@@ -18,7 +18,7 @@ export default function HeroVideo() {
           loop
           playsInline
           preload="auto"
-          src="/hero-video.mp4"
+          src="/hero_video.mp4"
           onError={() => setVideoFailed(true)}
           className="absolute inset-0 w-full h-full object-cover"
         />
