@@ -1,4 +1,4 @@
-# CLAUDE.md
+﻿# CLAUDE.md
 
 This file provides guidance to Claude Code when working with this repository.
 
@@ -91,11 +91,10 @@ src/
 │   ├── sitemap.ts                                 (Auto-generated sitemap — all routes, both locales)
 │   └── robots.ts                                  (Robots.txt — allow all crawlers)
 ├── components/
-│   ├── Navbar.tsx          (client — scroll detection, mobile menu, LanguageToggle, DarkModeToggle)
+│   ├── Navbar.tsx          (client — scroll detection, mobile menu, LanguageToggle)
 │   ├── Footer.tsx          (server — translated links, contact info)
 │   ├── Logo.tsx            (server — dark/light logo variants)
 │   ├── LanguageToggle.tsx  (client — AR/EN switch)
-│   ├── DarkModeToggle.tsx  (client — dark/light mode switch, localStorage + OS preference)
 │   ├── AnimatedSection.tsx (client — Framer Motion scroll animations)
 │   ├── FAQ.tsx             (client — accordion component, Framer Motion expand/collapse)
 │   ├── ShareButtons.tsx    (client — social sharing: WhatsApp, Facebook, Telegram, copy link)
@@ -133,7 +132,6 @@ src/
 - `ProjectGallery` — lightbox interaction
 - `WhatsAppButton` — client-side interaction, `useTranslations`
 - `LanguageToggle` — locale switching
-- `DarkModeToggle` — theme switching, localStorage, `useTranslations`
 - `FAQ` — accordion expand/collapse state, Framer Motion
 - `ShareButtons` — Web Share API detection, clipboard, `useTranslations`
 - `ScrollToTop` — scroll detection, Framer Motion
@@ -188,8 +186,8 @@ Data managed in `src/data/projects.json`, accessed via `src/lib/portfolio.ts` he
 | `src/lib/portfolio.ts` | Portfolio data helpers (reads from projects.json) |
 | `src/data/projects.json` | Portfolio categories and projects data |
 | `src/lib/utils.ts` | `formatPrice()` (Iraqi Dinar), `cn()` (classname merge) |
-| `src/app/globals.css` | Tailwind v4 `@theme` color/font definitions, dark mode overrides, custom CSS utilities |
-| `src/app/[locale]/layout.tsx` | Root layout: locale, dir, fonts, NextIntlClientProvider, dark mode anti-flash |
+| `src/app/globals.css` | Tailwind v4 `@theme` color/font definitions, custom CSS utilities |
+| `src/app/[locale]/layout.tsx` | Root layout: locale, dir, fonts, NextIntlClientProvider |
 | `src/app/sitemap.ts` | Auto-generated sitemap with all routes and both locales |
 | `src/app/robots.ts` | Robots.txt configuration |
 | `next.config.ts` | next-intl plugin + remote image patterns |
@@ -243,24 +241,12 @@ Font selection is automatic via `[lang="ar"]` and `[lang="en"]` CSS selectors in
 - Arrow icons: `rotate-180` only needed in RTL mode
 - Text alignment: default is already right in RTL, use `text-start` / `text-end`
 
-### Dark Mode
-
-Dark mode uses CSS custom property overrides on the `.dark` class (added to `<html>`):
-- Enabled via `@custom-variant dark (&:where(.dark, .dark *));` in globals.css
-- Theme colors (secondary, surface, text) are overridden in `.dark { }` block
-- Background: `#0F172A`, Surface: `#1E293B`
-- Toggle in Navbar via `DarkModeToggle` component
-- Preference saved to localStorage, respects OS `prefers-color-scheme`
-- Anti-flash `<script>` in layout.tsx applies `.dark` before React hydrates
-- Use `dark:bg-[#0F172A]` for `bg-white` sections, `dark:bg-[#1E293B]` for cards
-- Images get `brightness(0.9)` filter globally in dark mode
-
 ### Custom CSS Classes
 
-- `.bg-geometric` — subtle geometric pattern overlay (has dark mode override)
+- `.bg-geometric` — subtle geometric pattern overlay
 - `.accent-shimmer` / `.gold-shimmer` — animated accent gradient effect
 - `.noise-overlay` — texture via `::before` pseudo-element
-- `.skeleton` — loading shimmer animation (has dark mode override)
+- `.skeleton` — loading shimmer animation
 
 ### Logo Component
 
