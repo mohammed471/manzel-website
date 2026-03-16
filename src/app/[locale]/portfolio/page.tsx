@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { Link } from "@/i18n/navigation";
 import { getTranslations } from "next-intl/server";
-import Image from "next/image";
 import AnimatedSection from "@/components/AnimatedSection";
+import Card3D from "@/components/Card3D";
+import BlurImage from "@/components/BlurImage";
 import StatsCounter from "@/components/StatsCounter";
 import PortfolioFilter from "@/components/PortfolioFilter";
 import {
@@ -93,24 +94,25 @@ export default async function PortfolioPage({
                     project.images[0] || "cover.jpg",
                   );
                   return (
-                    <Link
-                      key={project.id}
-                      href={`/portfolio/${project.category}/${project.id}`}
-                      className="group"
-                    >
-                      <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-secondary">
-                        <Image
-                          src={coverUrl}
-                          alt={project.name}
-                          fill
-                          className="object-cover transition-transform duration-700 group-hover:scale-105"
-                          sizes="(max-width: 768px) 50vw, 25vw"
-                        />
-                      </div>
-                      <p className="mt-2.5 text-sm font-medium text-text-primary group-hover:text-primary transition-colors">
-                        {project.name}
-                      </p>
-                    </Link>
+                    <Card3D key={project.id}>
+                      <Link
+                        href={`/portfolio/${project.category}/${project.id}`}
+                        className="group"
+                      >
+                        <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-secondary">
+                          <BlurImage
+                            src={coverUrl}
+                            alt={project.name}
+                            fill
+                            className="object-cover transition-transform duration-700 group-hover:scale-105"
+                            sizes="(max-width: 768px) 50vw, 25vw"
+                          />
+                        </div>
+                        <p className="mt-2.5 text-sm font-medium text-text-primary group-hover:text-primary transition-colors">
+                          {project.name}
+                        </p>
+                      </Link>
+                    </Card3D>
                   );
                 })}
               </div>

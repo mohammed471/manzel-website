@@ -48,7 +48,7 @@ export default async function ContactPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16">
             {/* Contact Form */}
-            <AnimatedSection>
+            <AnimatedSection variant="slideRight">
               <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 md:p-10">
                 <h2 className="text-2xl font-bold text-text-primary mb-6">
                   {t("send_message")}
@@ -58,7 +58,7 @@ export default async function ContactPage() {
             </AnimatedSection>
 
             {/* Company Info */}
-            <AnimatedSection delay={0.2}>
+            <AnimatedSection delay={0.2} variant="fadeIn">
               <div className="bg-surface rounded-2xl p-8 md:p-10 h-full">
                 <h2 className="text-2xl font-bold text-text-primary mb-8">
                   {t("contact_info")}

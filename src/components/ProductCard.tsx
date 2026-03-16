@@ -1,5 +1,5 @@
 import { Link } from "@/i18n/navigation";
-import Image from "next/image";
+import BlurImage from "@/components/BlurImage";
 import type { Product } from "@/lib/api";
 import { getProductImageUrl } from "@/lib/api";
 
@@ -12,7 +12,7 @@ export default function ProductCard({ product }: { product: Product }) {
       {/* Image */}
       <div className="relative aspect-[3/4] bg-secondary-light overflow-hidden">
         {product.image ? (
-          <Image
+          <BlurImage
             src={getProductImageUrl(product.image)}
             alt={product.name}
             fill

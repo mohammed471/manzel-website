@@ -1,5 +1,5 @@
 import { Link } from "@/i18n/navigation";
-import Image from "next/image";
+import BlurImage from "@/components/BlurImage";
 import type { PortfolioProject } from "@/lib/portfolio";
 import { getProjectImageUrl } from "@/lib/portfolio";
 
@@ -22,7 +22,7 @@ export default function ProjectCard({
     >
       {/* Image */}
       <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-secondary mb-3">
-        <Image
+        <BlurImage
           src={coverUrl}
           alt={project.name}
           fill

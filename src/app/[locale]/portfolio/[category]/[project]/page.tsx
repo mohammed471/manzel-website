@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Link } from "@/i18n/navigation";
-import Image from "next/image";
+import BlurImage from "@/components/BlurImage";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import AnimatedSection from "@/components/AnimatedSection";
@@ -114,9 +114,9 @@ export default async function ProjectDetailPage({ params }: PageProps) {
           </AnimatedSection>
 
           {/* Hero Image */}
-          <AnimatedSection delay={0.1}>
+          <AnimatedSection delay={0.1} variant="fadeIn">
             <div className="relative aspect-[16/9] md:aspect-[2/1] rounded-2xl overflow-hidden bg-secondary mb-10">
-              <Image
+              <BlurImage
                 src={coverUrl}
                 alt={project.name}
                 fill

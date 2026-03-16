@@ -138,7 +138,8 @@
   },
   "common": {
     "back_to_home": "Back to Home",
-    "home": "Home"
+    "home": "Home",
+    "scroll_to_top": "Scroll to top"
   },
   "errors": {
     "page_not_found": "Page Not Found",
@@ -149,7 +150,8 @@
     "back_to_home": "Back to Home"
   },
   "whatsapp": {
-    "aria_label": "Chat on WhatsApp"
+    "aria_label": "Chat on WhatsApp",
+    "hover_text": "Chat on WhatsApp"
   },
   "metadata": {
     "home_title": "Manzel | Building Materials & Interior Design Services",

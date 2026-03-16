@@ -9,6 +9,8 @@ import "../globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
+import PageTransition from "@/components/PageTransition";
+import ScrollToTop from "@/components/ScrollToTop";
 import ar from "@/messages/ar.json";
 import en from "@/messages/en.json";
 
@@ -83,9 +85,10 @@ export default async function LocaleLayout({
       >
         <NextIntlClientProvider locale={locale} messages={messages}>
           <Navbar />
-          <main className="min-h-screen">{children}</main>
+          <main className="min-h-screen"><PageTransition>{children}</PageTransition></main>
           <Footer />
           <WhatsAppButton />
+          <ScrollToTop />
         </NextIntlClientProvider>
       </body>
     </html>

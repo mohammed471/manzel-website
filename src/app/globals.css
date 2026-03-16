@@ -29,6 +29,10 @@
   --font-english-display: 'Playfair Display', serif;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -106,6 +110,35 @@ body {
   );
   background-size: 200% 100%;
   animation: shimmer 3s ease-in-out infinite;
+}
+
+/* Breathing pulse animation (WhatsApp button) */
+@keyframes breathe {
+  0%, 100% { transform: scale(1); opacity: 0.4; }
+  50% { transform: scale(1.5); opacity: 0; }
+}
+.animate-breathe {
+  animation: breathe 2.5s ease-in-out infinite;
+}
+
+/* CTA hover glow effects */
+.btn-glow:hover {
+  box-shadow: 0 0 20px rgba(241, 233, 232, 0.3), 0 0 40px rgba(241, 233, 232, 0.1);
+}
+.btn-glow-accent:hover {
+  box-shadow: 0 0 20px rgba(147, 57, 40, 0.3), 0 0 40px rgba(147, 57, 40, 0.1);
+}
+
+/* Skeleton loading shimmer */
+@keyframes skeleton-shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.skeleton {
+  background: linear-gradient(90deg, var(--color-secondary) 25%, var(--color-secondary-light) 50%, var(--color-secondary) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s ease-in-out infinite;
+  border-radius: 0.5rem;
 }
 
 /* Noise texture overlay */

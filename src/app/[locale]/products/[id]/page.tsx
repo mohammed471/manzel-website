@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Image from "next/image";
+import BlurImage from "@/components/BlurImage";
 import { Link } from "@/i18n/navigation";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
@@ -138,10 +138,10 @@ export default async function ProductPage({ params }: ProductPageProps) {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16">
             {/* Product Image */}
-            <AnimatedSection>
+            <AnimatedSection variant="fadeIn">
               <div className="relative bg-surface rounded-2xl overflow-hidden aspect-square shadow-sm border border-gray-100">
                 {product.image ? (
-                  <Image
+                  <BlurImage
                     src={getProductImageUrl(product.image)}
                     alt={product.name}
                     fill
@@ -170,7 +170,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
             </AnimatedSection>
 
             {/* Product Info */}
-            <AnimatedSection delay={0.15}>
+            <AnimatedSection delay={0.15} variant="slideRight">
               <div className="flex flex-col h-full">
                 {/* Category Badge */}
                 <div className="flex items-center gap-3 mb-4">

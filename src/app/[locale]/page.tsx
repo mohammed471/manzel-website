@@ -5,6 +5,10 @@ import { getFeaturedProjects } from "@/lib/portfolio";
 import AnimatedSection from "@/components/AnimatedSection";
 import CategoryCard from "@/components/CategoryCard";
 import ProjectCard from "@/components/ProjectCard";
+import HeroVideo from "@/components/HeroVideo";
+import HeroText from "@/components/HeroText";
+import CountUpStats from "@/components/CountUpStats";
+import Card3D from "@/components/Card3D";
 
 export default async function Home({
   params,
@@ -27,86 +31,30 @@ export default async function Home({
   const featuredProjects = getFeaturedProjects().slice(0, 4);
 
   const stats = [
-    { number: tStats("products_count"), label: tStats("products_label") },
-    { number: tStats("projects_count"), label: tStats("projects_label") },
-    { number: tStats("years_count"), label: tStats("years_label") },
-    { number: tStats("clients_count"), label: tStats("clients_label") },
+    { numberText: tStats("products_count"), label: tStats("products_label") },
+    { numberText: tStats("projects_count"), label: tStats("projects_label") },
+    { numberText: tStats("years_count"), label: tStats("years_label") },
+    { numberText: tStats("clients_count"), label: tStats("clients_label") },
   ];
 
   return (
     <>
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-        {/* Background */}
-        <div className="absolute inset-0 bg-gradient-to-b from-primary-dark via-primary to-primary-dark" />
-
-        {/* Minimal radial glow decorations */}
+        {/* Video Background with fallback */}
         <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute top-1/4 -right-32 w-[600px] h-[600px] bg-primary-light/20 rounded-full blur-[120px]" />
-          <div className="absolute -bottom-48 -left-24 w-[500px] h-[500px] bg-primary-light/10 rounded-full blur-[100px]" />
+          <HeroVideo />
         </div>
 
-        {/* Noise overlay */}
-        <div className="absolute inset-0 noise-overlay" />
-
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center py-32">
-          {/* Pill badge */}
-          <AnimatedSection>
-            <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-5 py-2.5 mb-8">
-              <span className="w-2 h-2 bg-accent rounded-full" />
-              <span className="text-white/80 text-sm font-medium">
-                {t("hero_badge")}
-              </span>
-            </div>
-          </AnimatedSection>
-
-          {/* Large bold heading */}
-          <AnimatedSection delay={0.1}>
-            <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-extrabold text-white leading-tight">
-              {t("hero_title")}
-              <span className="block text-secondary mt-3">
-                {t("hero_subtitle")}
-              </span>
-            </h1>
-          </AnimatedSection>
-
-          {/* Description */}
-          <AnimatedSection delay={0.2}>
-            <p className="mt-8 text-lg sm:text-xl text-white/70 max-w-2xl mx-auto leading-relaxed">
-              {t("hero_description")}
-            </p>
-          </AnimatedSection>
-
-          {/* CTA buttons */}
-          <AnimatedSection delay={0.3}>
-            <div className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link
-                href="/products"
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-secondary text-primary-dark font-bold px-8 py-4 rounded-xl transition-colors text-lg hover:bg-secondary-light"
-              >
-                {t("browse_products")}
-                <svg
-                  className="w-5 h-5 rotate-180"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M17 8l4 4m0 0l-4 4m4-4H3"
-                  />
-                </svg>
-              </Link>
-              <Link
-                href="/portfolio"
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 border border-white/20 text-white font-bold px-8 py-4 rounded-xl transition-colors text-lg hover:bg-white/10"
-              >
-                {t("view_portfolio")}
-              </Link>
-            </div>
-          </AnimatedSection>
+          <HeroText
+            badge={t("hero_badge")}
+            title={t("hero_title")}
+            subtitle={t("hero_subtitle")}
+            description={t("hero_description")}
+            browseProductsLabel={t("browse_products")}
+            viewPortfolioLabel={t("view_portfolio")}
+          />
         </div>
 
         {/* Scroll indicator */}
@@ -135,7 +83,7 @@ export default async function Home({
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {categories.slice(0, 6).map((category, i) => (
-                <AnimatedSection key={category.id} delay={i * 0.1}>
+                <AnimatedSection key={category.id} delay={i * 0.1} variant="scaleIn">
                   <CategoryCard category={category} index={i} />
                 </AnimatedSection>
               ))}
@@ -149,20 +97,7 @@ export default async function Home({
         <div className="absolute inset-0 noise-overlay" />
         <div className="absolute top-0 left-0 w-full h-1 accent-shimmer" />
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            {stats.map((stat, i) => (
-              <AnimatedSection key={stat.label} delay={i * 0.1}>
-                <div className="text-center">
-                  <p className="text-4xl md:text-5xl font-extrabold text-secondary">
-                    {stat.number}
-                  </p>
-                  <p className="text-white/80 mt-2 font-medium">
-                    {stat.label}
-                  </p>
-                </div>
-              </AnimatedSection>
-            ))}
-          </div>
+          <CountUpStats stats={stats} />
         </div>
       </section>
 
@@ -205,7 +140,9 @@ export default async function Home({
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {featuredProjects.map((project, i) => (
                 <AnimatedSection key={project.id} delay={i * 0.1}>
-                  <ProjectCard project={project} locale={locale} />
+                  <Card3D>
+                    <ProjectCard project={project} locale={locale} />
+                  </Card3D>
                 </AnimatedSection>
               ))}
             </div>
@@ -231,7 +168,7 @@ export default async function Home({
             </p>
             <Link
               href="/contact"
-              className="mt-10 inline-flex items-center gap-2 bg-accent hover:bg-accent-light text-white font-bold px-8 py-4 rounded-xl transition-colors text-lg"
+              className="mt-10 inline-flex items-center gap-2 bg-accent hover:bg-accent-light text-white font-bold px-8 py-4 rounded-xl transition-colors text-lg btn-glow-accent"
             >
               {t("contact_us")}
               <svg
