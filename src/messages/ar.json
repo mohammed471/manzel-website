@@ -96,7 +96,18 @@
     "cat_exterior_design_desc": "واجهات وتصاميم خارجية عصرية",
     "cat_execution_desc": "تنفيذ المشاريع بأعلى معايير الجودة",
     "cat_floor_plan_desc": "خرائط معمارية وهندسية احترافية",
-    "cat_finishing_desc": "أعمال تشطيب وإنهاء بدقة عالية"
+    "cat_finishing_desc": "أعمال تشطيب وإنهاء بدقة عالية",
+    "before_after": "قبل وبعد",
+    "before_label": "قبل",
+    "after_label": "بعد"
+  },
+  "testimonials": {
+    "title": "ماذا يقول عملاؤنا",
+    "subtitle": "آراء العملاء",
+    "view_all": "عرض جميع الآراء",
+    "no_testimonials": "لا توجد آراء حالياً",
+    "page_title": "آراء العملاء",
+    "page_description": "نفخر بثقة عملائنا ونسعى دائماً لتقديم أفضل خدمة"
   },
   "contact": {
     "hero_label": "نحن هنا لمساعدتك",
@@ -163,6 +174,8 @@
     "contact_title": "تواصل معنا | منزل",
     "contact_description": "تواصل معنا للاستفسار عن منتجاتنا وخدماتنا",
     "product_not_found": "منتج غير موجود | منزل",
-    "project_not_found": "مشروع غير موجود | منزل"
+    "project_not_found": "مشروع غير موجود | منزل",
+    "testimonials_title": "آراء العملاء | منزل",
+    "testimonials_description": "اقرأ آراء عملائنا عن خدماتنا في البناء والتصميم الداخلي"
   }
 }

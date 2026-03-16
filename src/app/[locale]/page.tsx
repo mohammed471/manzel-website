@@ -2,6 +2,7 @@ import { Link } from "@/i18n/navigation";
 import { getTranslations } from "next-intl/server";
 import { getCategories } from "@/lib/api";
 import { getFeaturedProjects } from "@/lib/portfolio";
+import { getTestimonials, getTestimonialImageUrl } from "@/lib/testimonials";
 import AnimatedSection from "@/components/AnimatedSection";
 import CategoryCard from "@/components/CategoryCard";
 import ProjectCard from "@/components/ProjectCard";
@@ -9,6 +10,7 @@ import HeroVideo from "@/components/HeroVideo";
 import HeroText from "@/components/HeroText";
 import CountUpStats from "@/components/CountUpStats";
 import Card3D from "@/components/Card3D";
+import TestimonialsCarousel from "@/components/TestimonialsCarousel";
 
 export default async function Home({
   params,
@@ -18,6 +20,7 @@ export default async function Home({
   const { locale } = await params;
   const t = await getTranslations("home");
   const tStats = await getTranslations("stats");
+  const tTestimonials = await getTranslations("testimonials");
 
   let categories: Awaited<ReturnType<typeof getCategories>> = [];
 
@@ -29,6 +32,17 @@ export default async function Home({
 
   categories = Array.isArray(categories) ? categories : [];
   const featuredProjects = getFeaturedProjects().slice(0, 4);
+
+  const testimonials = getTestimonials();
+  const testimonialData = testimonials.map((item) => ({
+    id: item.id,
+    name: item.name,
+    role: item.role,
+    location: item.location,
+    rating: item.rating,
+    text: item.text,
+    imageUrl: item.image ? getTestimonialImageUrl(item.image) : null,
+  }));
 
   const stats = [
     { numberText: tStats("products_count"), label: tStats("products_label") },
@@ -146,6 +160,48 @@ export default async function Home({
                 </AnimatedSection>
               ))}
             </div>
+          </div>
+        </section>
+      )}
+
+      {/* Testimonials */}
+      {testimonialData.length > 0 && (
+        <section className="py-20 md:py-28 bg-white bg-geometric">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <AnimatedSection>
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-14 gap-4">
+                <div>
+                  <span className="text-accent font-bold text-sm tracking-wider uppercase">
+                    {tTestimonials("subtitle")}
+                  </span>
+                  <h2 className="text-3xl md:text-4xl font-extrabold text-text-primary mt-2">
+                    {tTestimonials("title")}
+                  </h2>
+                </div>
+                <Link
+                  href="/testimonials"
+                  className="inline-flex items-center gap-2 text-primary font-bold hover:text-primary-light transition-colors"
+                >
+                  {tTestimonials("view_all")}
+                  <svg
+                    className="w-5 h-5 rotate-180"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M17 8l4 4m0 0l-4 4m4-4H3"
+                    />
+                  </svg>
+                </Link>
+              </div>
+            </AnimatedSection>
+            <AnimatedSection delay={0.1}>
+              <TestimonialsCarousel testimonials={testimonialData} />
+            </AnimatedSection>
           </div>
         </section>
       )}

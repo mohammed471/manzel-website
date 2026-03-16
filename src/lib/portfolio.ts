@@ -12,6 +12,12 @@ export interface ProjectVideo {
   url: string;
 }
 
+export interface BeforeAfterPair {
+  before: string;
+  after: string;
+  caption?: string;
+}
+
 export interface PortfolioProject {
   id: string;
   category: string;
@@ -22,6 +28,7 @@ export interface PortfolioProject {
   images: string[];
   videos: ProjectVideo[];
   featured: boolean;
+  beforeAfter?: BeforeAfterPair[];
 }
 
 export function getCategories(): PortfolioCategory[] {

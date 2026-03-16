@@ -43,7 +43,11 @@
       "videos": [
         { "type": "youtube", "url": "https://www.youtube.com/watch?v=EXAMPLE1" }
       ],
-      "featured": true
+      "featured": true,
+      "beforeAfter": [
+        { "before": "before-1.jpg", "after": "after-1.jpg", "caption": "غرفة المعيشة" },
+        { "before": "before-2.jpg", "after": "after-2.jpg", "caption": "المطبخ" }
+      ]
     },
     {
       "id": "villa-baghdad",

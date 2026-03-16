@@ -13,6 +13,7 @@ import {
   getProjects,
   getProjectImageUrl,
 } from "@/lib/portfolio";
+import BeforeAfterSlider from "@/components/BeforeAfterSlider";
 
 interface PageProps {
   params: Promise<{ locale: string; category: string; project: string }>;
@@ -271,6 +272,29 @@ export default async function ProjectDetailPage({ params }: PageProps) {
               </div>
             </div>
           </AnimatedSection>
+
+          {/* Before & After */}
+          {project.beforeAfter && project.beforeAfter.length > 0 && (
+            <AnimatedSection delay={0.28}>
+              <div className="mb-16">
+                <h2 className="text-xl font-bold text-text-primary mb-6">
+                  {t("before_after")}
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {project.beforeAfter.map((pair, idx) => (
+                    <BeforeAfterSlider
+                      key={idx}
+                      beforeSrc={getProjectImageUrl(project.category, project.id, pair.before)}
+                      afterSrc={getProjectImageUrl(project.category, project.id, pair.after)}
+                      beforeAlt={`${project.name} - ${t("before_label")}`}
+                      afterAlt={`${project.name} - ${t("after_label")}`}
+                      caption={pair.caption}
+                    />
+                  ))}
+                </div>
+              </div>
+            </AnimatedSection>
+          )}
 
           {/* Gallery */}
           {allImages.length > 0 && (

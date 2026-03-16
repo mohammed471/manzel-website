@@ -96,7 +96,18 @@
     "cat_exterior_design_desc": "Modern facades and exterior designs",
     "cat_execution_desc": "Project execution with the highest quality standards",
     "cat_floor_plan_desc": "Professional architectural and engineering floor plans",
-    "cat_finishing_desc": "High-precision finishing and completion work"
+    "cat_finishing_desc": "High-precision finishing and completion work",
+    "before_after": "Before & After",
+    "before_label": "Before",
+    "after_label": "After"
+  },
+  "testimonials": {
+    "title": "What Our Clients Say",
+    "subtitle": "Client Testimonials",
+    "view_all": "View All Testimonials",
+    "no_testimonials": "No testimonials available",
+    "page_title": "Client Testimonials",
+    "page_description": "We take pride in our clients' trust and always strive to deliver the best service"
   },
   "contact": {
     "hero_label": "We're Here to Help",
@@ -163,6 +174,8 @@
     "contact_title": "Contact Us | Manzel",
     "contact_description": "Contact us to inquire about our products and services",
     "product_not_found": "Product Not Found | Manzel",
-    "project_not_found": "Project Not Found | Manzel"
+    "project_not_found": "Project Not Found | Manzel",
+    "testimonials_title": "Client Testimonials | Manzel",
+    "testimonials_description": "Read what our clients say about our construction and interior design services"
   }
 }
