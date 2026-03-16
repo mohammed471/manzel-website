@@ -6,9 +6,7 @@
     "contact": "Contact Us",
     "menu": "Menu",
     "calculator": "Cost Calculator",
-    "booking": "Book Consultation",
-    "dark_mode": "Switch to dark mode",
-    "light_mode": "Switch to light mode"
+    "booking": "Book Consultation"
   },
   "brand": {
     "name": "Manzel",
@@ -314,6 +312,11 @@
     "a5": "Yes, we provide regular updates with photos and work stage reports",
     "q6": "What payment methods are available?",
     "a6": "We accept cash and bank transfers, with installment payment options available"
+  },
+  "splash": {
+    "brand_name": "منزل",
+    "tagline": "Your Partner in Construction & Design",
+    "skip_hint": "Tap to skip"
   },
   "share": {
     "title": "Share Project",

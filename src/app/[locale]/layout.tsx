@@ -11,6 +11,7 @@ import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import PageTransition from "@/components/PageTransition";
 import ScrollToTop from "@/components/ScrollToTop";
+import SplashScreen from "@/components/SplashScreen";
 import ar from "@/messages/ar.json";
 import en from "@/messages/en.json";
 
@@ -84,18 +85,12 @@ export default async function LocaleLayout({
   const isRTL = locale === "ar";
 
   return (
-    <html lang={locale} dir={isRTL ? "rtl" : "ltr"} suppressHydrationWarning>
-      <head>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `(function(){try{var t=localStorage.getItem('theme');if(t==='dark'||(!t&&window.matchMedia('(prefers-color-scheme:dark)').matches)){document.documentElement.classList.add('dark')}}catch(e){}})();`,
-          }}
-        />
-      </head>
+    <html lang={locale} dir={isRTL ? "rtl" : "ltr"}>
       <body
         className={`${khalidArt.variable} ${poppins.variable} ${tajawal.variable} ${playfairDisplay.variable} antialiased`}
       >
         <NextIntlClientProvider locale={locale} messages={messages}>
+          <SplashScreen />
           <Navbar />
           <main className="min-h-screen"><PageTransition>{children}</PageTransition></main>
           <Footer />

@@ -56,7 +56,7 @@ export default async function CategoryPage({ params }: PageProps) {
 
   return (
     <>
-      <section className="pt-28 pb-20 bg-white dark:bg-[#0F172A]">
+      <section className="pt-28 pb-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Breadcrumb */}
           <AnimatedSection>

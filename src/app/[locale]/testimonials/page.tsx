@@ -53,7 +53,7 @@ export default async function TestimonialsPage() {
       </section>
 
       {/* Testimonials Grid */}
-      <section className="py-16 md:py-24 bg-white dark:bg-[#0F172A] bg-geometric">
+      <section className="py-16 md:py-24 bg-white bg-geometric">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {testimonials.length === 0 ? (
             <p className="text-center text-text-secondary text-lg">
@@ -63,7 +63,7 @@ export default async function TestimonialsPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {testimonials.map((testimonial, i) => (
                 <AnimatedSection key={testimonial.id} delay={i * 0.1}>
-                  <div className="bg-white dark:bg-[#1E293B] rounded-2xl p-6 shadow-sm border border-secondary-dark/30 h-full flex flex-col">
+                  <div className="bg-white rounded-2xl p-6 shadow-sm border border-secondary-dark/30 h-full flex flex-col">
                     {/* Decorative quote */}
                     <div className="text-accent/10 text-6xl font-serif leading-none mb-2 select-none">
                       &#10077;

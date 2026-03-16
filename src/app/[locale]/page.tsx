@@ -140,7 +140,7 @@ export default async function Home({
 
       {/* Featured Categories */}
       {categories.length > 0 && (
-        <section className="py-20 md:py-28 bg-white dark:bg-[#0F172A] bg-geometric">
+        <section className="py-20 md:py-28 bg-white bg-geometric">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <AnimatedSection>
               <div className="text-center mb-14">
@@ -225,7 +225,7 @@ export default async function Home({
 
       {/* Testimonials */}
       {testimonialData.length > 0 && (
-        <section className="py-20 md:py-28 bg-white dark:bg-[#0F172A] bg-geometric">
+        <section className="py-20 md:py-28 bg-white bg-geometric">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <AnimatedSection>
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-14 gap-4">

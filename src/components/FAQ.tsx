@@ -20,7 +20,7 @@ export default function FAQ({ items }: FAQProps) {
   };
 
   return (
-    <div className="bg-white dark:bg-[#1E293B] rounded-2xl shadow-sm border border-secondary-dark/20 overflow-hidden divide-y divide-secondary-dark/20">
+    <div className="bg-white rounded-2xl shadow-sm border border-secondary-dark/20 overflow-hidden divide-y divide-secondary-dark/20">
       {items.map((item, index) => (
         <div key={index}>
           <button

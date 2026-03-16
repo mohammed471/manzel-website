@@ -72,7 +72,7 @@ export default async function PortfolioPage({
   return (
     <>
       {/* ── Hero Section ── */}
-      <section className="pt-32 pb-20 bg-white dark:bg-[#0F172A]">
+      <section className="pt-32 pb-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Two-column header */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-end mb-16">
@@ -130,7 +130,7 @@ export default async function PortfolioPage({
       <div className="border-t border-secondary-dark/30" />
 
       {/* ── Stats Section ── */}
-      <section className="py-20 md:py-28 bg-white dark:bg-[#0F172A]">
+      <section className="py-20 md:py-28 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <AnimatedSection>
             <div className="text-center mb-14">
@@ -153,7 +153,7 @@ export default async function PortfolioPage({
       <div className="border-t border-secondary-dark/30" />
 
       {/* ── Projects Grid with Filters ── */}
-      <section className="py-20 md:py-28 bg-white dark:bg-[#0F172A]">
+      <section className="py-20 md:py-28 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <AnimatedSection>
             <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold text-text-primary mb-10">
