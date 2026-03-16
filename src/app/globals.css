@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   /* Primary: Dark Green (company brand) */
   --color-primary: #153C38;
@@ -27,6 +29,55 @@
   --font-arabic-body: 'Tajawal', sans-serif;
   --font-english: 'Poppins', sans-serif;
   --font-english-display: 'Playfair Display', serif;
+}
+
+/* Dark mode color overrides */
+.dark {
+  --color-secondary: #1E293B;
+  --color-secondary-light: #243447;
+  --color-secondary-dark: #15202D;
+  --color-surface: #1E293B;
+  --color-text-primary: #E2E8F0;
+  --color-text-secondary: #94A3B8;
+}
+
+.dark body {
+  background: #0F172A;
+}
+
+.dark img {
+  filter: brightness(0.9);
+}
+
+.dark ::selection {
+  background: var(--color-accent);
+  color: #fff;
+}
+
+.dark ::-webkit-scrollbar-track {
+  background: #1E293B;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #475569;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #64748B;
+}
+
+.dark .bg-geometric {
+  background-image:
+    linear-gradient(30deg, rgba(148, 163, 184, 0.05) 12%, transparent 12.5%, transparent 87%, rgba(148, 163, 184, 0.05) 87.5%, rgba(148, 163, 184, 0.05)),
+    linear-gradient(150deg, rgba(148, 163, 184, 0.05) 12%, transparent 12.5%, transparent 87%, rgba(148, 163, 184, 0.05) 87.5%, rgba(148, 163, 184, 0.05)),
+    linear-gradient(30deg, rgba(148, 163, 184, 0.05) 12%, transparent 12.5%, transparent 87%, rgba(148, 163, 184, 0.05) 87.5%, rgba(148, 163, 184, 0.05)),
+    linear-gradient(150deg, rgba(148, 163, 184, 0.05) 12%, transparent 12.5%, transparent 87%, rgba(148, 163, 184, 0.05) 87.5%, rgba(148, 163, 184, 0.05));
+}
+
+.dark .skeleton {
+  background: linear-gradient(90deg, #1E293B 25%, #243447 50%, #1E293B 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s ease-in-out infinite;
 }
 
 html {

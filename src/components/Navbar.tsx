@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import Logo from "@/components/Logo";
 import LanguageToggle from "@/components/LanguageToggle";
+import DarkModeToggle from "@/components/DarkModeToggle";
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -52,7 +53,7 @@ export default function Navbar() {
         className={cn(
           "fixed top-0 inset-x-0 z-50 transition-all duration-300",
           scrolled
-            ? "bg-white/95 backdrop-blur-md shadow-sm"
+            ? "bg-white/95 dark:bg-[#0F172A]/95 backdrop-blur-md shadow-sm"
             : "bg-transparent"
         )}
       >
@@ -108,7 +109,15 @@ export default function Navbar() {
             </ul>
             <div
               className={cn(
-                "ms-4 transition-colors",
+                "ms-3 transition-colors",
+                scrolled ? "text-text-secondary" : "text-white"
+              )}
+            >
+              <DarkModeToggle />
+            </div>
+            <div
+              className={cn(
+                "ms-1 transition-colors",
                 scrolled ? "text-text-secondary" : "text-white"
               )}
             >
@@ -179,13 +188,16 @@ export default function Navbar() {
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              className="fixed top-0 right-0 bottom-0 w-72 bg-white z-50 md:hidden shadow-2xl"
+              className="fixed top-0 right-0 bottom-0 w-72 bg-white dark:bg-[#0F172A] z-50 md:hidden shadow-2xl"
             >
               <div className="p-6 pt-20">
                 {/* LanguageToggle at top of mobile drawer */}
                 <div className="flex items-center justify-between mb-6 pb-4 border-b border-surface">
                   <Logo variant="dark" width={100} height={40} />
-                  <LanguageToggle />
+                  <div className="flex items-center gap-2">
+                    <DarkModeToggle />
+                    <LanguageToggle />
+                  </div>
                 </div>
 
                 {/* Nav links */}

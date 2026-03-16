@@ -6,7 +6,9 @@
     "contact": "Contact Us",
     "menu": "Menu",
     "calculator": "Cost Calculator",
-    "booking": "Book Consultation"
+    "booking": "Book Consultation",
+    "dark_mode": "Switch to dark mode",
+    "light_mode": "Switch to light mode"
   },
   "brand": {
     "name": "Manzel",
@@ -28,7 +30,9 @@
     "cta_description": "Our team is ready to help you achieve your vision. Contact us today",
     "contact_us": "Contact Us",
     "book_consultation": "Book Consultation",
-    "estimate_cost": "Estimate Your Cost"
+    "estimate_cost": "Estimate Your Cost",
+    "faq_title": "Frequently Asked Questions",
+    "faq_subtitle": "Common Questions"
   },
   "stats": {
     "products_count": "+500",
@@ -187,7 +191,9 @@
     "calculator_title": "Cost Calculator | Manzel",
     "calculator_description": "Get a preliminary cost estimate for your project with our cost calculator",
     "booking_title": "Book a Free Consultation | Manzel",
-    "booking_description": "Schedule a free consultation with the Manzel expert team"
+    "booking_description": "Schedule a free consultation with the Manzel expert team",
+    "home_keywords": "interior design, exterior design, building materials, Karbala, Iraq, decor, finishing, Manzel",
+    "site_name": "Manzel"
   },
   "calculator": {
     "hero_label": "Cost Calculator",
@@ -294,5 +300,26 @@
     "calendar_event_title": "Manzel Consultation",
     "calendar_event_description": "Free consultation with the Manzel team",
     "required": "*"
+  },
+  "faq": {
+    "q1": "What services does Manzel offer?",
+    "a1": "We offer interior and exterior design, project execution, finishing, and engineering floor plans",
+    "q2": "Do you offer free consultations?",
+    "a2": "Yes, we offer a free initial consultation. You can book an appointment through the booking page",
+    "q3": "What areas do you serve?",
+    "a3": "We cover all Iraqi governorates with special focus on Karbala, Baghdad, and Najaf",
+    "q4": "How long does a project take to complete?",
+    "a4": "The duration depends on the size and type of project. It typically ranges from 1 to 6 months",
+    "q5": "Can I track my project progress?",
+    "a5": "Yes, we provide regular updates with photos and work stage reports",
+    "q6": "What payment methods are available?",
+    "a6": "We accept cash and bank transfers, with installment payment options available"
+  },
+  "share": {
+    "title": "Share Project",
+    "whatsapp_text": "Check out the project {name} by Manzel:",
+    "copied": "Link copied!",
+    "copy_link": "Copy Link",
+    "share_on": "Share"
   }
 }

@@ -11,6 +11,7 @@ import HeroText from "@/components/HeroText";
 import CountUpStats from "@/components/CountUpStats";
 import Card3D from "@/components/Card3D";
 import TestimonialsCarousel from "@/components/TestimonialsCarousel";
+import FAQ from "@/components/FAQ";
 
 export default async function Home({
   params,
@@ -21,6 +22,7 @@ export default async function Home({
   const t = await getTranslations("home");
   const tStats = await getTranslations("stats");
   const tTestimonials = await getTranslations("testimonials");
+  const tFaq = await getTranslations("faq");
 
   let categories: Awaited<ReturnType<typeof getCategories>> = [];
 
@@ -51,8 +53,64 @@ export default async function Home({
     { numberText: tStats("clients_count"), label: tStats("clients_label") },
   ];
 
+  const faqItems = Array.from({ length: 6 }, (_, i) => ({
+    question: tFaq(`q${i + 1}`),
+    answer: tFaq(`a${i + 1}`),
+  }));
+
   return (
     <>
+      {/* JSON-LD Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify([
+            {
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              name: locale === "ar" ? "منزل" : "Manzel",
+              url: "https://example.com",
+              logo: "https://example.com/images/logo-dark.png",
+              contactPoint: {
+                "@type": "ContactPoint",
+                telephone: "+964-770-000-0000",
+                contactType: "customer service",
+              },
+              sameAs: [
+                "https://facebook.com/manzel",
+                "https://instagram.com/manzel",
+              ],
+            },
+            {
+              "@context": "https://schema.org",
+              "@type": "HomeAndConstructionBusiness",
+              name: locale === "ar" ? "منزل" : "Manzel",
+              image: "https://example.com/images/logo-dark.png",
+              address: {
+                "@type": "PostalAddress",
+                addressLocality: locale === "ar" ? "كربلاء" : "Karbala",
+                addressCountry: "IQ",
+              },
+              telephone: "+964-770-000-0000",
+              openingHoursSpecification: {
+                "@type": "OpeningHoursSpecification",
+                dayOfWeek: [
+                  "Saturday",
+                  "Sunday",
+                  "Monday",
+                  "Tuesday",
+                  "Wednesday",
+                  "Thursday",
+                ],
+                opens: "09:00",
+                closes: "18:00",
+              },
+              inLanguage: locale === "ar" ? "ar" : "en",
+            },
+          ]),
+        }}
+      />
+
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
         {/* Video Background with fallback */}
@@ -82,7 +140,7 @@ export default async function Home({
 
       {/* Featured Categories */}
       {categories.length > 0 && (
-        <section className="py-20 md:py-28 bg-white bg-geometric">
+        <section className="py-20 md:py-28 bg-white dark:bg-[#0F172A] bg-geometric">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <AnimatedSection>
               <div className="text-center mb-14">
@@ -167,7 +225,7 @@ export default async function Home({
 
       {/* Testimonials */}
       {testimonialData.length > 0 && (
-        <section className="py-20 md:py-28 bg-white bg-geometric">
+        <section className="py-20 md:py-28 bg-white dark:bg-[#0F172A] bg-geometric">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <AnimatedSection>
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-14 gap-4">
@@ -206,6 +264,26 @@ export default async function Home({
           </div>
         </section>
       )}
+
+      {/* FAQ Section */}
+      <section className="py-20 md:py-28 bg-surface">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+          <AnimatedSection>
+            <div className="text-center mb-14">
+              <span className="text-accent font-bold text-sm tracking-wider uppercase">
+                {t("faq_subtitle")}
+              </span>
+              <h2 className="text-3xl md:text-4xl font-extrabold text-text-primary mt-2">
+                {t("faq_title")}
+              </h2>
+              <div className="w-16 h-1 bg-accent mx-auto mt-4 rounded-full" />
+            </div>
+          </AnimatedSection>
+          <AnimatedSection delay={0.1}>
+            <FAQ items={faqItems} />
+          </AnimatedSection>
+        </div>
+      </section>
 
       {/* CTA Section */}
       <section className="relative py-24 md:py-32 overflow-hidden">

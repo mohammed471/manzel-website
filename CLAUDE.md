@@ -83,13 +83,22 @@ src/
 │       ├── portfolio/page.tsx                    (Portfolio — 5 category cards)
 │       ├── portfolio/[category]/page.tsx          (Category — projects grid)
 │       ├── portfolio/[category]/[project]/page.tsx (Project detail — gallery, videos)
-│       └── contact/page.tsx                       (Contact)
+│       ├── contact/page.tsx                       (Contact)
+│       ├── booking/page.tsx                       (Booking consultation)
+│       ├── calculator/page.tsx                    (Cost calculator)
+│       └── testimonials/page.tsx                  (Client testimonials)
+├── app/
+│   ├── sitemap.ts                                 (Auto-generated sitemap — all routes, both locales)
+│   └── robots.ts                                  (Robots.txt — allow all crawlers)
 ├── components/
-│   ├── Navbar.tsx          (client — scroll detection, mobile menu, LanguageToggle)
+│   ├── Navbar.tsx          (client — scroll detection, mobile menu, LanguageToggle, DarkModeToggle)
 │   ├── Footer.tsx          (server — translated links, contact info)
 │   ├── Logo.tsx            (server — dark/light logo variants)
 │   ├── LanguageToggle.tsx  (client — AR/EN switch)
+│   ├── DarkModeToggle.tsx  (client — dark/light mode switch, localStorage + OS preference)
 │   ├── AnimatedSection.tsx (client — Framer Motion scroll animations)
+│   ├── FAQ.tsx             (client — accordion component, Framer Motion expand/collapse)
+│   ├── ShareButtons.tsx    (client — social sharing: WhatsApp, Facebook, Telegram, copy link)
 │   ├── ContactForm.tsx     (client — form with translated labels)
 │   ├── ProductCard.tsx     (server)
 │   ├── ProductsFilter.tsx  (client — translated search/filter UI)
@@ -97,6 +106,7 @@ src/
 │   ├── ProjectGallery.tsx  (client — lightbox)
 │   ├── VideoSection.tsx    (client — YouTube/local video embeds)
 │   ├── CategoryCard.tsx    (server)
+│   ├── ScrollToTop.tsx     (client — scroll-to-top button, appears after 400px)
 │   └── WhatsAppButton.tsx  (client)
 ├── fonts/
 │   └── khalid-art-bold.ttf (local Arabic display font)
@@ -123,6 +133,10 @@ src/
 - `ProjectGallery` — lightbox interaction
 - `WhatsAppButton` — client-side interaction, `useTranslations`
 - `LanguageToggle` — locale switching
+- `DarkModeToggle` — theme switching, localStorage, `useTranslations`
+- `FAQ` — accordion expand/collapse state, Framer Motion
+- `ShareButtons` — Web Share API detection, clipboard, `useTranslations`
+- `ScrollToTop` — scroll detection, Framer Motion
 
 ### Data Flow
 
@@ -174,8 +188,10 @@ Data managed in `src/data/projects.json`, accessed via `src/lib/portfolio.ts` he
 | `src/lib/portfolio.ts` | Portfolio data helpers (reads from projects.json) |
 | `src/data/projects.json` | Portfolio categories and projects data |
 | `src/lib/utils.ts` | `formatPrice()` (Iraqi Dinar), `cn()` (classname merge) |
-| `src/app/globals.css` | Tailwind v4 `@theme` color/font definitions, custom CSS utilities |
-| `src/app/[locale]/layout.tsx` | Root layout: locale, dir, fonts, NextIntlClientProvider |
+| `src/app/globals.css` | Tailwind v4 `@theme` color/font definitions, dark mode overrides, custom CSS utilities |
+| `src/app/[locale]/layout.tsx` | Root layout: locale, dir, fonts, NextIntlClientProvider, dark mode anti-flash |
+| `src/app/sitemap.ts` | Auto-generated sitemap with all routes and both locales |
+| `src/app/robots.ts` | Robots.txt configuration |
 | `next.config.ts` | next-intl plugin + remote image patterns |
 | `.env.local` | `NEXT_PUBLIC_API_URL=http://localhost:5000` |
 
@@ -227,17 +243,56 @@ Font selection is automatic via `[lang="ar"]` and `[lang="en"]` CSS selectors in
 - Arrow icons: `rotate-180` only needed in RTL mode
 - Text alignment: default is already right in RTL, use `text-start` / `text-end`
 
+### Dark Mode
+
+Dark mode uses CSS custom property overrides on the `.dark` class (added to `<html>`):
+- Enabled via `@custom-variant dark (&:where(.dark, .dark *));` in globals.css
+- Theme colors (secondary, surface, text) are overridden in `.dark { }` block
+- Background: `#0F172A`, Surface: `#1E293B`
+- Toggle in Navbar via `DarkModeToggle` component
+- Preference saved to localStorage, respects OS `prefers-color-scheme`
+- Anti-flash `<script>` in layout.tsx applies `.dark` before React hydrates
+- Use `dark:bg-[#0F172A]` for `bg-white` sections, `dark:bg-[#1E293B]` for cards
+- Images get `brightness(0.9)` filter globally in dark mode
+
 ### Custom CSS Classes
 
-- `.bg-geometric` — subtle geometric pattern overlay (uses green tones)
+- `.bg-geometric` — subtle geometric pattern overlay (has dark mode override)
 - `.accent-shimmer` / `.gold-shimmer` — animated accent gradient effect
 - `.noise-overlay` — texture via `::before` pseudo-element
+- `.skeleton` — loading shimmer animation (has dark mode override)
 
 ### Logo Component
 
 - `<Logo variant="dark" />` — dark green logo for light backgrounds
 - `<Logo variant="light" />` — cream/light logo for dark backgrounds
 - Logo files in `public/images/logo-dark.png` and `public/images/logo-light.png`
+
+## SEO & Structured Data
+
+- All pages have `generateMetadata()` with OpenGraph tags
+- `metadataBase` set in layout.tsx (currently `https://example.com` — update for production)
+- Home page includes JSON-LD: Organization + LocalBusiness (HomeAndConstructionBusiness)
+- `/sitemap.xml` auto-generated from portfolio data + static routes (both locales, hreflang)
+- `/robots.txt` allows all crawlers
+- Project detail pages use `openGraph.type: "article"` with cover image
+
+## Marketing Features
+
+### FAQ Section (Home Page)
+- Accordion component (`FAQ.tsx`) after Testimonials, before CTA
+- 6 Q&A items from `faq` translation namespace
+- One item open at a time, Framer Motion animations
+
+### Social Sharing (Project Detail Page)
+- `ShareButtons.tsx` in project info sidebar
+- WhatsApp, Facebook, Telegram, Copy Link buttons
+- Uses Web Share API on mobile, fallback buttons on desktop
+- Translation namespace: `share`
+
+### Loading Skeletons
+- Route-specific `loading.tsx` for: products, portfolio, category, project detail
+- Uses `.skeleton` CSS class for shimmer animation
 
 ## Conventions
 
@@ -246,7 +301,7 @@ Font selection is automatic via `[lang="ar"]` and `[lang="en"]` CSS selectors in
 - Server components: `const t = await getTranslations("namespace")`
 - Client components: `const t = useTranslations("namespace")`
 - Add new keys to BOTH `src/messages/ar.json` and `src/messages/en.json`
-- Translation namespaces: `nav`, `brand`, `home`, `stats`, `products`, `portfolio`, `contact`, `form`, `footer`, `common`, `errors`, `whatsapp`, `metadata`
+- Translation namespaces: `nav`, `brand`, `home`, `stats`, `products`, `portfolio`, `contact`, `form`, `footer`, `common`, `errors`, `whatsapp`, `metadata`, `testimonials`, `calculator`, `booking`, `faq`, `share`
 
 ### Links
 - ALWAYS use `Link` from `@/i18n/navigation`, NOT from `next/link`

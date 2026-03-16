@@ -13,6 +13,11 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   return {
     title: t("products_title"),
     description: t("products_description"),
+    openGraph: {
+      title: t("products_title"),
+      description: t("products_description"),
+      type: "website",
+    },
   };
 }
 
@@ -76,7 +81,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
       </section>
 
       {/* Products Section */}
-      <section id="products" className="py-16 md:py-24 bg-white">
+      <section id="products" className="py-16 md:py-24 bg-white dark:bg-[#0F172A]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Section Heading */}
           <AnimatedSection>

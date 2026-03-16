@@ -28,9 +28,15 @@ export async function generateMetadata({
   }
 
   const translatedName = t(`cat_${categoryId.replace(/-/g, "_")}`);
+  const categoryDesc = t(`cat_${categoryId.replace(/-/g, "_")}_desc`);
   return {
     title: `${translatedName} | ${tMeta("portfolio_title").split(" | ").pop()}`,
-    description: t(`cat_${categoryId.replace(/-/g, "_")}_desc`),
+    description: categoryDesc,
+    openGraph: {
+      title: `${translatedName} | ${tMeta("portfolio_title")}`,
+      description: categoryDesc,
+      type: "website",
+    },
   };
 }
 
@@ -50,7 +56,7 @@ export default async function CategoryPage({ params }: PageProps) {
 
   return (
     <>
-      <section className="pt-28 pb-20 bg-white">
+      <section className="pt-28 pb-20 bg-white dark:bg-[#0F172A]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Breadcrumb */}
           <AnimatedSection>

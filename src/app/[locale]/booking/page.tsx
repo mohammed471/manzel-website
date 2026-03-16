@@ -14,6 +14,11 @@ export async function generateMetadata({
   return {
     title: t("booking_title"),
     description: t("booking_description"),
+    openGraph: {
+      title: t("booking_title"),
+      description: t("booking_description"),
+      type: "website",
+    },
   };
 }
 
@@ -46,10 +51,10 @@ export default async function BookingPage() {
       </section>
 
       {/* Booking Form */}
-      <section className="py-16 md:py-24 bg-white bg-geometric">
+      <section className="py-16 md:py-24 bg-white dark:bg-[#0F172A] bg-geometric">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           <AnimatedSection>
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 md:p-10">
+            <div className="bg-white dark:bg-[#0F172A] rounded-2xl shadow-sm border border-gray-100 p-8 md:p-10">
               <BookingForm />
             </div>
           </AnimatedSection>

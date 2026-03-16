@@ -51,13 +51,18 @@ export async function generateMetadata({
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "metadata" });
 
+  const isAR = locale === "ar";
   return {
+    metadataBase: new URL("https://example.com"),
     title: t("home_title"),
     description: t("home_description"),
+    keywords: t("home_keywords"),
     openGraph: {
       title: t("home_title"),
       description: t("home_description"),
       type: "website",
+      locale: isAR ? "ar_IQ" : "en_US",
+      siteName: t("site_name"),
     },
   };
 }
@@ -79,7 +84,14 @@ export default async function LocaleLayout({
   const isRTL = locale === "ar";
 
   return (
-    <html lang={locale} dir={isRTL ? "rtl" : "ltr"}>
+    <html lang={locale} dir={isRTL ? "rtl" : "ltr"} suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem('theme');if(t==='dark'||(!t&&window.matchMedia('(prefers-color-scheme:dark)').matches)){document.documentElement.classList.add('dark')}}catch(e){}})();`,
+          }}
+        />
+      </head>
       <body
         className={`${khalidArt.variable} ${poppins.variable} ${tajawal.variable} ${playfairDisplay.variable} antialiased`}
       >

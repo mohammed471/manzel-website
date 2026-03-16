@@ -14,6 +14,7 @@ import {
   getProjectImageUrl,
 } from "@/lib/portfolio";
 import BeforeAfterSlider from "@/components/BeforeAfterSlider";
+import ShareButtons from "@/components/ShareButtons";
 
 interface PageProps {
   params: Promise<{ locale: string; category: string; project: string }>;
@@ -40,6 +41,12 @@ export async function generateMetadata({
   return {
     title: `${project.name} | ${tMeta("portfolio_title").split(" | ").pop()}`,
     description: project.description?.slice(0, 160),
+    openGraph: {
+      title: project.name,
+      description: project.description?.slice(0, 160),
+      type: "article",
+      images: [`/portfolio/${project.category}/${project.id}/cover.jpg`],
+    },
   };
 }
 
@@ -82,7 +89,7 @@ export default async function ProjectDetailPage({ params }: PageProps) {
 
   return (
     <>
-      <section className="pt-28 pb-20 bg-white">
+      <section className="pt-28 pb-20 bg-white dark:bg-[#0F172A]">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Breadcrumb */}
           <AnimatedSection>
@@ -268,6 +275,12 @@ export default async function ProjectDetailPage({ params }: PageProps) {
                     </svg>
                     {t("whatsapp_inquiry")}
                   </a>
+
+                  <ShareButtons
+                    url={`https://example.com/${locale}/portfolio/${categoryId}/${projectId}`}
+                    title={project.name}
+                    description={project.description?.slice(0, 100)}
+                  />
                 </div>
               </div>
             </div>

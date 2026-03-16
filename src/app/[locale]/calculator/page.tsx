@@ -13,6 +13,11 @@ export async function generateMetadata({
   return {
     title: t("calculator_title"),
     description: t("calculator_description"),
+    openGraph: {
+      title: t("calculator_title"),
+      description: t("calculator_description"),
+      type: "website",
+    },
   };
 }
 

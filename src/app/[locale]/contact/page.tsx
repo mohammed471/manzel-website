@@ -15,6 +15,11 @@ export async function generateMetadata({
   return {
     title: t("contact_title"),
     description: t("contact_description"),
+    openGraph: {
+      title: t("contact_title"),
+      description: t("contact_description"),
+      type: "website",
+    },
   };
 }
 
@@ -45,12 +50,12 @@ export default async function ContactPage() {
       </section>
 
       {/* Contact Content */}
-      <section className="py-16 md:py-24 bg-white bg-geometric">
+      <section className="py-16 md:py-24 bg-white dark:bg-[#0F172A] bg-geometric">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16">
             {/* Contact Form */}
             <AnimatedSection variant="slideRight">
-              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 md:p-10">
+              <div className="bg-white dark:bg-[#0F172A] rounded-2xl shadow-sm border border-gray-100 p-8 md:p-10">
                 <h2 className="text-2xl font-bold text-text-primary mb-6">
                   {t("send_message")}
                 </h2>
@@ -176,7 +181,7 @@ export default async function ContactPage() {
       </section>
 
       {/* Google Maps */}
-      <section className="pb-16 md:pb-24 bg-white">
+      <section className="pb-16 md:pb-24 bg-white dark:bg-[#0F172A]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <AnimatedSection>
             <div className="rounded-xl overflow-hidden shadow-sm border border-gray-100">
