@@ -1,0 +1,120 @@
+@import "tailwindcss";
+
+@theme {
+  /* Primary: Dark Green (company brand) */
+  --color-primary: #153C38;
+  --color-primary-light: #1E5650;
+  --color-primary-dark: #0E2A27;
+
+  /* Secondary: Cream */
+  --color-secondary: #F1E9E8;
+  --color-secondary-light: #F7F2F1;
+  --color-secondary-dark: #E0D3D1;
+
+  /* Accent: Red/Brown */
+  --color-accent: #933928;
+  --color-accent-light: #B04A38;
+  --color-accent-dark: #7A2E20;
+
+  /* Neutrals */
+  --color-surface: #F7F2F1;
+  --color-text-primary: #1A1A2E;
+  --color-text-secondary: #6C757D;
+  --color-success: #27AE60;
+
+  /* Fonts */
+  --font-arabic: 'Khalid Art Bold', sans-serif;
+  --font-arabic-body: 'Tajawal', sans-serif;
+  --font-english: 'Poppins', sans-serif;
+  --font-english-display: 'Playfair Display', serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background: #ffffff;
+  color: var(--color-text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Arabic: Khalid Art Bold for headings, Tajawal for body */
+[lang="ar"] body { font-family: var(--font-arabic-body); }
+[lang="ar"] h1, [lang="ar"] h2, [lang="ar"] h3,
+[lang="ar"] h4, [lang="ar"] h5, [lang="ar"] h6 {
+  font-family: var(--font-arabic);
+}
+
+/* English: Poppins for everything */
+[lang="en"] body { font-family: var(--font-english); }
+
+/* English display headings: Playfair Display */
+[lang="en"] .font-display { font-family: var(--font-english-display); }
+
+/* Arabic display headings use Khalid Art Bold (already set via h1-h6 rule) */
+[lang="ar"] .font-display { font-family: var(--font-arabic); }
+
+/* Selection color */
+::selection {
+  background: var(--color-accent);
+  color: #fff;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-surface);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-primary-light);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-primary);
+}
+
+/* Geometric pattern background utility */
+.bg-geometric {
+  background-image:
+    linear-gradient(30deg, rgba(21, 60, 56, 0.03) 12%, transparent 12.5%, transparent 87%, rgba(21, 60, 56, 0.03) 87.5%, rgba(21, 60, 56, 0.03)),
+    linear-gradient(150deg, rgba(21, 60, 56, 0.03) 12%, transparent 12.5%, transparent 87%, rgba(21, 60, 56, 0.03) 87.5%, rgba(21, 60, 56, 0.03)),
+    linear-gradient(30deg, rgba(21, 60, 56, 0.03) 12%, transparent 12.5%, transparent 87%, rgba(21, 60, 56, 0.03) 87.5%, rgba(21, 60, 56, 0.03)),
+    linear-gradient(150deg, rgba(21, 60, 56, 0.03) 12%, transparent 12.5%, transparent 87%, rgba(21, 60, 56, 0.03) 87.5%, rgba(21, 60, 56, 0.03));
+  background-size: 80px 140px;
+  background-position: 0 0, 0 0, 40px 70px, 40px 70px;
+}
+
+/* Gold shimmer effect */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.gold-shimmer, .accent-shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--color-accent) 0%,
+    var(--color-accent-light) 50%,
+    var(--color-accent) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 3s ease-in-out infinite;
+}
+
+/* Noise texture overlay */
+.noise-overlay::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 1;
+}

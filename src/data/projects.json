@@ -1,0 +1,95 @@
+{
+  "categories": [
+    {
+      "id": "interior-design",
+      "name": "التصميم الداخلي",
+      "description": "تصاميم داخلية مبتكرة للمنازل والمحلات التجارية",
+      "icon": "home"
+    },
+    {
+      "id": "exterior-design",
+      "name": "التصميم الخارجي",
+      "description": "واجهات وتصاميم خارجية عصرية",
+      "icon": "building"
+    },
+    {
+      "id": "execution",
+      "name": "التنفيذ",
+      "description": "تنفيذ المشاريع بأعلى معايير الجودة",
+      "icon": "hammer"
+    },
+    {
+      "id": "floor-plan",
+      "name": "الخرائط",
+      "description": "خرائط معمارية وهندسية احترافية",
+      "icon": "map"
+    },
+    {
+      "id": "finishing",
+      "name": "التشطيبات",
+      "description": "أعمال تشطيب وإنهاء بدقة عالية",
+      "icon": "paintbrush"
+    }
+  ],
+  "projects": [
+    {
+      "id": "cafeteria-karbala",
+      "category": "interior-design",
+      "name": "كافتيريا كربلاء",
+      "description": "تصميم داخلي كامل لكافتيريا عصرية بمساحة 150 متر مربع، تشمل منطقة الجلوس والبار والإضاءة الديكورية",
+      "location": "كربلاء",
+      "year": "2025",
+      "images": ["cover.jpg", "1.jpg", "2.jpg", "3.jpg"],
+      "videos": [
+        { "type": "youtube", "url": "https://www.youtube.com/watch?v=EXAMPLE1" }
+      ],
+      "featured": true
+    },
+    {
+      "id": "villa-baghdad",
+      "category": "exterior-design",
+      "name": "فيلا بغداد الحديثة",
+      "description": "تصميم واجهة خارجية لفيلا سكنية بطراز حديث مع حديقة ومسبح",
+      "location": "بغداد",
+      "year": "2024",
+      "images": ["cover.jpg", "1.jpg", "2.jpg"],
+      "videos": [],
+      "featured": true
+    },
+    {
+      "id": "house-najaf",
+      "category": "execution",
+      "name": "بناء منزل النجف",
+      "description": "تنفيذ كامل لمنزل سكني من الأساسات حتى التسليم",
+      "location": "النجف",
+      "year": "2025",
+      "images": ["cover.jpg", "1.jpg"],
+      "videos": [
+        { "type": "youtube", "url": "https://www.youtube.com/watch?v=EXAMPLE2" }
+      ],
+      "featured": true
+    },
+    {
+      "id": "map-residential",
+      "category": "floor-plan",
+      "name": "خارطة مجمع سكني",
+      "description": "تصميم خرائط معمارية لمجمع سكني من 20 وحدة",
+      "location": "كربلاء",
+      "year": "2024",
+      "images": ["cover.jpg", "1.jpg"],
+      "videos": [],
+      "featured": true
+    },
+    {
+      "id": "finishing-apartment",
+      "category": "finishing",
+      "name": "تشطيب شقة كربلاء",
+      "description": "أعمال تشطيب كاملة تشمل الدهان والسيراميك والأبواب",
+      "location": "كربلاء",
+      "year": "2025",
+      "images": ["cover.jpg", "1.jpg", "2.jpg"],
+      "videos": [],
+      "featured": true
+    }
+  ]
+}
