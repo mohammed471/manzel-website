@@ -10,6 +10,7 @@ interface HeroTextProps {
   description: string;
   browseProductsLabel: string;
   viewPortfolioLabel: string;
+  bookingLabel?: string;
 }
 
 const fadeUp = {
@@ -30,6 +31,7 @@ export default function HeroText({
   description,
   browseProductsLabel,
   viewPortfolioLabel,
+  bookingLabel,
 }: HeroTextProps) {
   const titleWords = title.split(" ");
   const subtitleWords = subtitle.split(" ");
@@ -120,6 +122,14 @@ export default function HeroText({
         >
           {viewPortfolioLabel}
         </Link>
+        {bookingLabel && (
+          <Link
+            href="/booking"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-accent hover:bg-accent-light text-white font-bold px-8 py-4 rounded-xl transition-colors text-lg btn-glow-accent"
+          >
+            {bookingLabel}
+          </Link>
+        )}
       </motion.div>
     </div>
   );

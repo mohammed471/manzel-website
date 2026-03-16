@@ -18,6 +18,7 @@ export default function Navbar() {
     { href: "/" as const, label: t("home") },
     { href: "/products" as const, label: t("products") },
     { href: "/portfolio" as const, label: t("portfolio") },
+    { href: "/calculator" as const, label: t("calculator") },
     { href: "/contact" as const, label: t("contact") },
   ];
 
@@ -113,6 +114,17 @@ export default function Navbar() {
             >
               <LanguageToggle />
             </div>
+            <Link
+              href="/booking"
+              className={cn(
+                "ms-3 font-bold px-4 py-2 rounded-lg text-sm transition-colors",
+                scrolled
+                  ? "bg-accent hover:bg-accent-light text-white"
+                  : "bg-accent hover:bg-accent-light text-white"
+              )}
+            >
+              {t("booking")}
+            </Link>
           </div>
 
           {/* Mobile Hamburger */}
@@ -200,6 +212,14 @@ export default function Navbar() {
                     );
                   })}
                 </ul>
+                <div className="mt-4 pt-4 border-t border-surface">
+                  <Link
+                    href="/booking"
+                    className="block w-full text-center bg-accent hover:bg-accent-light text-white font-bold py-3 px-4 rounded-xl transition-colors"
+                  >
+                    {t("booking")}
+                  </Link>
+                </div>
               </div>
             </motion.div>
           </>

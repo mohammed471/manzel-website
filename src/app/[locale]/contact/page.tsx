@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Link } from "@/i18n/navigation";
 import { getTranslations } from "next-intl/server";
 import AnimatedSection from "@/components/AnimatedSection";
 import ContactForm from "@/components/ContactForm";
@@ -149,6 +150,23 @@ export default async function ContactPage() {
                       <h3 className="font-semibold text-text-primary mb-1">{t("working_hours")}</h3>
                       <p className="text-text-secondary">{t("working_hours_value")}</p>
                     </div>
+                  </div>
+                </div>
+
+                {/* Booking Promotion */}
+                <div className="mt-8 pt-6 border-t border-gray-100">
+                  <div className="bg-accent/5 rounded-xl p-6">
+                    <h3 className="font-bold text-text-primary mb-2">{t("booking_promo")}</h3>
+                    <p className="text-text-secondary text-sm mb-4">{t("booking_promo_description")}</p>
+                    <Link
+                      href="/booking"
+                      className="inline-flex items-center gap-2 bg-accent hover:bg-accent-light text-white font-bold py-2.5 px-6 rounded-lg text-sm transition-colors"
+                    >
+                      {t("booking_cta")}
+                      <svg className="w-4 h-4 rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                      </svg>
+                    </Link>
                   </div>
                 </div>
               </div>

@@ -68,6 +68,7 @@ export default async function Home({
             description={t("hero_description")}
             browseProductsLabel={t("browse_products")}
             viewPortfolioLabel={t("view_portfolio")}
+            bookingLabel={t("book_consultation")}
           />
         </div>
 
@@ -222,25 +223,33 @@ export default async function Home({
             <p className="mt-6 text-white/70 text-lg max-w-lg mx-auto leading-relaxed">
               {t("cta_description")}
             </p>
-            <Link
-              href="/contact"
-              className="mt-10 inline-flex items-center gap-2 bg-accent hover:bg-accent-light text-white font-bold px-8 py-4 rounded-xl transition-colors text-lg btn-glow-accent"
-            >
-              {t("contact_us")}
-              <svg
-                className="w-5 h-5 rotate-180"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
+            <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
+              <Link
+                href="/contact"
+                className="inline-flex items-center gap-2 bg-accent hover:bg-accent-light text-white font-bold px-8 py-4 rounded-xl transition-colors text-lg btn-glow-accent"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M17 8l4 4m0 0l-4 4m4-4H3"
-                />
-              </svg>
-            </Link>
+                {t("contact_us")}
+                <svg
+                  className="w-5 h-5 rotate-180"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M17 8l4 4m0 0l-4 4m4-4H3"
+                  />
+                </svg>
+              </Link>
+              <Link
+                href="/calculator"
+                className="mt-4 sm:mt-0 inline-flex items-center gap-2 border border-white/20 text-white font-bold px-8 py-4 rounded-xl transition-colors text-lg hover:bg-white/10"
+              >
+                {t("estimate_cost")}
+              </Link>
+            </div>
           </AnimatedSection>
         </div>
       </section>

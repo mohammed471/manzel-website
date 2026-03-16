@@ -103,3 +103,34 @@ export function getProductImageUrl(imagePath: string): string {
   return `${API}/api/public/products/images/${imagePath}`;
 }
 
+export interface BookingData {
+  name: string;
+  phone: string;
+  email: string;
+  projectType: string;
+  location: string;
+  preferredDate: string;
+  preferredTime: string;
+  notes: string;
+}
+
+export async function submitBooking(data: BookingData): Promise<{ success: boolean }> {
+  try {
+    const res = await fetch(`${API}/api/public/contact`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: data.name,
+        phone: data.phone,
+        email: data.email,
+        message: `[Booking Request]\nProject: ${data.projectType}\nLocation: ${data.location}\nDate: ${data.preferredDate}\nTime: ${data.preferredTime}\nNotes: ${data.notes}`,
+        type: "booking",
+      }),
+    });
+    if (!res.ok) return { success: false };
+    return res.json();
+  } catch {
+    return { success: false };
+  }
+}
+
