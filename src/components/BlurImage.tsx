@@ -7,10 +7,13 @@ import { cn } from "@/lib/utils";
 export default function BlurImage(props: ComponentProps<typeof Image>) {
   const [loaded, setLoaded] = useState(false);
   const { className, onLoad, ...rest } = props;
+  const src = typeof props.src === "string" ? props.src : "";
+  const isExternal = src.startsWith("http://") || src.startsWith("https://");
 
   return (
     <Image
       {...rest}
+      unoptimized={isExternal}
       className={cn(
         "transition-all duration-500 ease-out",
         loaded ? "opacity-100 blur-0 scale-100" : "opacity-0 blur-sm scale-[1.02]",
