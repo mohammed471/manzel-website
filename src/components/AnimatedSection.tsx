@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, useInView } from "framer-motion";
+import { motion, useInView, useReducedMotion } from "framer-motion";
 import { useRef, useState, useEffect, type ReactNode } from "react";
 
 type AnimationVariant = "fadeUp" | "fadeIn" | "scaleIn" | "slideRight";
@@ -39,11 +39,17 @@ export default function AnimatedSection({
 }: AnimatedSectionProps) {
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, amount: 0.2 });
+  const prefersReducedMotion = useReducedMotion();
   const [isRTL, setIsRTL] = useState(false);
 
   useEffect(() => {
     setIsRTL(document.documentElement.dir === "rtl");
   }, []);
+
+  // Skip animations entirely if user prefers reduced motion
+  if (prefersReducedMotion) {
+    return <div className={className}>{children}</div>;
+  }
 
   const { hidden, visible } = variants[variant];
 

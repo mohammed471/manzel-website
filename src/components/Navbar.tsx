@@ -62,8 +62,9 @@ export default function Navbar() {
           <Link href="/" className="flex items-center">
             <Logo
               variant={scrolled ? "dark" : "light"}
-              width={100}
-              height={40}
+              width={80}
+              height={32}
+              className="md:w-[100px] md:h-[40px]"
             />
           </Link>
 
@@ -180,12 +181,12 @@ export default function Navbar() {
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              className="fixed top-0 right-0 bottom-0 w-72 bg-white z-50 md:hidden shadow-2xl"
+              className="fixed top-0 right-0 bottom-0 w-64 sm:w-72 bg-white z-50 md:hidden shadow-2xl"
             >
               <div className="p-6 pt-20">
                 {/* LanguageToggle at top of mobile drawer */}
                 <div className="flex items-center justify-between mb-6 pb-4 border-b border-surface">
-                  <Logo variant="dark" width={100} height={40} />
+                  <Logo variant="dark" width={80} height={32} />
                   <LanguageToggle />
                 </div>
 

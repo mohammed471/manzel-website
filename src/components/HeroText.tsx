@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Link } from "@/i18n/navigation";
+import { useEffect, useState } from "react";
 
 interface HeroTextProps {
   badge: string;
@@ -33,11 +34,20 @@ export default function HeroText({
   viewPortfolioLabel,
   bookingLabel,
 }: HeroTextProps) {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    setIsMobile(window.innerWidth < 640);
+  }, []);
+
   const titleWords = title.split(" ");
   const subtitleWords = subtitle.split(" ");
-  const subtitleStartDelay = 0.3 + titleWords.length * 0.08;
-  const descriptionDelay = subtitleStartDelay + subtitleWords.length * 0.08;
-  const ctaDelay = descriptionDelay + 0.6;
+
+  // On mobile: animate title and subtitle as 2 groups instead of per-word
+  // On desktop: keep the word-by-word stagger effect
+  const subtitleStartDelay = isMobile ? 0.5 : 0.3 + titleWords.length * 0.08;
+  const descriptionDelay = isMobile ? 0.7 : subtitleStartDelay + subtitleWords.length * 0.08;
+  const ctaDelay = isMobile ? 0.9 : descriptionDelay + 0.6;
 
   return (
     <div className="relative text-center">
@@ -46,37 +56,63 @@ export default function HeroText({
         initial={fadeUp.initial}
         animate={fadeUp.animate}
         transition={transition(0)}
-        className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-5 py-2.5 mb-8"
+        className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-5 py-2.5 mb-6 sm:mb-8"
       >
         <span className="w-2 h-2 bg-accent rounded-full" />
         <span className="text-white/80 text-sm font-medium">{badge}</span>
       </motion.div>
 
       {/* Title + Subtitle */}
-      <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-extrabold text-white leading-tight">
-        {titleWords.map((word, i) => (
+      <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-extrabold text-white leading-tight">
+        {isMobile ? (
+          /* Mobile: animate entire title as one block */
           <motion.span
-            key={`title-${i}`}
             initial={fadeUp.initial}
             animate={fadeUp.animate}
-            transition={transition(0.3 + i * 0.08)}
-            className="inline-block me-3"
+            transition={transition(0.3)}
+            className="inline-block"
           >
-            {word}
+            {title}
           </motion.span>
-        ))}
-        <span className="block text-secondary mt-3">
-          {subtitleWords.map((word, i) => (
+        ) : (
+          /* Desktop: word-by-word stagger */
+          titleWords.map((word, i) => (
             <motion.span
-              key={`subtitle-${i}`}
+              key={`title-${i}`}
               initial={fadeUp.initial}
               animate={fadeUp.animate}
-              transition={transition(subtitleStartDelay + i * 0.08)}
+              transition={transition(0.3 + i * 0.08)}
               className="inline-block me-3"
             >
               {word}
             </motion.span>
-          ))}
+          ))
+        )}
+        <span className="block text-secondary mt-2 sm:mt-3">
+          {isMobile ? (
+            /* Mobile: animate entire subtitle as one block */
+            <motion.span
+              initial={fadeUp.initial}
+              animate={fadeUp.animate}
+              transition={transition(subtitleStartDelay)}
+              className="inline-block"
+            >
+              {subtitle}
+            </motion.span>
+          ) : (
+            /* Desktop: word-by-word stagger */
+            subtitleWords.map((word, i) => (
+              <motion.span
+                key={`subtitle-${i}`}
+                initial={fadeUp.initial}
+                animate={fadeUp.animate}
+                transition={transition(subtitleStartDelay + i * 0.08)}
+                className="inline-block me-3"
+              >
+                {word}
+              </motion.span>
+            ))
+          )}
         </span>
       </h1>
 
@@ -85,7 +121,7 @@ export default function HeroText({
         initial={fadeUp.initial}
         animate={fadeUp.animate}
         transition={transition(descriptionDelay)}
-        className="mt-8 text-lg sm:text-xl text-white/70 max-w-2xl mx-auto leading-relaxed"
+        className="mt-6 sm:mt-8 text-base sm:text-lg md:text-xl text-white/70 max-w-2xl mx-auto leading-relaxed"
       >
         {description}
       </motion.p>
@@ -95,11 +131,11 @@ export default function HeroText({
         initial={fadeUp.initial}
         animate={fadeUp.animate}
         transition={transition(ctaDelay)}
-        className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-4"
+        className="mt-8 sm:mt-12 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4"
       >
         <Link
           href="/products"
-          className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-secondary text-primary-dark font-bold px-8 py-4 rounded-xl transition-colors text-lg hover:bg-secondary-light btn-glow"
+          className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-secondary text-primary-dark font-bold px-6 py-3 sm:px-8 sm:py-4 rounded-xl transition-colors text-base sm:text-lg hover:bg-secondary-light btn-glow"
         >
           {browseProductsLabel}
           <svg
@@ -118,14 +154,14 @@ export default function HeroText({
         </Link>
         <Link
           href="/portfolio"
-          className="w-full sm:w-auto inline-flex items-center justify-center gap-2 border border-white/20 text-white font-bold px-8 py-4 rounded-xl transition-colors text-lg hover:bg-white/10"
+          className="w-full sm:w-auto inline-flex items-center justify-center gap-2 border border-white/20 text-white font-bold px-6 py-3 sm:px-8 sm:py-4 rounded-xl transition-colors text-base sm:text-lg hover:bg-white/10"
         >
           {viewPortfolioLabel}
         </Link>
         {bookingLabel && (
           <Link
             href="/booking"
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-accent hover:bg-accent-light text-white font-bold px-8 py-4 rounded-xl transition-colors text-lg btn-glow-accent"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-accent hover:bg-accent-light text-white font-bold px-6 py-3 sm:px-8 sm:py-4 rounded-xl transition-colors text-base sm:text-lg btn-glow-accent"
           >
             {bookingLabel}
           </Link>

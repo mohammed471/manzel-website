@@ -234,8 +234,10 @@ export default function SplashScreen() {
             }
           }}
         >
-          {/* Background geometric decorations */}
-          <GeometricShapes />
+          {/* Background geometric decorations — hidden on mobile for performance */}
+          <div className="hidden md:block">
+            <GeometricShapes />
+          </div>
 
           {/* Logo + Brand Name */}
           <motion.div

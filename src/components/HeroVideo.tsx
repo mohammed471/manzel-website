@@ -34,27 +34,29 @@ export default function HeroVideo() {
       <div className="absolute top-1/4 -right-32 w-[600px] h-[600px] bg-primary-light/20 rounded-full blur-[120px]" />
       <div className="absolute -bottom-48 -left-24 w-[500px] h-[500px] bg-primary-light/10 rounded-full blur-[100px]" />
 
-      {/* Floating Geometric Shapes */}
-      {/* Circle — top-right, slow Y oscillation */}
-      <motion.div
-        className="absolute top-12 right-12 w-64 h-64 rounded-full border border-white/10 opacity-10 pointer-events-none"
-        animate={{ y: [0, 20, 0] }}
-        transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-      />
+      {/* Floating Geometric Shapes — hidden on mobile for performance */}
+      <div className="hidden md:block">
+        {/* Circle — top-right, slow Y oscillation */}
+        <motion.div
+          className="absolute top-12 right-12 w-64 h-64 rounded-full border border-white/10 opacity-10 pointer-events-none"
+          animate={{ y: [0, 20, 0] }}
+          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+        />
 
-      {/* Diamond — center-right, scale pulse */}
-      <motion.div
-        className="absolute top-1/2 right-24 w-16 h-16 rotate-45 border border-white/10 opacity-10 pointer-events-none"
-        animate={{ scale: [0.8, 1.2, 0.8] }}
-        transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-      />
+        {/* Diamond — center-right, scale pulse */}
+        <motion.div
+          className="absolute top-1/2 right-24 w-16 h-16 rotate-45 border border-white/10 opacity-10 pointer-events-none"
+          animate={{ scale: [0.8, 1.2, 0.8] }}
+          transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+        />
 
-      {/* Small square — bottom-left, slow rotation */}
-      <motion.div
-        className="absolute bottom-24 left-16 w-20 h-20 border border-white/10 opacity-10 pointer-events-none"
-        animate={{ rotate: 360 }}
-        transition={{ duration: 12, repeat: Infinity, ease: "linear" }}
-      />
+        {/* Small square — bottom-left, slow rotation */}
+        <motion.div
+          className="absolute bottom-24 left-16 w-20 h-20 border border-white/10 opacity-10 pointer-events-none"
+          animate={{ rotate: 360 }}
+          transition={{ duration: 12, repeat: Infinity, ease: "linear" }}
+        />
+      </div>
     </>
   );
 }

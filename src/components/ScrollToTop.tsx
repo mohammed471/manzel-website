@@ -32,7 +32,7 @@ export default function ScrollToTop() {
           transition={{ duration: 0.2 }}
           onClick={() => window.scrollTo({ top: 0 })}
           aria-label={t("scroll_to_top")}
-          className="fixed bottom-6 end-6 z-30 bg-primary text-white rounded-full w-12 h-12 shadow-lg hover:bg-primary-light transition-colors flex items-center justify-center"
+          className="fixed bottom-22 end-6 sm:bottom-6 z-30 bg-primary text-white rounded-full w-11 h-11 sm:w-12 sm:h-12 shadow-lg hover:bg-primary-light transition-colors flex items-center justify-center"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
