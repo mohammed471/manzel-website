@@ -17,6 +17,11 @@ const nextConfig: NextConfig = {
         hostname: "manzel.onrender.com",
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname: "i.ibb.co",
+        pathname: "/**",
+      },
     ],
   },
 };
