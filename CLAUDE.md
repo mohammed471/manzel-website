@@ -86,7 +86,8 @@ src/
 │       ├── contact/page.tsx                       (Contact)
 │       ├── booking/page.tsx                       (Booking consultation)
 │       ├── calculator/page.tsx                    (Cost calculator)
-│       └── testimonials/page.tsx                  (Client testimonials)
+│       ├── testimonials/page.tsx                  (Client testimonials)
+│       └── about/page.tsx                         (About Us — story, timeline, team, values)
 ├── app/
 │   ├── sitemap.ts                                 (Auto-generated sitemap — all routes, both locales)
 │   └── robots.ts                                  (Robots.txt — allow all crawlers)
@@ -106,15 +107,18 @@ src/
 │   ├── VideoSection.tsx    (client — YouTube/local video embeds)
 │   ├── CategoryCard.tsx    (server)
 │   ├── ScrollToTop.tsx     (client — scroll-to-top button, appears after 400px)
-│   └── WhatsAppButton.tsx  (client)
+│   ├── WhatsAppButton.tsx  (client)
+│   └── Timeline.tsx        (client — interactive scroll-animated vertical timeline)
 ├── fonts/
 │   └── khalid-art-bold.ttf (local Arabic display font)
 ├── i18n/                   (next-intl config)
 ├── data/
-│   └── projects.json       (Portfolio categories + projects — file-based, no API)
+│   ├── projects.json       (Portfolio categories + projects — file-based, no API)
+│   └── about.json          (About page data — timeline, team, values)
 ├── lib/
 │   ├── api.ts              (Flask API calls for products, categories, contact)
 │   ├── portfolio.ts        (Portfolio data helpers — reads from projects.json)
+│   ├── about.ts            (About page data helpers — reads from about.json)
 │   └── utils.ts            (formatPrice, cn)
 ├── messages/
 │   ├── ar.json             (Arabic translations)
@@ -135,6 +139,7 @@ src/
 - `FAQ` — accordion expand/collapse state, Framer Motion
 - `ShareButtons` — Web Share API detection, clipboard, `useTranslations`
 - `ScrollToTop` — scroll detection, Framer Motion
+- `Timeline` — Framer Motion scroll-triggered animations, RTL detection
 
 ### Data Flow
 
@@ -287,7 +292,7 @@ Font selection is automatic via `[lang="ar"]` and `[lang="en"]` CSS selectors in
 - Server components: `const t = await getTranslations("namespace")`
 - Client components: `const t = useTranslations("namespace")`
 - Add new keys to BOTH `src/messages/ar.json` and `src/messages/en.json`
-- Translation namespaces: `nav`, `brand`, `home`, `stats`, `products`, `portfolio`, `contact`, `form`, `footer`, `common`, `errors`, `whatsapp`, `metadata`, `testimonials`, `calculator`, `booking`, `faq`, `share`
+- Translation namespaces: `nav`, `brand`, `home`, `stats`, `products`, `portfolio`, `contact`, `form`, `footer`, `common`, `errors`, `whatsapp`, `metadata`, `testimonials`, `calculator`, `booking`, `faq`, `share`, `about`
 
 ### Links
 - ALWAYS use `Link` from `@/i18n/navigation`, NOT from `next/link`

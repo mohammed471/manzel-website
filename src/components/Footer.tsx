@@ -11,7 +11,9 @@ export default async function Footer() {
     { href: "/" as const, label: tNav("home") },
     { href: "/products" as const, label: tNav("products") },
     { href: "/portfolio" as const, label: tNav("portfolio") },
+    { href: "/about" as const, label: tNav("about") },
     { href: "/calculator" as const, label: tNav("calculator") },
+    { href: "/area-calculator" as const, label: tNav("area_calculator") },
     { href: "/booking" as const, label: tNav("booking") },
     { href: "/contact" as const, label: tNav("contact") },
   ];

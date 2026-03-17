@@ -19,7 +19,9 @@ export default function Navbar() {
     { href: "/" as const, label: t("home") },
     { href: "/products" as const, label: t("products") },
     { href: "/portfolio" as const, label: t("portfolio") },
+    { href: "/about" as const, label: t("about") },
     { href: "/calculator" as const, label: t("calculator") },
+    { href: "/area-calculator" as const, label: t("area_calculator") },
     { href: "/contact" as const, label: t("contact") },
   ];
 
@@ -62,9 +64,9 @@ export default function Navbar() {
           <Link href="/" className="flex items-center">
             <Logo
               variant={scrolled ? "dark" : "light"}
-              width={80}
-              height={32}
-              className="md:w-[100px] md:h-[40px]"
+              width={72}
+              height={45}
+              className="md:w-[90px] md:h-[56px]"
             />
           </Link>
 
@@ -186,7 +188,7 @@ export default function Navbar() {
               <div className="p-6 pt-20">
                 {/* LanguageToggle at top of mobile drawer */}
                 <div className="flex items-center justify-between mb-6 pb-4 border-b border-surface">
-                  <Logo variant="dark" width={80} height={32} />
+                  <Logo variant="dark" width={72} height={45} />
                   <LanguageToggle />
                 </div>
 
