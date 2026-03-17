@@ -100,6 +100,9 @@ export async function submitContact(data: {
 }
 
 export function getProductImageUrl(imagePath: string): string {
+  if (imagePath.startsWith("http://") || imagePath.startsWith("https://")) {
+    return imagePath;
+  }
   return `${API}/api/public/products/images/${imagePath}`;
 }
 
