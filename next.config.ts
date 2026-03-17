@@ -12,6 +12,11 @@ const nextConfig: NextConfig = {
         port: "5000",
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname: "manzel.onrender.com",
+        pathname: "/**",
+      },
     ],
   },
 };
