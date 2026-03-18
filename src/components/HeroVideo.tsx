@@ -1,10 +1,32 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 
 export default function HeroVideo() {
   const [videoFailed, setVideoFailed] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  // Force play on mobile — some browsers block autoPlay attribute
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    const tryPlay = () => {
+      video.play().catch(() => {
+        // Autoplay truly blocked — show fallback gradient
+        setVideoFailed(true);
+      });
+    };
+
+    if (video.readyState >= 2) {
+      tryPlay();
+    } else {
+      video.addEventListener("canplay", tryPlay, { once: true });
+    }
+
+    return () => video.removeEventListener("canplay", tryPlay);
+  }, []);
 
   return (
     <>
@@ -13,6 +35,7 @@ export default function HeroVideo() {
         <div className="absolute inset-0 bg-gradient-to-b from-primary-dark via-primary to-primary-dark" />
       ) : (
         <video
+          ref={videoRef}
           autoPlay
           muted
           loop
