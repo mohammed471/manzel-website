@@ -11,6 +11,7 @@ export default function ScrollVideoSection() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [activeSlide, setActiveSlide] = useState(0);
   const [videoReady, setVideoReady] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   // Smooth scrubbing refs
   const targetTimeRef = useRef(0);
@@ -18,6 +19,18 @@ export default function ScrollVideoSection() {
   const rafRef = useRef<number>(0);
   const lastSeekRef = useRef(0);
   const pendingDrawRef = useRef(false);
+
+  // Detect mobile (touch device or narrow screen)
+  useEffect(() => {
+    const check = () => {
+      const narrow = window.innerWidth < 768;
+      const touch = "ontouchstart" in window || navigator.maxTouchPoints > 0;
+      setIsMobile(narrow || touch);
+    };
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
 
   const slides = [
     {
@@ -42,7 +55,7 @@ export default function ScrollVideoSection() {
     offset: ["start start", "end end"],
   });
 
-  // ── Video readiness ──
+  // ── Video readiness — always pause for scroll-scrubbing ──
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
@@ -67,9 +80,9 @@ export default function ScrollVideoSection() {
     };
   }, []);
 
-  // ── Draw frame on `seeked` event — only draws when frame is actually decoded ──
+  // ── Draw frame on `seeked` event — only draws when frame is actually decoded (desktop only) ──
   useEffect(() => {
-    if (!videoReady) return;
+    if (!videoReady || isMobile) return;
 
     const video = videoRef.current;
     const canvas = canvasRef.current;
@@ -95,15 +108,14 @@ export default function ScrollVideoSection() {
     };
 
     // Use requestVideoFrameCallback if available (much smoother)
-    if ("requestVideoFrameCallback" in video) {
+    const rvfc = (video as HTMLVideoElement & { requestVideoFrameCallback?: (cb: () => void) => number })
+      .requestVideoFrameCallback;
+    if (rvfc) {
       const onVideoFrame = () => {
         drawFrame();
-        // Keep requesting as long as component is mounted
-        (video as HTMLVideoElement & { requestVideoFrameCallback: (cb: () => void) => number })
-          .requestVideoFrameCallback(onVideoFrame);
+        rvfc.call(video, onVideoFrame);
       };
-      (video as HTMLVideoElement & { requestVideoFrameCallback: (cb: () => void) => number })
-        .requestVideoFrameCallback(onVideoFrame);
+      rvfc.call(video, onVideoFrame);
     } else {
       // Fallback: draw on seeked event
       video.addEventListener("seeked", drawFrame);
@@ -115,18 +127,18 @@ export default function ScrollVideoSection() {
     return () => {
       video.removeEventListener("seeked", drawFrame);
     };
-  }, [videoReady]);
+  }, [videoReady, isMobile]);
 
-  // ── Always-running smooth animation loop ──
+  // ── Always-running smooth animation loop (both desktop & mobile) ──
   useEffect(() => {
     if (!videoReady) return;
 
     const video = videoRef.current;
     if (!video) return;
 
-    const LERP_SPEED = 0.12;
+    const LERP_SPEED = isMobile ? 0.15 : 0.12;
     const THRESHOLD = 0.005;
-    const MIN_SEEK_INTERVAL = 40; // ~25 seeks/sec max — prevents decoder overload
+    const MIN_SEEK_INTERVAL = isMobile ? 50 : 40; // Slightly more throttle on mobile
 
     const animate = () => {
       const diff = targetTimeRef.current - currentTimeRef.current;
@@ -155,7 +167,8 @@ export default function ScrollVideoSection() {
     rafRef.current = requestAnimationFrame(animate);
 
     return () => cancelAnimationFrame(rafRef.current);
-  }, [videoReady]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [videoReady, isMobile]);
 
   // ── On scroll → update target time (the loop handles the rest) ──
   useMotionValueEvent(scrollYProgress, "change", (latest) => {
@@ -196,35 +209,42 @@ export default function ScrollVideoSection() {
     <section
       ref={containerRef}
       className="relative bg-white"
-      style={{ height: "500vh" }}
+      style={{ height: isMobile ? "400vh" : "500vh" }}
     >
       {/* Sticky fullscreen viewport */}
       <div className="sticky top-0 h-screen w-full flex items-center justify-center overflow-hidden">
-        {/* Video frame — centered with rounded corners */}
+        {/* Video frame — centered */}
         <div
-          className="relative w-[85%] max-w-4xl aspect-square max-h-[80vh]"
+          className="relative w-[92%] md:w-[85%] max-w-4xl aspect-[3/4] md:aspect-square max-h-[80vh]"
         >
-          {/* Side gradients — blend video edges into white background */}
-          <div className="absolute inset-y-0 left-0 w-24 sm:w-32 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none" />
-          <div className="absolute inset-y-0 right-0 w-24 sm:w-32 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none" />
+          {/* Edge gradients — blend video into white background on all sides */}
+          <div className="absolute inset-y-0 left-0 w-12 sm:w-24 md:w-32 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none" />
+          <div className="absolute inset-y-0 right-0 w-12 sm:w-24 md:w-32 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none" />
+          <div className="absolute inset-x-0 top-0 h-16 sm:h-24 md:h-32 bg-gradient-to-b from-white to-transparent z-10 pointer-events-none" />
+          <div className="absolute inset-x-0 bottom-0 h-16 sm:h-24 md:h-32 bg-gradient-to-t from-white to-transparent z-10 pointer-events-none" />
 
-          {/* Hidden video source — used for frame data only */}
+          {/* Video element — visible on mobile (direct scrub), hidden on desktop (canvas renders) */}
           <video
             ref={videoRef}
             src="/furniture-scrub.mp4"
             muted
             playsInline
             preload="auto"
-            className="absolute w-0 h-0 opacity-0 pointer-events-none"
+            className={isMobile
+              ? `absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ${videoReady ? "opacity-100" : "opacity-0"}`
+              : "absolute w-0 h-0 opacity-0 pointer-events-none"
+            }
           />
 
-          {/* Canvas for smooth frame rendering */}
-          <canvas
-            ref={canvasRef}
-            className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ${
-              videoReady ? "opacity-100" : "opacity-0"
-            }`}
-          />
+          {/* Canvas for smooth frame rendering (desktop only) */}
+          {!isMobile && (
+            <canvas
+              ref={canvasRef}
+              className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ${
+                videoReady ? "opacity-100" : "opacity-0"
+              }`}
+            />
+          )}
 
           {/* Poster/placeholder while loading */}
           {!videoReady && (
@@ -256,12 +276,12 @@ export default function ScrollVideoSection() {
                   </div>
 
                   {/* Heading */}
-                  <h2 className="text-4xl sm:text-5xl md:text-7xl font-extrabold text-primary leading-[1.1] font-display whitespace-pre-line">
+                  <h2 className="text-2xl sm:text-4xl md:text-5xl lg:text-7xl font-extrabold text-primary leading-[1.1] font-display whitespace-pre-line">
                     {slide.heading}
                   </h2>
 
                   {/* Description */}
-                  <p className="mt-5 text-sm sm:text-base md:text-lg text-primary/80 leading-relaxed max-w-xl mx-auto">
+                  <p className="mt-3 sm:mt-5 text-xs sm:text-sm md:text-base lg:text-lg text-primary/80 leading-relaxed max-w-xl mx-auto">
                     {slide.description}
                   </p>
                 </div>
