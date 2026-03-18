@@ -3,8 +3,8 @@ import { Link } from "@/i18n/navigation";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import AnimatedSection from "@/components/AnimatedSection";
-import Card3D from "@/components/Card3D";
-import ProjectCard from "@/components/ProjectCard";
+import MasonryGrid from "@/components/MasonryGrid";
+import MasonryProjectCard from "@/components/MasonryProjectCard";
 import { getCategories, getCategory, getProjects } from "@/lib/portfolio";
 
 interface PageProps {
@@ -96,15 +96,11 @@ export default async function CategoryPage({ params }: PageProps) {
 
           {/* Projects Grid */}
           {projects.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {projects.map((project, i) => (
-                <AnimatedSection key={project.id} delay={i * 0.08} variant="scaleIn">
-                  <Card3D>
-                    <ProjectCard project={project} locale={locale} />
-                  </Card3D>
-                </AnimatedSection>
+            <MasonryGrid>
+              {projects.map((project) => (
+                <MasonryProjectCard key={project.id} project={project} />
               ))}
-            </div>
+            </MasonryGrid>
           ) : (
             <AnimatedSection delay={0.2}>
               <div className="text-center py-20">

@@ -81,11 +81,11 @@ export default async function ContactPage() {
                     <div>
                       <h3 className="font-semibold text-text-primary mb-1">{t("phone")}</h3>
                       <a
-                        href="tel:+9647700000000"
+                        href="tel:+9647737685000"
                         className="text-text-secondary hover:text-primary transition-colors"
                         dir="ltr"
                       >
-                        +964 770 000 0000
+                        0773 768 5000
                       </a>
                     </div>
                   </div>
@@ -100,13 +100,13 @@ export default async function ContactPage() {
                     <div>
                       <h3 className="font-semibold text-text-primary mb-1">{t("whatsapp")}</h3>
                       <a
-                        href="https://wa.me/9647700000000"
+                        href="https://wa.me/9647737685000"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-text-secondary hover:text-success transition-colors"
                         dir="ltr"
                       >
-                        +964 770 000 0000
+                        0773 768 5000
                       </a>
                     </div>
                   </div>
@@ -121,11 +121,11 @@ export default async function ContactPage() {
                     <div>
                       <h3 className="font-semibold text-text-primary mb-1">{t("email_label")}</h3>
                       <a
-                        href="mailto:info@manzel.iq"
+                        href="mailto:contact.manzel@gmail.com"
                         className="text-text-secondary hover:text-primary transition-colors"
                         dir="ltr"
                       >
-                        info@manzel.iq
+                        contact.manzel@gmail.com
                       </a>
                     </div>
                   </div>

@@ -4,7 +4,7 @@ This file provides guidance to Claude Code when working with this repository.
 
 ## Project Overview
 
-Manzel (منزل) — Bilingual (Arabic RTL + English LTR) public website for a construction, interior design, and building materials company based in Karbala, Iraq. Displays products catalog (from Flask API) and project portfolio (file-based, from `src/data/projects.json`).
+Manzel (منزل) — Bilingual (Arabic RTL + English LTR) public website for a construction, interior design, and building materials company based in Kirkuk, Iraq. Displays products catalog (from Flask API) and project portfolio (file-based, from `src/data/projects.json`).
 
 **Two-system architecture:**
 - **Internal app** (Flask + SQLite): `C:\Users\msi-pc\Desktop\APP TEST\manzel_split\mobile_web` — manages products, invoices, customers (private)

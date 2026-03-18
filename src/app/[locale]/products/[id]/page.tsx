@@ -50,7 +50,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
   const whatsappMessage = encodeURIComponent(
     t("whatsapp_message", { name: product.name })
   );
-  const whatsappUrl = `https://wa.me/9647700000000?text=${whatsappMessage}`;
+  const whatsappUrl = `https://wa.me/9647737685000?text=${whatsappMessage}`;
 
   return (
     <>

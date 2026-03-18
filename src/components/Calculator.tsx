@@ -400,7 +400,7 @@ export default function Calculator() {
       estimate: `$${result.low.toLocaleString()} - $${result.high.toLocaleString()}`,
     });
 
-    return `https://wa.me/9647700000000?text=${encodeURIComponent(message)}`;
+    return `https://wa.me/9647737685000?text=${encodeURIComponent(message)}`;
   };
 
   // Progress indicator

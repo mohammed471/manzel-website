@@ -3,9 +3,9 @@ import { getTranslations } from "next-intl/server";
 import Image from "next/image";
 import { getCategories, getProducts } from "@/lib/api";
 import AnimatedSection from "@/components/AnimatedSection";
-import ProductCard from "@/components/ProductCard";
+import MasonryGrid from "@/components/MasonryGrid";
+import MasonryProductCard from "@/components/MasonryProductCard";
 import ProductsFilter from "@/components/ProductsFilter";
-import Card3D from "@/components/Card3D";
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -109,15 +109,11 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
 
           {/* Product Grid */}
           {products.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
-              {products.map((product, i) => (
-                <AnimatedSection key={product.id} delay={i < 8 ? i * 0.06 : 0} variant="scaleIn">
-                  <Card3D>
-                    <ProductCard product={product} />
-                  </Card3D>
-                </AnimatedSection>
+            <MasonryGrid>
+              {products.map((product) => (
+                <MasonryProductCard key={product.id} product={product} />
               ))}
-            </div>
+            </MasonryGrid>
           ) : (
             <AnimatedSection>
               <div className="text-center py-24">

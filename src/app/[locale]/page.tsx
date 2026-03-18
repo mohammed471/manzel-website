@@ -12,6 +12,7 @@ import CountUpStats from "@/components/CountUpStats";
 import Card3D from "@/components/Card3D";
 import TestimonialsCarousel from "@/components/TestimonialsCarousel";
 import FAQ from "@/components/FAQ";
+import ScrollVideoSection from "@/components/ScrollVideoSection";
 
 export default async function Home({
   params,
@@ -73,12 +74,12 @@ export default async function Home({
               logo: "https://example.com/images/logo-dark.png",
               contactPoint: {
                 "@type": "ContactPoint",
-                telephone: "+964-770-000-0000",
+                telephone: "+964-773-768-5000",
                 contactType: "customer service",
               },
               sameAs: [
-                "https://facebook.com/manzel",
-                "https://instagram.com/manzel",
+                "https://www.facebook.com/Manzel.Design.House/",
+                "https://www.instagram.com/manzel.design.house/",
               ],
             },
             {
@@ -88,10 +89,10 @@ export default async function Home({
               image: "https://example.com/images/logo-dark.png",
               address: {
                 "@type": "PostalAddress",
-                addressLocality: locale === "ar" ? "كربلاء" : "Karbala",
+                addressLocality: locale === "ar" ? "كركوك" : "Kirkuk",
                 addressCountry: "IQ",
               },
-              telephone: "+964-770-000-0000",
+              telephone: "+964-773-768-5000",
               openingHoursSpecification: {
                 "@type": "OpeningHoursSpecification",
                 dayOfWeek: [
@@ -137,6 +138,9 @@ export default async function Home({
           </div>
         </div>
       </section>
+
+      {/* Scroll Video Showcase */}
+      <ScrollVideoSection />
 
       {/* Featured Categories */}
       {categories.length > 0 && (
