@@ -51,6 +51,22 @@ export async function getProducts(params?: {
   }
 }
 
+export async function searchProductsClient(query: string): Promise<Product[]> {
+  if (!query.trim()) return [];
+  try {
+    const searchParams = new URLSearchParams();
+    searchParams.set("search", query);
+    const res = await fetch(`${API}/api/public/products?${searchParams}`);
+    if (!res.ok) return [];
+    const data = await res.json();
+    const products = data.products ?? data;
+    if (!Array.isArray(products)) return [];
+    return products.map(mapProduct);
+  } catch {
+    return [];
+  }
+}
+
 export async function getProduct(id: number): Promise<Product | null> {
   try {
     const res = await fetch(`${API}/api/public/products/${id}`, {

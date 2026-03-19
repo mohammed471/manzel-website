@@ -92,7 +92,8 @@ src/
 │   ├── sitemap.ts                                 (Auto-generated sitemap — all routes, both locales)
 │   └── robots.ts                                  (Robots.txt — allow all crawlers)
 ├── components/
-│   ├── Navbar.tsx          (client — scroll detection, mobile menu, LanguageToggle)
+│   ├── Navbar.tsx          (client — scroll detection, mobile menu, LanguageToggle, search trigger)
+│   ├── GlobalSearch.tsx    (client — Ctrl+K search overlay, products/portfolio/pages search)
 │   ├── Footer.tsx          (server — translated links, contact info)
 │   ├── Logo.tsx            (server — dark/light logo variants)
 │   ├── LanguageToggle.tsx  (client — AR/EN switch)
@@ -116,7 +117,7 @@ src/
 │   ├── projects.json       (Portfolio categories + projects — file-based, no API)
 │   └── about.json          (About page data — timeline, team, values)
 ├── lib/
-│   ├── api.ts              (Flask API calls for products, categories, contact)
+│   ├── api.ts              (Flask API calls for products, categories, contact, client-side search)
 │   ├── portfolio.ts        (Portfolio data helpers — reads from projects.json)
 │   ├── about.ts            (About page data helpers — reads from about.json)
 │   └── utils.ts            (formatPrice, cn)
@@ -140,6 +141,7 @@ src/
 - `ShareButtons` — Web Share API detection, clipboard, `useTranslations`
 - `ScrollToTop` — scroll detection, Framer Motion
 - `Timeline` — Framer Motion scroll-triggered animations, RTL detection
+- `GlobalSearch` — Ctrl+K overlay, debounced search, keyboard navigation, recent searches
 
 ### Data Flow
 
@@ -292,7 +294,7 @@ Font selection is automatic via `[lang="ar"]` and `[lang="en"]` CSS selectors in
 - Server components: `const t = await getTranslations("namespace")`
 - Client components: `const t = useTranslations("namespace")`
 - Add new keys to BOTH `src/messages/ar.json` and `src/messages/en.json`
-- Translation namespaces: `nav`, `brand`, `home`, `stats`, `products`, `portfolio`, `contact`, `form`, `footer`, `common`, `errors`, `whatsapp`, `metadata`, `testimonials`, `calculator`, `booking`, `faq`, `share`, `about`
+- Translation namespaces: `nav`, `brand`, `home`, `stats`, `products`, `portfolio`, `contact`, `form`, `footer`, `common`, `errors`, `whatsapp`, `metadata`, `testimonials`, `calculator`, `booking`, `faq`, `share`, `about`, `search`
 
 ### Links
 - ALWAYS use `Link` from `@/i18n/navigation`, NOT from `next/link`

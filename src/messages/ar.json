@@ -8,7 +8,9 @@
     "calculator": "حاسبة التكلفة",
     "area_calculator": "حاسبة المساحات",
     "booking": "احجز استشارة",
-    "about": "من نحن"
+    "about": "من نحن",
+    "search": "بحث",
+    "testimonials": "آراء العملاء"
   },
   "brand": {
     "name": "منزل",
@@ -434,5 +436,19 @@
     "whatsapp_message": "مرحباً، أحتاج استشارة حول مشروع:\nالمساحة الكلية: {totalArea} م²\n\nتفاصيل الغرف:\n{roomDetails}\n\n{materialDetails}",
     "enter_dimensions": "أدخل أبعاد الغرف لحساب المساحة والمواد",
     "print_title": "تقرير حاسبة المساحات - منزل"
+  },
+  "search": {
+    "placeholder": "ابحث عن منتجات، مشاريع، صفحات...",
+    "no_results": "لا توجد نتائج",
+    "no_results_query": "لا توجد نتائج لـ \"{query}\"",
+    "products_group": "المنتجات",
+    "projects_group": "المشاريع",
+    "pages_group": "الصفحات",
+    "show_all_products": "عرض الكل",
+    "show_all_projects": "عرض الكل",
+    "recent_searches": "عمليات البحث الأخيرة",
+    "clear_recent": "مسح",
+    "close": "إغلاق البحث",
+    "search_label": "بحث"
   }
 }

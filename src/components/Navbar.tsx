@@ -4,6 +4,7 @@ import { usePathname, Link } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Logo from "@/components/Logo";
 import LanguageToggle from "@/components/LanguageToggle";
@@ -110,6 +111,24 @@ export default function Navbar() {
                 );
               })}
             </ul>
+            <button
+              onClick={() => window.dispatchEvent(new CustomEvent("open-global-search"))}
+              className={cn(
+                "ms-3 flex items-center gap-2 px-3 py-1.5 rounded-lg border transition-colors",
+                scrolled
+                  ? "border-secondary-dark/40 text-text-secondary hover:text-primary hover:border-primary/30 hover:bg-secondary"
+                  : "border-white/20 text-white/70 hover:text-white hover:border-white/40"
+              )}
+              aria-label={t("search")}
+            >
+              <Search className="w-4 h-4" />
+              <kbd className={cn(
+                "text-[10px] font-medium px-1 py-0.5 rounded",
+                scrolled ? "bg-secondary text-primary/40" : "bg-white/10 text-white/50"
+              )}>
+                Ctrl+K
+              </kbd>
+            </button>
             <div
               className={cn(
                 "ms-3 transition-colors",
@@ -131,12 +150,23 @@ export default function Navbar() {
             </Link>
           </div>
 
-          {/* Mobile Hamburger */}
-          <button
-            onClick={() => setMobileOpen(!mobileOpen)}
-            className="md:hidden p-2 rounded-lg"
-            aria-label={t("menu")}
-          >
+          {/* Mobile: search + hamburger */}
+          <div className="flex items-center gap-1 md:hidden">
+            <button
+              onClick={() => window.dispatchEvent(new CustomEvent("open-global-search"))}
+              className={cn(
+                "p-2 rounded-lg transition-colors",
+                scrolled ? "text-primary" : "text-white"
+              )}
+              aria-label={t("search")}
+            >
+              <Search className="w-5 h-5" />
+            </button>
+            <button
+              onClick={() => setMobileOpen(!mobileOpen)}
+              className="p-2 rounded-lg"
+              aria-label={t("menu")}
+            >
             <div className="w-6 h-5 flex flex-col justify-between">
               <span
                 className={cn(
@@ -161,6 +191,7 @@ export default function Navbar() {
               />
             </div>
           </button>
+          </div>
         </nav>
       </header>
 

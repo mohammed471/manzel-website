@@ -8,7 +8,9 @@
     "calculator": "Cost Calculator",
     "area_calculator": "Area Calculator",
     "booking": "Book Consultation",
-    "about": "About Us"
+    "about": "About Us",
+    "search": "Search",
+    "testimonials": "Testimonials"
   },
   "brand": {
     "name": "Manzel",
@@ -434,5 +436,19 @@
     "whatsapp_message": "Hello, I need a consultation for a project:\nTotal Area: {totalArea} m²\n\nRoom Details:\n{roomDetails}\n\n{materialDetails}",
     "enter_dimensions": "Enter room dimensions to calculate area and materials",
     "print_title": "Area Calculator Report - Manzel"
+  },
+  "search": {
+    "placeholder": "Search products, projects, pages...",
+    "no_results": "No results found",
+    "no_results_query": "No results for \"{query}\"",
+    "products_group": "Products",
+    "projects_group": "Projects",
+    "pages_group": "Pages",
+    "show_all_products": "Show all",
+    "show_all_projects": "Show all",
+    "recent_searches": "Recent Searches",
+    "clear_recent": "Clear",
+    "close": "Close search",
+    "search_label": "Search"
   }
 }

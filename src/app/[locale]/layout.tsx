@@ -11,6 +11,7 @@ import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import PageTransition from "@/components/PageTransition";
 import ScrollToTop from "@/components/ScrollToTop";
+import GlobalSearch from "@/components/GlobalSearch";
 import SplashScreen from "@/components/SplashScreen";
 import Analytics from "@/components/Analytics";
 import ar from "@/messages/ar.json";
@@ -98,6 +99,7 @@ export default async function LocaleLayout({
           <Footer />
           <WhatsAppButton />
           <ScrollToTop />
+          <GlobalSearch />
         </NextIntlClientProvider>
       </body>
     </html>
