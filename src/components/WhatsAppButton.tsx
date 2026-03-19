@@ -3,9 +3,12 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslations } from "next-intl";
+import { usePathname } from "@/i18n/navigation";
+import { trackGA4Event } from "@/lib/analytics";
 
 export default function WhatsAppButton() {
   const t = useTranslations("whatsapp");
+  const pathname = usePathname();
   const [isHovered, setIsHovered] = useState(false);
 
   return (
@@ -15,6 +18,7 @@ export default function WhatsAppButton() {
       rel="noopener noreferrer"
       className="fixed bottom-6 left-6 z-40 h-14 bg-[#25D366] rounded-full flex items-center shadow-lg hover:shadow-xl transition-shadow overflow-hidden"
       aria-label={t("aria_label")}
+      onClick={() => trackGA4Event("whatsapp_click", { page: pathname })}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       whileTap={{ scale: 0.95 }}
