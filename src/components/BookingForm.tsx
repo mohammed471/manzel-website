@@ -4,6 +4,7 @@ import { useState, type FormEvent } from "react";
 import { useTranslations } from "next-intl";
 import { motion } from "framer-motion";
 import { submitBooking, type BookingData } from "@/lib/api";
+import { trackGA4Event, trackFBEvent } from "@/lib/analytics";
 import { generateICS, downloadICS } from "@/lib/ics";
 import CalendarPicker from "@/components/CalendarPicker";
 
@@ -64,6 +65,8 @@ export default function BookingForm() {
       const result = await submitBooking(formData);
 
       if (result.success) {
+        trackGA4Event("booking_submit");
+        trackFBEvent("Lead");
         setSuccess(true);
         // Don't clear form yet — need data for .ics download
       } else {

@@ -3,6 +3,7 @@
 import { useState, type FormEvent } from "react";
 import { useTranslations } from "next-intl";
 import { submitContact } from "@/lib/api";
+import { trackGA4Event, trackFBEvent } from "@/lib/analytics";
 
 interface FormData {
   name: string;
@@ -58,6 +59,8 @@ export default function ContactForm() {
       const result = await submitContact(formData);
 
       if (result.success) {
+        trackGA4Event("contact_submit");
+        trackFBEvent("Contact");
         setSuccess(true);
         setFormData({ name: "", phone: "", email: "", message: "" });
         setErrors({});

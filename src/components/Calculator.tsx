@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
+import { trackGA4Event } from "@/lib/analytics";
 import {
   calculateEstimate,
   OPTION_PRICES,
@@ -339,6 +340,8 @@ export default function Calculator() {
       qualityLevel,
       additionalOptions,
     });
+
+    trackGA4Event("calculator_complete", { estimate: result.high });
 
     const duration = 1500;
     const startTime = performance.now();

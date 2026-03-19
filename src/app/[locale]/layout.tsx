@@ -12,6 +12,7 @@ import WhatsAppButton from "@/components/WhatsAppButton";
 import PageTransition from "@/components/PageTransition";
 import ScrollToTop from "@/components/ScrollToTop";
 import SplashScreen from "@/components/SplashScreen";
+import Analytics from "@/components/Analytics";
 import ar from "@/messages/ar.json";
 import en from "@/messages/en.json";
 
@@ -86,6 +87,7 @@ export default async function LocaleLayout({
 
   return (
     <html lang={locale} dir={isRTL ? "rtl" : "ltr"}>
+      <Analytics />
       <body
         className={`${khalidArt.variable} ${poppins.variable} ${tajawal.variable} ${playfairDisplay.variable} antialiased`}
       >
