@@ -24,6 +24,7 @@ const PAGES: PageResult[] = [
   { href: "/calculator", labelKey: "calculator" },
   { href: "/area-calculator", labelKey: "area_calculator" },
   { href: "/contact", labelKey: "contact" },
+  { href: "/color-picker", labelKey: "color_picker" },
   { href: "/booking", labelKey: "booking" },
   { href: "/testimonials", labelKey: "testimonials" },
 ];

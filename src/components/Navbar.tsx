@@ -4,7 +4,7 @@ import { usePathname, Link } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search } from "lucide-react";
+import { Search, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Logo from "@/components/Logo";
 import LanguageToggle from "@/components/LanguageToggle";
@@ -15,15 +15,29 @@ export default function Navbar() {
   const t = useTranslations("nav");
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [toolsOpen, setToolsOpen] = useState(false);
 
   const navLinks = [
     { href: "/" as const, label: t("home") },
     { href: "/products" as const, label: t("products") },
     { href: "/portfolio" as const, label: t("portfolio") },
     { href: "/about" as const, label: t("about") },
+    { href: "/contact" as const, label: t("contact") },
+  ];
+
+  const toolsLinks = [
     { href: "/calculator" as const, label: t("calculator") },
     { href: "/area-calculator" as const, label: t("area_calculator") },
-    { href: "/contact" as const, label: t("contact") },
+    { href: "/color-picker" as const, label: t("color_picker") },
+  ];
+
+  const isToolsActive = toolsLinks.some((link) => pathname.startsWith(link.href));
+
+  // All links for mobile drawer (flat list)
+  const allLinks = [
+    ...navLinks.slice(0, 4),
+    ...toolsLinks,
+    ...navLinks.slice(4),
   ];
 
   // Scroll detection at 50px threshold
@@ -110,6 +124,69 @@ export default function Navbar() {
                   </li>
                 );
               })}
+
+              {/* Tools Dropdown */}
+              <li
+                className="relative"
+                onMouseEnter={() => setToolsOpen(true)}
+                onMouseLeave={() => setToolsOpen(false)}
+              >
+                <button
+                  className={cn(
+                    "relative flex items-center gap-1 px-4 py-2 rounded-lg text-sm font-medium transition-colors",
+                    isToolsActive
+                      ? scrolled
+                        ? "text-primary"
+                        : "text-white"
+                      : scrolled
+                        ? "text-text-secondary hover:text-primary"
+                        : "text-white/80 hover:text-white"
+                  )}
+                >
+                  {t("tools")}
+                  <ChevronDown className={cn("w-3.5 h-3.5 transition-transform", toolsOpen && "rotate-180")} />
+                  {isToolsActive && (
+                    <motion.div
+                      layoutId="navbar-indicator"
+                      className="absolute bottom-0 inset-x-2 h-0.5 bg-accent rounded-full"
+                      transition={{
+                        type: "spring",
+                        stiffness: 300,
+                        damping: 30,
+                      }}
+                    />
+                  )}
+                </button>
+                <AnimatePresence>
+                  {toolsOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 8 }}
+                      transition={{ duration: 0.15 }}
+                      className="absolute top-full start-0 mt-1 w-48 bg-white rounded-xl shadow-lg border border-secondary-dark/20 overflow-hidden py-1"
+                    >
+                      {toolsLinks.map((link) => {
+                        const isActive = pathname.startsWith(link.href);
+                        return (
+                          <Link
+                            key={link.href}
+                            href={link.href}
+                            className={cn(
+                              "block px-4 py-2.5 text-sm font-medium transition-colors",
+                              isActive
+                                ? "bg-primary/10 text-primary"
+                                : "text-text-secondary hover:bg-surface hover:text-primary"
+                            )}
+                          >
+                            {link.label}
+                          </Link>
+                        );
+                      })}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </li>
             </ul>
             <button
               onClick={() => window.dispatchEvent(new CustomEvent("open-global-search"))}
@@ -225,7 +302,7 @@ export default function Navbar() {
 
                 {/* Nav links */}
                 <ul className="space-y-2">
-                  {navLinks.map((link) => {
+                  {allLinks.map((link) => {
                     const isActive =
                       link.href === "/"
                         ? pathname === "/"

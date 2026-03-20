@@ -92,6 +92,12 @@ export default async function Home({
                 addressLocality: locale === "ar" ? "كركوك" : "Kirkuk",
                 addressCountry: "IQ",
               },
+              geo: {
+                "@type": "GeoCoordinates",
+                latitude: 35.4502682,
+                longitude: 44.3956904,
+              },
+              hasMap: "https://maps.app.goo.gl/qajNmbhiGRAPTasa7",
               telephone: "+964-773-768-5000",
               openingHoursSpecification: {
                 "@type": "OpeningHoursSpecification",

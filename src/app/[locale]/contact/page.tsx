@@ -140,7 +140,14 @@ export default async function ContactPage() {
                     </div>
                     <div>
                       <h3 className="font-semibold text-text-primary mb-1">{t("address")}</h3>
-                      <p className="text-text-secondary">{t("address_value")}</p>
+                      <a
+                        href="https://maps.app.goo.gl/qajNmbhiGRAPTasa7"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-text-secondary hover:text-primary transition-colors"
+                      >
+                        {t("address_value")}
+                      </a>
                     </div>
                   </div>
 
@@ -186,7 +193,7 @@ export default async function ContactPage() {
           <AnimatedSection>
             <div className="rounded-xl overflow-hidden shadow-sm border border-gray-100">
               <iframe
-                src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d53820.92637624!2d44.3661!3d33.3152!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sar!2siq!4v1700000000000!5m2!1sar!2siq"
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d800!2d44.3956904!3d35.4502682!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x1554d700122bb0a7%3A0x3b4027df0fd30a83!2sManzel%20Design%20House!5e1!3m2!1sar!2siq"
                 width="100%"
                 height="450"
                 style={{ border: 0 }}

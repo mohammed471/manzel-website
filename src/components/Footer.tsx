@@ -14,6 +14,7 @@ export default async function Footer() {
     { href: "/about" as const, label: tNav("about") },
     { href: "/calculator" as const, label: tNav("calculator") },
     { href: "/area-calculator" as const, label: tNav("area_calculator") },
+    { href: "/color-picker" as const, label: tNav("color_picker") },
     { href: "/booking" as const, label: tNav("booking") },
     { href: "/contact" as const, label: tNav("contact") },
   ];
@@ -131,27 +132,34 @@ export default async function Footer() {
               </li>
 
               {/* Address */}
-              <li className="flex items-start gap-3">
-                <svg
-                  className="w-5 h-5 mt-0.5 text-accent shrink-0"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
+              <li>
+                <a
+                  href="https://maps.app.goo.gl/qajNmbhiGRAPTasa7"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-start gap-3 hover:text-accent transition-colors"
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={1.5}
-                    d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"
-                  />
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={1.5}
-                    d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"
-                  />
-                </svg>
-                <span>{tContact("address_value")}</span>
+                  <svg
+                    className="w-5 h-5 mt-0.5 text-accent shrink-0"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={1.5}
+                      d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"
+                    />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={1.5}
+                      d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"
+                    />
+                  </svg>
+                  <span>{tContact("address_value")}</span>
+                </a>
               </li>
 
               {/* Working Hours */}
