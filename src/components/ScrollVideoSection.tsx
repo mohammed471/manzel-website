@@ -62,9 +62,12 @@ export default function ScrollVideoSection() {
     const video = videoRef.current;
     if (!video) return;
 
+    // iOS blocks programmatic seeking — let it autoplay instead of pausing for scrub
+    const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
+
     const markReady = () => {
       if (video.readyState >= 2) {
-        video.pause();
+        if (!isIOS) video.pause();
         setVideoReady(true);
       }
     };
@@ -239,7 +242,8 @@ export default function ScrollVideoSection() {
             src="/furniture-scrub.mp4"
             muted
             playsInline
-            preload="auto"
+            autoPlay
+            preload="metadata"
             className={isMobile
               ? `absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ${videoReady ? "opacity-100" : "opacity-0"}`
               : "absolute w-0 h-0 opacity-0 pointer-events-none"

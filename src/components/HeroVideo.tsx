@@ -48,7 +48,7 @@ export default function HeroVideo() {
           muted
           loop
           playsInline
-          preload="metadata"
+          preload="auto"
           src="/hero_video.mp4"
           onError={() => setVideoFailed(true)}
           className="absolute inset-0 w-full h-full object-cover"

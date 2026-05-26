@@ -48,7 +48,7 @@ export default function VideoSection({ videos }: VideoSectionProps) {
                 muted
                 className="w-full rounded-2xl"
               >
-                <source src={video.url} />
+                <source src={video.url} type="video/mp4" />
               </video>
             </div>
           );
