@@ -31,6 +31,7 @@ export default function VideoSection({ videos }: VideoSectionProps) {
                 title={`Video ${index + 1}`}
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
+                loading="lazy"
                 className="w-full h-full"
               />
             </div>
@@ -43,6 +44,8 @@ export default function VideoSection({ videos }: VideoSectionProps) {
               <video
                 controls
                 preload="metadata"
+                playsInline
+                muted
                 className="w-full rounded-2xl"
               >
                 <source src={video.url} />

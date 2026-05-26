@@ -5,7 +5,15 @@ import { motion } from "framer-motion";
 
 export default function HeroVideo() {
   const [videoFailed, setVideoFailed] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    const check = () => setIsDesktop(window.innerWidth >= 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
 
   // Force play on mobile — some browsers block autoPlay attribute
   useEffect(() => {
@@ -40,7 +48,7 @@ export default function HeroVideo() {
           muted
           loop
           playsInline
-          preload="auto"
+          preload="metadata"
           src="/hero_video.mp4"
           onError={() => setVideoFailed(true)}
           className="absolute inset-0 w-full h-full object-cover"
@@ -57,8 +65,8 @@ export default function HeroVideo() {
       <div className="absolute top-1/4 -right-32 w-[600px] h-[600px] bg-primary-light/20 rounded-full blur-[120px]" />
       <div className="absolute -bottom-48 -left-24 w-[500px] h-[500px] bg-primary-light/10 rounded-full blur-[100px]" />
 
-      {/* Floating Geometric Shapes — hidden on mobile for performance */}
-      <div className="hidden md:block">
+      {/* Floating Geometric Shapes — only rendered on desktop, not just hidden */}
+      {isDesktop && <div>
         {/* Circle — top-right, slow Y oscillation */}
         <motion.div
           className="absolute top-12 right-12 w-64 h-64 rounded-full border border-white/10 opacity-10 pointer-events-none"
@@ -79,7 +87,7 @@ export default function HeroVideo() {
           animate={{ rotate: 360 }}
           transition={{ duration: 12, repeat: Infinity, ease: "linear" }}
         />
-      </div>
+      </div>}
     </>
   );
 }

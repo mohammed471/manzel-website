@@ -19,6 +19,8 @@ export default function ScrollVideoSection() {
   const rafRef = useRef<number>(0);
   const lastSeekRef = useRef(0);
   const pendingDrawRef = useRef(false);
+  const isAnimatingRef = useRef(false);
+  const animateFnRef = useRef<() => void>(() => {});
 
   // Detect mobile (touch device or narrow screen)
   useEffect(() => {
@@ -129,7 +131,7 @@ export default function ScrollVideoSection() {
     };
   }, [videoReady, isMobile]);
 
-  // ── Always-running smooth animation loop (both desktop & mobile) ──
+  // ── On-demand smooth animation loop — only runs while scrolling ──
   useEffect(() => {
     if (!videoReady) return;
 
@@ -138,44 +140,52 @@ export default function ScrollVideoSection() {
 
     const LERP_SPEED = isMobile ? 0.15 : 0.12;
     const THRESHOLD = 0.005;
-    const MIN_SEEK_INTERVAL = isMobile ? 50 : 40; // Slightly more throttle on mobile
+    const MIN_SEEK_INTERVAL = isMobile ? 50 : 40;
 
     const animate = () => {
       const diff = targetTimeRef.current - currentTimeRef.current;
 
       if (Math.abs(diff) > THRESHOLD) {
-        // Lerp toward target
         currentTimeRef.current += diff * LERP_SPEED;
 
-        // Throttle actual video seeks to prevent decoder overload
         const now = performance.now();
         if (now - lastSeekRef.current >= MIN_SEEK_INTERVAL) {
           video.currentTime = currentTimeRef.current;
           lastSeekRef.current = now;
           pendingDrawRef.current = true;
         }
-      } else if (currentTimeRef.current !== targetTimeRef.current) {
-        // Snap to final position
+        rafRef.current = requestAnimationFrame(animate);
+      } else {
+        // Snap to final position and stop the loop — no wasted frames on idle
         currentTimeRef.current = targetTimeRef.current;
         video.currentTime = currentTimeRef.current;
         pendingDrawRef.current = true;
+        isAnimatingRef.current = false;
       }
-
-      rafRef.current = requestAnimationFrame(animate);
     };
 
-    rafRef.current = requestAnimationFrame(animate);
+    animateFnRef.current = animate;
 
-    return () => cancelAnimationFrame(rafRef.current);
+    return () => {
+      cancelAnimationFrame(rafRef.current);
+      isAnimatingRef.current = false;
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [videoReady, isMobile]);
 
-  // ── On scroll → update target time (the loop handles the rest) ──
+  // ── On scroll → update target time and start loop if idle ──
   useMotionValueEvent(scrollYProgress, "change", (latest) => {
     const video = videoRef.current;
     if (!video || !videoReady || !video.duration) return;
 
     targetTimeRef.current = latest * video.duration;
+
+    // Start the animation loop only when there's something to animate
+    if (!isAnimatingRef.current && animateFnRef.current) {
+      isAnimatingRef.current = true;
+      cancelAnimationFrame(rafRef.current);
+      rafRef.current = requestAnimationFrame(animateFnRef.current);
+    }
 
     // Track active slide
     if (latest < 0.33) setActiveSlide(0);
