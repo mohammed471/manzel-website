@@ -40,11 +40,20 @@ export default function Navbar() {
     ...navLinks.slice(4),
   ];
 
-  // Scroll detection at 50px threshold
+  // Scroll detection at 50px threshold — rAF-throttled so the state update
+  // (and the nav re-render it triggers) runs at most once per frame
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 50);
+    let raf = 0;
+    const handleScroll = () => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => setScrolled(window.scrollY > 50));
+    };
+    handleScroll();
     window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener("scroll", handleScroll);
+    };
   }, []);
 
   // Close mobile drawer on pathname change
@@ -70,7 +79,7 @@ export default function Navbar() {
         className={cn(
           "fixed top-0 inset-x-0 z-50 transition-all duration-300",
           scrolled
-            ? "bg-white/95 backdrop-blur-md shadow-sm"
+            ? "bg-white/95 shadow-sm md:backdrop-blur-md"
             : "bg-transparent"
         )}
       >
@@ -82,6 +91,7 @@ export default function Navbar() {
               width={72}
               height={45}
               className="md:w-[90px] md:h-[56px]"
+              priority
             />
           </Link>
 

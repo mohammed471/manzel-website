@@ -13,7 +13,7 @@ export default function ScrollVideoSection() {
   const [videoReady, setVideoReady] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
-  // Smooth scrubbing refs
+  // Smooth scrubbing refs (desktop only)
   const targetTimeRef = useRef(0);
   const currentTimeRef = useRef(0);
   const rafRef = useRef<number>(0);
@@ -24,14 +24,23 @@ export default function ScrollVideoSection() {
 
   // Detect mobile (touch device or narrow screen)
   useEffect(() => {
+    // rAF-throttled — iOS fires resize continuously while the URL bar collapses during scroll
+    let raf = 0;
     const check = () => {
       const narrow = window.innerWidth < 768;
       const touch = "ontouchstart" in window || navigator.maxTouchPoints > 0;
       setIsMobile(narrow || touch);
     };
+    const onResize = () => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(check);
+    };
     check();
-    window.addEventListener("resize", check);
-    return () => window.removeEventListener("resize", check);
+    window.addEventListener("resize", onResize, { passive: true });
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener("resize", onResize);
+    };
   }, []);
 
   const slides = [
@@ -57,17 +66,16 @@ export default function ScrollVideoSection() {
     offset: ["start start", "end end"],
   });
 
-  // ── Video readiness — always pause for scroll-scrubbing ──
+  // ── Desktop: pause video once decodable so the scrub loop owns playback ──
   useEffect(() => {
+    if (isMobile) return;
+
     const video = videoRef.current;
     if (!video) return;
 
-    // iOS blocks programmatic seeking — let it autoplay instead of pausing for scrub
-    const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
-
     const markReady = () => {
       if (video.readyState >= 2) {
-        if (!isIOS) video.pause();
+        video.pause();
         setVideoReady(true);
       }
     };
@@ -83,7 +91,30 @@ export default function ScrollVideoSection() {
       video.removeEventListener("loadeddata", markReady);
       video.removeEventListener("canplay", markReady);
     };
-  }, []);
+  }, [isMobile]);
+
+  // ── Mobile: lazy-load — start fetching/playing only when the section nears the viewport,
+  //    so it never competes with the hero video for bandwidth ──
+  useEffect(() => {
+    if (!isMobile) return;
+
+    const container = containerRef.current;
+    const video = videoRef.current;
+    if (!container || !video) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          video.play().catch(() => {});
+        } else {
+          video.pause();
+        }
+      },
+      { rootMargin: "200px" }
+    );
+    observer.observe(container);
+    return () => observer.disconnect();
+  }, [isMobile]);
 
   // ── Draw frame on `seeked` event — only draws when frame is actually decoded (desktop only) ──
   useEffect(() => {
@@ -134,16 +165,16 @@ export default function ScrollVideoSection() {
     };
   }, [videoReady, isMobile]);
 
-  // ── On-demand smooth animation loop — only runs while scrolling ──
+  // ── On-demand smooth animation loop — desktop only; iOS can't seek without a gesture ──
   useEffect(() => {
-    if (!videoReady) return;
+    if (!videoReady || isMobile) return;
 
     const video = videoRef.current;
     if (!video) return;
 
-    const LERP_SPEED = isMobile ? 0.15 : 0.12;
+    const LERP_SPEED = 0.12;
     const THRESHOLD = 0.005;
-    const MIN_SEEK_INTERVAL = isMobile ? 50 : 40;
+    const MIN_SEEK_INTERVAL = 40;
 
     const animate = () => {
       const diff = targetTimeRef.current - currentTimeRef.current;
@@ -176,8 +207,10 @@ export default function ScrollVideoSection() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [videoReady, isMobile]);
 
-  // ── On scroll → update target time and start loop if idle ──
+  // ── On scroll → update target time and start loop if idle (desktop only) ──
   useMotionValueEvent(scrollYProgress, "change", (latest) => {
+    if (isMobile) return;
+
     const video = videoRef.current;
     if (!video || !videoReady || !video.duration) return;
 
@@ -218,11 +251,58 @@ export default function ScrollVideoSection() {
   // ── Progress bar ──
   const progressWidth = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]);
 
+  // ── Mobile: normal-height section, lazy autoplaying loop, slides as static text ──
+  if (isMobile) {
+    return (
+      <section ref={containerRef} className="relative bg-white py-16 overflow-hidden">
+        <div className="relative w-[92%] mx-auto aspect-[3/4] max-h-[70vh]">
+          {/* Edge gradients — blend video into white background */}
+          <div className="absolute inset-y-0 left-0 w-12 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none" />
+          <div className="absolute inset-y-0 right-0 w-12 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none" />
+          <div className="absolute inset-x-0 top-0 h-16 bg-gradient-to-b from-white to-transparent z-10 pointer-events-none" />
+          <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-white to-transparent z-10 pointer-events-none" />
+
+          {/* Small normal-GOP encode — the all-intra scrub file is desktop-only */}
+          <video
+            ref={videoRef}
+            src="/furniture-mobile.mp4"
+            muted
+            playsInline
+            loop
+            preload="none"
+            poster="/images/furniture-poster.jpg"
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+        </div>
+
+        <div className="mt-12 px-6 space-y-12">
+          {slides.map((slide, i) => (
+            <div key={i} className="text-center">
+              <div className="inline-flex items-center gap-3 mb-4">
+                <div className="w-8 h-[2px] bg-accent" />
+                <span className="text-accent font-bold text-xs tracking-[0.2em] uppercase">
+                  {slide.label}
+                </span>
+                <div className="w-8 h-[2px] bg-accent" />
+              </div>
+              <h2 className="text-2xl sm:text-3xl font-extrabold text-primary leading-[1.15] font-display whitespace-pre-line">
+                {slide.heading}
+              </h2>
+              <p className="mt-3 text-sm text-primary/80 leading-relaxed max-w-xl mx-auto">
+                {slide.description}
+              </p>
+            </div>
+          ))}
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section
       ref={containerRef}
       className="relative bg-white"
-      style={{ height: isMobile ? "400vh" : "500vh" }}
+      style={{ height: "500vh" }}
     >
       {/* Sticky fullscreen viewport */}
       <div className="sticky top-0 h-screen w-full flex items-center justify-center overflow-hidden">
@@ -236,7 +316,9 @@ export default function ScrollVideoSection() {
           <div className="absolute inset-x-0 top-0 h-16 sm:h-24 md:h-32 bg-gradient-to-b from-white to-transparent z-10 pointer-events-none" />
           <div className="absolute inset-x-0 bottom-0 h-16 sm:h-24 md:h-32 bg-gradient-to-t from-white to-transparent z-10 pointer-events-none" />
 
-          {/* Video element — visible on mobile (direct scrub), hidden on desktop (canvas renders) */}
+          {/* Video element — hidden, feeds the canvas; autoPlay forces data load so canplay fires, then we pause.
+              furniture-scrub.mp4 MUST stay all-intra (ffmpeg -g 1) — sparse keyframes make every seek decode
+              dozens of frames and the scrub stutters */}
           <video
             ref={videoRef}
             src="/furniture-scrub.mp4"
@@ -244,21 +326,16 @@ export default function ScrollVideoSection() {
             playsInline
             autoPlay
             preload="metadata"
-            className={isMobile
-              ? `absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ${videoReady ? "opacity-100" : "opacity-0"}`
-              : "absolute w-0 h-0 opacity-0 pointer-events-none"
-            }
+            className="absolute w-0 h-0 opacity-0 pointer-events-none"
           />
 
-          {/* Canvas for smooth frame rendering (desktop only) */}
-          {!isMobile && (
-            <canvas
-              ref={canvasRef}
-              className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ${
-                videoReady ? "opacity-100" : "opacity-0"
-              }`}
-            />
-          )}
+          {/* Canvas for smooth frame rendering */}
+          <canvas
+            ref={canvasRef}
+            className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ${
+              videoReady ? "opacity-100" : "opacity-0"
+            }`}
+          />
 
           {/* Poster/placeholder while loading */}
           {!videoReady && (

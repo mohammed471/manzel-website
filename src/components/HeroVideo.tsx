@@ -9,10 +9,19 @@ export default function HeroVideo() {
   const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
+    // Throttle via rAF — iOS fires resize continuously while the URL bar collapses during scroll
+    let raf = 0;
     const check = () => setIsDesktop(window.innerWidth >= 768);
+    const onResize = () => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(check);
+    };
     check();
-    window.addEventListener("resize", check);
-    return () => window.removeEventListener("resize", check);
+    window.addEventListener("resize", onResize, { passive: true });
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener("resize", onResize);
+    };
   }, []);
 
   // Force play on mobile — some browsers block autoPlay attribute
@@ -48,7 +57,8 @@ export default function HeroVideo() {
           muted
           loop
           playsInline
-          preload="auto"
+          preload="metadata"
+          poster="/images/hero-poster.jpg"
           src="/hero_video.mp4"
           onError={() => setVideoFailed(true)}
           className="absolute inset-0 w-full h-full object-cover"
@@ -58,12 +68,12 @@ export default function HeroVideo() {
       {/* Dark Overlay */}
       <div className="absolute inset-0 bg-primary-dark/60" />
 
-      {/* Noise Overlay */}
-      <div className="absolute inset-0 noise-overlay" />
+      {/* Noise Overlay — feTurbulence filter is too expensive over video on iOS, desktop only */}
+      <div className="absolute inset-0 noise-overlay hidden md:block" />
 
-      {/* Radial Glow Decorations */}
-      <div className="absolute top-1/4 -right-32 w-[600px] h-[600px] bg-primary-light/20 rounded-full blur-[120px]" />
-      <div className="absolute -bottom-48 -left-24 w-[500px] h-[500px] bg-primary-light/10 rounded-full blur-[100px]" />
+      {/* Radial Glow Decorations — large-radius blur costs a GPU pass per video frame, desktop only */}
+      <div className="hidden md:block absolute top-1/4 -right-32 w-[600px] h-[600px] bg-primary-light/20 rounded-full blur-[120px]" />
+      <div className="hidden md:block absolute -bottom-48 -left-24 w-[500px] h-[500px] bg-primary-light/10 rounded-full blur-[100px]" />
 
       {/* Floating Geometric Shapes — only rendered on desktop, not just hidden */}
       {isDesktop && <div>

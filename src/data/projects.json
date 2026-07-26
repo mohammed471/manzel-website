@@ -39,7 +39,7 @@
       "description": "تصميم داخلي كامل لكافتيريا عصرية بمساحة 150 متر مربع، تشمل منطقة الجلوس والبار والإضاءة الديكورية",
       "location": "كربلاء",
       "year": "2025",
-      "images": ["cover.jpg", "1.jpg", "2.jpg", "3.jpg"],
+      "images": ["after-1.jpg", "after-2.jpg"],
       "videos": [
         { "type": "youtube", "url": "https://www.youtube.com/watch?v=EXAMPLE1" }
       ],
@@ -56,7 +56,7 @@
       "description": "تصميم واجهة خارجية لفيلا سكنية بطراز حديث مع حديقة ومسبح",
       "location": "بغداد",
       "year": "2024",
-      "images": ["cover.jpg", "1.jpg", "2.jpg"],
+      "images": ["cover.jpg"],
       "videos": [],
       "featured": true
     },
@@ -67,7 +67,7 @@
       "description": "تنفيذ كامل لمنزل سكني من الأساسات حتى التسليم",
       "location": "النجف",
       "year": "2025",
-      "images": ["cover.jpg", "1.jpg"],
+      "images": ["cover.jpg"],
       "videos": [
         { "type": "youtube", "url": "https://www.youtube.com/watch?v=EXAMPLE2" }
       ],
@@ -80,7 +80,7 @@
       "description": "تصميم خرائط معمارية لمجمع سكني من 20 وحدة",
       "location": "كربلاء",
       "year": "2024",
-      "images": ["cover.jpg", "1.jpg"],
+      "images": ["cover.jpg"],
       "videos": [],
       "featured": true
     },
@@ -91,7 +91,7 @@
       "description": "أعمال تشطيب كاملة تشمل الدهان والسيراميك والأبواب",
       "location": "كربلاء",
       "year": "2025",
-      "images": ["cover.jpg", "1.jpg", "2.jpg"],
+      "images": ["cover.jpg"],
       "videos": [],
       "featured": true
     }

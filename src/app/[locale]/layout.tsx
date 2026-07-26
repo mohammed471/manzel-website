@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import localFont from "next/font/local";
 import { Playfair_Display, Poppins, Tajawal } from "next/font/google";
 import { routing } from "@/i18n/routing";
@@ -11,7 +11,7 @@ import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import PageTransition from "@/components/PageTransition";
 import ScrollToTop from "@/components/ScrollToTop";
-import GlobalSearch from "@/components/GlobalSearch";
+import GlobalSearchLazy from "@/components/GlobalSearchLazy";
 import SplashScreen from "@/components/SplashScreen";
 import Analytics from "@/components/Analytics";
 import ar from "@/messages/ar.json";
@@ -45,6 +45,12 @@ const playfairDisplay = Playfair_Display({
   variable: "--font-english-display",
   display: "swap",
 });
+
+// Pre-render both locales statically — without this every request renders
+// dynamically and can block on the Flask API's cold start
+export function generateStaticParams() {
+  return routing.locales.map((locale) => ({ locale }));
+}
 
 export async function generateMetadata({
   params,
@@ -83,15 +89,17 @@ export default async function LocaleLayout({
     notFound();
   }
 
+  setRequestLocale(locale);
+
   const messages = messagesMap[locale] ?? ar;
   const isRTL = locale === "ar";
 
   return (
     <html lang={locale} dir={isRTL ? "rtl" : "ltr"}>
-      <Analytics />
       <body
         className={`${khalidArt.variable} ${poppins.variable} ${tajawal.variable} ${playfairDisplay.variable} antialiased`}
       >
+        <Analytics />
         <NextIntlClientProvider locale={locale} messages={messages}>
           <SplashScreen />
           <Navbar />
@@ -99,7 +107,7 @@ export default async function LocaleLayout({
           <Footer />
           <WhatsAppButton />
           <ScrollToTop />
-          <GlobalSearch />
+          <GlobalSearchLazy />
         </NextIntlClientProvider>
       </body>
     </html>

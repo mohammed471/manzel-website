@@ -43,6 +43,11 @@ next-env.d.ts
 # reference/design assets at root
 /*.png
 /*.webp
+/*.jpg
+/*.mp4
+
+# media originals backup (pre-compression)
+/_media-originals/
 
 # font source archive
 /arfonts-khalid-art-bold/

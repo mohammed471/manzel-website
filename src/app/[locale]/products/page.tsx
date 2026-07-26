@@ -52,7 +52,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
       <section className="relative min-h-[50vh] sm:min-h-[55vh] lg:min-h-[60vh] flex items-center overflow-hidden">
         {/* Background Image */}
         <Image
-          src="/images/products-hero.png"
+          src="/images/products-hero.webp"
           alt=""
           fill
           className="object-cover"

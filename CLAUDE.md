@@ -94,6 +94,7 @@ src/
 ├── components/
 │   ├── Navbar.tsx          (client — scroll detection, mobile menu, LanguageToggle, search trigger)
 │   ├── GlobalSearch.tsx    (client — Ctrl+K search overlay, products/portfolio/pages search)
+│   ├── GlobalSearchLazy.tsx (client — lazy loader: imports GlobalSearch only on first open intent)
 │   ├── Footer.tsx          (server — translated links, contact info)
 │   ├── Logo.tsx            (server — dark/light logo variants)
 │   ├── LanguageToggle.tsx  (client — AR/EN switch)
@@ -313,6 +314,21 @@ Font selection is automatic via `[lang="ar"]` and `[lang="en"]` CSS selectors in
 - API failures: show fallback UI, never crash the page
 - Empty data: show translated "no results" message, not a blank page
 - Loading states: use spinner (language-agnostic)
+
+## Performance Rules (iOS Safari)
+
+Hard-won rules from the July 2026 iPhone performance fix — do not regress these:
+
+- **Media budgets:** videos in `public/` ≤ 1.5 MB (H.264, CRF 28, no audio, `+faststart`); images ≤ 300 KB. Originals are backed up in `_media-originals/` (gitignored). Compress with `ffmpeg-static` + `sharp` (devDependencies).
+- **Videos:** always `preload="metadata"` (or `"none"` + IntersectionObserver) with a `poster` image — NEVER `preload="auto"`. Two videos decoding at once exceed iOS Safari's media memory budget and one silently fails to render (this was the original "video not showing" bug).
+- **Video scrubbing** (`ScrollVideoSection`): desktop-only. iOS can't seek programmatically without a user gesture — on mobile/touch the component renders a normal-height section with a lazy autoplaying loop instead.
+- **Scrub video encoding:** `furniture-scrub.mp4` (desktop) MUST be all-intra (`ffmpeg -g 1`) — with sparse keyframes every seek decodes dozens of frames and scrubbing stutters. The mobile loop uses the separate normal-GOP `furniture-mobile.mp4` (3× smaller).
+- **Expensive effects are desktop-only:** large-radius `blur-[100px+]` layers, `.noise-overlay` (feTurbulence), `backdrop-blur` on the fixed navbar, and infinite `background-position` shimmers are all gated behind `md:` / `@media (hover: hover)` / mobile media queries. Do not add new ones over video or fixed elements on mobile.
+- **Scroll/resize listeners:** rAF-throttle them (see `Navbar.tsx`, `HeroVideo.tsx`). iOS fires `resize` continuously while the URL bar collapses during scroll.
+- **API fetches:** every fetch in `api.ts` has `AbortSignal.timeout(...)` (5s reads / 30s writes). The Flask API on Render free tier cold-starts for 30-60s — never let a fetch block without a timeout.
+- **Static rendering:** `[locale]/layout.tsx` has `generateStaticParams` + `setRequestLocale(locale)` (also in the home page). Call `setRequestLocale` in new pages that should prerender; without it the page renders dynamically on every request.
+- **GlobalSearch** is mounted via `GlobalSearchLazy` — its bundle (projects.json + framer + icons) loads only on first open (Ctrl+K or navbar button event `open-global-search`). Don't import `GlobalSearch` directly in the layout.
+- **SplashScreen** total duration is 1s and `GeometricShapes` mounts on desktop only (JS-conditional, not CSS-hidden — `display:none` framer animations still consume main thread).
 
 ## Common Pitfalls — Do NOT
 

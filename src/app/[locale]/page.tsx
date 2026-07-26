@@ -1,5 +1,5 @@
 import { Link } from "@/i18n/navigation";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { getCategories } from "@/lib/api";
 import { getFeaturedProjects } from "@/lib/portfolio";
 import { getTestimonials, getTestimonialImageUrl } from "@/lib/testimonials";
@@ -20,6 +20,7 @@ export default async function Home({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
+  setRequestLocale(locale);
   const t = await getTranslations("home");
   const tStats = await getTranslations("stats");
   const tTestimonials = await getTranslations("testimonials");

@@ -1,5 +1,11 @@
 const API = process.env.NEXT_PUBLIC_API_URL;
 
+// The Flask API on Render free tier can cold-start for 30-60s — never let a
+// page render block that long. Reads fail fast to fallback UI; form POSTs get
+// longer since losing a submission is worse than a slow spinner.
+const READ_TIMEOUT_MS = 5000;
+const WRITE_TIMEOUT_MS = 30000;
+
 export interface Product {
   id: number;
   name: string;
@@ -40,6 +46,7 @@ export async function getProducts(params?: {
     if (params?.search) searchParams.set("search", params.search);
     const res = await fetch(`${API}/api/public/products?${searchParams}`, {
       next: { revalidate: 3600 },
+      signal: AbortSignal.timeout(READ_TIMEOUT_MS),
     });
     if (!res.ok) return [];
     const data = await res.json();
@@ -56,7 +63,9 @@ export async function searchProductsClient(query: string): Promise<Product[]> {
   try {
     const searchParams = new URLSearchParams();
     searchParams.set("search", query);
-    const res = await fetch(`${API}/api/public/products?${searchParams}`);
+    const res = await fetch(`${API}/api/public/products?${searchParams}`, {
+      signal: AbortSignal.timeout(READ_TIMEOUT_MS),
+    });
     if (!res.ok) return [];
     const data = await res.json();
     const products = data.products ?? data;
@@ -71,6 +80,7 @@ export async function getProduct(id: number): Promise<Product | null> {
   try {
     const res = await fetch(`${API}/api/public/products/${id}`, {
       next: { revalidate: 3600 },
+      signal: AbortSignal.timeout(READ_TIMEOUT_MS),
     });
     if (!res.ok) return null;
     const data = await res.json();
@@ -85,6 +95,7 @@ export async function getCategories(): Promise<Category[]> {
   try {
     const res = await fetch(`${API}/api/public/categories`, {
       next: { revalidate: 3600 },
+      signal: AbortSignal.timeout(READ_TIMEOUT_MS),
     });
     if (!res.ok) return [];
     const data = await res.json();
@@ -107,6 +118,7 @@ export async function submitContact(data: {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
+      signal: AbortSignal.timeout(WRITE_TIMEOUT_MS),
     });
     if (!res.ok) return { success: false };
     return res.json();
@@ -145,6 +157,7 @@ export async function submitBooking(data: BookingData): Promise<{ success: boole
         message: `[Booking Request]\nProject: ${data.projectType}\nLocation: ${data.location}\nDate: ${data.preferredDate}\nTime: ${data.preferredTime}\nNotes: ${data.notes}`,
         type: "booking",
       }),
+      signal: AbortSignal.timeout(WRITE_TIMEOUT_MS),
     });
     if (!res.ok) return { success: false };
     return res.json();

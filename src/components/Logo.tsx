@@ -5,9 +5,10 @@ interface LogoProps {
   width?: number;
   height?: number;
   className?: string;
+  priority?: boolean;
 }
 
-export default function Logo({ variant, width = 120, height = 48, className }: LogoProps) {
+export default function Logo({ variant, width = 120, height = 48, className, priority = false }: LogoProps) {
   const src = variant === "dark" ? "/images/logo-dark.png" : "/images/logo-light.png";
 
   return (
@@ -17,7 +18,7 @@ export default function Logo({ variant, width = 120, height = 48, className }: L
       width={width}
       height={height}
       className={className}
-      priority
+      priority={priority}
     />
   );
 }

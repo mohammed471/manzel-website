@@ -94,10 +94,10 @@ describe("getFeaturedProjects", () => {
     }
   });
 
-  it("returns 3 featured projects from sample data", () => {
-    // cafeteria-karbala, villa-baghdad, finishing-apartment
+  it("returns 5 featured projects from sample data", () => {
+    // cafeteria-karbala, villa-baghdad, house-najaf, map-residential, finishing-apartment
     const featured = getFeaturedProjects();
-    expect(featured).toHaveLength(3);
+    expect(featured).toHaveLength(5);
   });
 });
 

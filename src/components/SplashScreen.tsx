@@ -125,7 +125,7 @@ function AnimatedTagline({ text }: { text: string }) {
         hidden: {},
         visible: {
           transition: {
-            staggerChildren: 0.1,
+            staggerChildren: 0.05,
           },
         },
       }}
@@ -150,6 +150,7 @@ function AnimatedTagline({ text }: { text: string }) {
 export default function SplashScreen() {
   const [show, setShow] = useState(false);
   const [phase, setPhase] = useState(0);
+  const [isDesktop, setIsDesktop] = useState(false);
   const timersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
   const t = useTranslations("splash");
 
@@ -193,13 +194,14 @@ export default function SplashScreen() {
     // Use rAF to avoid synchronous setState-in-effect lint warning
     const raf = requestAnimationFrame(() => {
       setShow(true);
+      setIsDesktop(window.innerWidth >= 768);
       document.body.style.overflow = "hidden";
 
       // Animation timeline — phases advance content, final timer triggers exit
       timersRef.current = [
-        setTimeout(() => setPhase(1), 1000),
-        setTimeout(() => setPhase(2), 1800),
-        setTimeout(() => setShow(false), 2500), // Triggers AnimatePresence exit animation
+        setTimeout(() => setPhase(1), 350),
+        setTimeout(() => setPhase(2), 650),
+        setTimeout(() => setShow(false), 1000), // Triggers AnimatePresence exit animation
       ];
     });
 
@@ -211,40 +213,25 @@ export default function SplashScreen() {
   }, []);
 
   return (
-    <AnimatePresence>
+    <AnimatePresence onExitComplete={handleExitComplete}>
       {show && (
         <motion.div
           className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-primary cursor-pointer"
           onClick={handleSkip}
           role="status"
           aria-label={t("skip_hint")}
-          initial={{ clipPath: "circle(150% at 50% 40%)" }}
-          exit={{ clipPath: "circle(0% at 50% 40%)" }}
-          transition={{ duration: 0.7, ease: "easeInOut" }}
-          onAnimationComplete={(definition) => {
-            // Handle exit animation complete — save session state
-            if (
-              typeof definition === "object" &&
-              definition !== null &&
-              "clipPath" in definition &&
-              (definition as { clipPath: string }).clipPath ===
-                "circle(0% at 50% 40%)"
-            ) {
-              handleExitComplete();
-            }
-          }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.4, ease: "easeInOut" }}
         >
-          {/* Background geometric decorations — hidden on mobile for performance */}
-          <div className="hidden md:block">
-            <GeometricShapes />
-          </div>
+          {/* Background geometric decorations — desktop only; on mobile they'd animate while display:none */}
+          {isDesktop && <GeometricShapes />}
 
           {/* Logo + Brand Name */}
           <motion.div
             className="relative z-10 text-center flex flex-col items-center"
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 1, ease: "easeOut" }}
+            transition={{ duration: 0.5, ease: "easeOut" }}
           >
             {/* Company logo */}
             <Image
@@ -261,7 +248,7 @@ export default function SplashScreen() {
               className="mt-4 md:mt-5 text-2xl md:text-3xl lg:text-4xl font-bold text-white tracking-wider"
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.5, ease: "easeOut" }}
+              transition={{ duration: 0.4, delay: 0.2, ease: "easeOut" }}
             >
               <span>{t("brand_name")}</span>
               <span className="mx-2 text-white/40">|</span>
@@ -284,7 +271,7 @@ export default function SplashScreen() {
                   className="h-full bg-splash-gold rounded-full"
                   initial={{ width: "0%" }}
                   animate={{ width: "100%" }}
-                  transition={{ duration: 0.7, ease: "easeInOut" }}
+                  transition={{ duration: 0.35, ease: "easeInOut" }}
                 />
               </div>
             </div>
