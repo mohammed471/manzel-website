@@ -101,7 +101,7 @@ export default function ContactForm() {
             setFormData({ ...formData, name: e.target.value });
             if (errors.name) setErrors({ ...errors, name: undefined });
           }}
-          className="w-full rounded-xl border border-gray-200 px-4 py-3 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition"
+          className="w-full rounded-xl border border-secondary-dark/60 px-4 py-3 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition"
           placeholder={t("name_placeholder")}
         />
         {errors.name && (
@@ -119,7 +119,7 @@ export default function ContactForm() {
           id="phone"
           value={formData.phone}
           onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-          className="w-full rounded-xl border border-gray-200 px-4 py-3 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition"
+          className="w-full rounded-xl border border-secondary-dark/60 px-4 py-3 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition"
           placeholder={t("phone_placeholder")}
           dir="ltr"
         />
@@ -135,7 +135,7 @@ export default function ContactForm() {
           id="email"
           value={formData.email}
           onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-          className="w-full rounded-xl border border-gray-200 px-4 py-3 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition"
+          className="w-full rounded-xl border border-secondary-dark/60 px-4 py-3 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition"
           placeholder={t("email_placeholder")}
           dir="ltr"
         />
@@ -154,7 +154,7 @@ export default function ContactForm() {
             setFormData({ ...formData, message: e.target.value });
             if (errors.message) setErrors({ ...errors, message: undefined });
           }}
-          className="w-full rounded-xl border border-gray-200 px-4 py-3 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition resize-none"
+          className="w-full rounded-xl border border-secondary-dark/60 px-4 py-3 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition resize-none"
           placeholder={t("message_placeholder")}
         />
         {errors.message && (

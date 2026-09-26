@@ -124,7 +124,7 @@ export default function CalendarPicker({
           {label}
         </label>
       )}
-      <div className="bg-white rounded-xl border border-gray-200 p-4">
+      <div className="bg-white rounded-xl border border-secondary-dark/60 p-4">
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
           <button

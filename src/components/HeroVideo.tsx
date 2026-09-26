@@ -1,103 +1,81 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
-import { motion } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
+import { useDevice } from "@/lib/device";
 
+// Full-bleed hero background.
+//
+// iOS rules (see CLAUDE.md "Performance Rules"):
+//  - The poster is a real <Image priority> so the hero paints instantly (LCP)
+//    even before/without video. The video fades in only once it is actually
+//    playing, so there is never a black box.
+//  - If autoplay is refused (Low Power Mode, Data Saver) the video element is
+//    dropped and the poster stays — never a broken/blank hero.
+//  - The video pauses whenever the hero leaves the viewport, so it never
+//    decodes at the same time as the furniture video further down the page
+//    (two concurrent decodes exceed iOS Safari's media budget).
+//  - Constrained devices (Save-Data, low memory, low-end Android) get the
+//    poster only.
 export default function HeroVideo() {
-  const [videoFailed, setVideoFailed] = useState(false);
-  const [isDesktop, setIsDesktop] = useState(false);
+  const device = useDevice();
+  const containerRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const [playing, setPlaying] = useState(false);
+  const [failed, setFailed] = useState(false);
+
+  const useVideo = device !== null && !device.constrained && !failed;
 
   useEffect(() => {
-    // Throttle via rAF — iOS fires resize continuously while the URL bar collapses during scroll
-    let raf = 0;
-    const check = () => setIsDesktop(window.innerWidth >= 768);
-    const onResize = () => {
-      cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(check);
-    };
-    check();
-    window.addEventListener("resize", onResize, { passive: true });
-    return () => {
-      cancelAnimationFrame(raf);
-      window.removeEventListener("resize", onResize);
-    };
-  }, []);
-
-  // Force play on mobile — some browsers block autoPlay attribute
-  useEffect(() => {
+    if (!useVideo) return;
     const video = videoRef.current;
-    if (!video) return;
+    const container = containerRef.current;
+    if (!video || !container) return;
 
     const tryPlay = () => {
-      video.play().catch(() => {
-        // Autoplay truly blocked — show fallback gradient
-        setVideoFailed(true);
-      });
+      video.play().catch(() => setFailed(true));
     };
 
-    if (video.readyState >= 2) {
-      tryPlay();
-    } else {
-      video.addEventListener("canplay", tryPlay, { once: true });
-    }
-
-    return () => video.removeEventListener("canplay", tryPlay);
-  }, []);
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) tryPlay();
+        else video.pause();
+      },
+      { threshold: 0.15 },
+    );
+    observer.observe(container);
+    return () => observer.disconnect();
+  }, [useVideo]);
 
   return (
-    <>
-      {/* Video or Fallback Gradient */}
-      {videoFailed ? (
-        <div className="absolute inset-0 bg-gradient-to-b from-primary-dark via-primary to-primary-dark" />
-      ) : (
+    <div ref={containerRef} className="absolute inset-0 overflow-hidden bg-primary-dark">
+      <Image
+        src="/images/hero-poster.jpg"
+        alt=""
+        fill
+        priority
+        sizes="100vw"
+        className="object-cover"
+      />
+
+      {useVideo && (
         <video
           ref={videoRef}
-          autoPlay
           muted
           loop
           playsInline
           preload="metadata"
           poster="/images/hero-poster.jpg"
           src="/hero_video.mp4"
-          onError={() => setVideoFailed(true)}
-          className="absolute inset-0 w-full h-full object-cover"
+          onPlaying={() => setPlaying(true)}
+          onError={() => setFailed(true)}
+          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ${
+            playing ? "opacity-100" : "opacity-0"
+          }`}
         />
       )}
 
-      {/* Dark Overlay */}
-      <div className="absolute inset-0 bg-primary-dark/60" />
-
-      {/* Noise Overlay — feTurbulence filter is too expensive over video on iOS, desktop only */}
-      <div className="absolute inset-0 noise-overlay hidden md:block" />
-
-      {/* Radial Glow Decorations — large-radius blur costs a GPU pass per video frame, desktop only */}
-      <div className="hidden md:block absolute top-1/4 -right-32 w-[600px] h-[600px] bg-primary-light/20 rounded-full blur-[120px]" />
-      <div className="hidden md:block absolute -bottom-48 -left-24 w-[500px] h-[500px] bg-primary-light/10 rounded-full blur-[100px]" />
-
-      {/* Floating Geometric Shapes — only rendered on desktop, not just hidden */}
-      {isDesktop && <div>
-        {/* Circle — top-right, slow Y oscillation */}
-        <motion.div
-          className="absolute top-12 right-12 w-64 h-64 rounded-full border border-white/10 opacity-10 pointer-events-none"
-          animate={{ y: [0, 20, 0] }}
-          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-        />
-
-        {/* Diamond — center-right, scale pulse */}
-        <motion.div
-          className="absolute top-1/2 right-24 w-16 h-16 rotate-45 border border-white/10 opacity-10 pointer-events-none"
-          animate={{ scale: [0.8, 1.2, 0.8] }}
-          transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-        />
-
-        {/* Small square — bottom-left, slow rotation */}
-        <motion.div
-          className="absolute bottom-24 left-16 w-20 h-20 border border-white/10 opacity-10 pointer-events-none"
-          animate={{ rotate: 360 }}
-          transition={{ duration: 12, repeat: Infinity, ease: "linear" }}
-        />
-      </div>}
-    </>
+      <div className="absolute inset-0 bg-gradient-to-b from-primary-dark/55 via-primary-dark/35 to-primary-dark/80" />
+    </div>
   );
 }

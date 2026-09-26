@@ -399,7 +399,7 @@ export default function ColorVisualizer() {
     <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
       {/* Room Photo */}
       <div className="w-full lg:w-[60%]">
-        <div className="rounded-2xl shadow-lg overflow-hidden border border-gray-200">
+        <div className="rounded-2xl shadow-lg overflow-hidden border border-secondary-dark/60">
           <div className="relative" style={{ aspectRatio: "1000/666" }}>
             {/* Base room photo */}
             <img
@@ -475,9 +475,9 @@ export default function ColorVisualizer() {
 
       {/* Color Panel */}
       <div className="w-full lg:w-[40%]">
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 md:p-6 lg:sticky lg:top-24 space-y-5">
+        <div className="bg-white rounded-3xl shadow-sm border border-secondary-dark/40 p-4 md:p-6 lg:sticky lg:top-24 space-y-5">
           {/* Active zone indicator */}
-          <div className="text-center pb-3 border-b border-gray-100">
+          <div className="text-center pb-3 border-b border-secondary-dark/40">
             {activeZone ? (
               <p className="text-sm font-semibold text-primary">
                 {t("active_zone", { zone: t(ZONE_KEYS[activeZone]) })}
@@ -533,7 +533,7 @@ export default function ColorVisualizer() {
                       "relative w-11 h-11 rounded-full border-2 transition-all shadow-sm",
                       isSelected
                         ? "border-primary ring-2 ring-primary/20 scale-110"
-                        : "border-gray-200 group-hover:scale-105 group-hover:border-gray-400"
+                        : "border-secondary-dark/60 group-hover:scale-105 group-hover:border-gray-400"
                     )}
                     style={{ backgroundColor: color.hex }}
                   >
@@ -572,7 +572,7 @@ export default function ColorVisualizer() {
                       "flex-shrink-0 rounded-xl border-2 p-2 transition-all",
                       isActive
                         ? "border-primary ring-2 ring-primary/20"
-                        : "border-gray-200 hover:border-primary/40"
+                        : "border-secondary-dark/60 hover:border-primary/40"
                     )}
                   >
                     <svg
@@ -604,7 +604,7 @@ export default function ColorVisualizer() {
             {/* Reset */}
             <button
               onClick={handleReset}
-              className="flex items-center justify-center gap-2 border border-gray-200 text-text-secondary py-2.5 px-6 rounded-xl hover:bg-gray-50 transition-colors text-sm font-medium"
+              className="flex items-center justify-center gap-2 border border-secondary-dark/60 text-text-secondary py-2.5 px-6 rounded-xl hover:bg-gray-50 transition-colors text-sm font-medium"
             >
               <RotateCcw className="w-4 h-4" />
               {t("reset")}

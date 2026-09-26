@@ -45,8 +45,8 @@ export default function PortfolioFilter({
           onClick={() => setActiveFilter("all")}
           className={`px-5 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-300 ${
             activeFilter === "all"
-              ? "bg-primary text-white shadow-lg shadow-primary/20"
-              : "bg-secondary text-text-secondary hover:bg-secondary-dark hover:text-text-primary"
+              ? "bg-primary text-white"
+              : "bg-white border border-secondary-dark/50 text-text-secondary hover:border-primary/30 hover:text-primary"
           }`}
         >
           {t("filter_all")}
@@ -57,8 +57,8 @@ export default function PortfolioFilter({
             onClick={() => setActiveFilter(cat.id)}
             className={`px-5 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-300 ${
               activeFilter === cat.id
-                ? "bg-primary text-white shadow-lg shadow-primary/20"
-                : "bg-secondary text-text-secondary hover:bg-secondary-dark hover:text-text-primary"
+                ? "bg-primary text-white"
+                : "bg-white border border-secondary-dark/50 text-text-secondary hover:border-primary/30 hover:text-primary"
             }`}
           >
             {cat.translatedName}
@@ -86,7 +86,7 @@ export default function PortfolioFilter({
                 className="group block"
               >
                 {/* Image */}
-                <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-secondary mb-3">
+                <div className="relative aspect-[4/3] rounded-3xl overflow-hidden bg-secondary mb-3">
                   <Image
                     src={project.coverUrl}
                     alt={project.name}

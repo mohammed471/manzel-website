@@ -58,7 +58,7 @@ function TimelineMilestone({
           {/* START side */}
           <div className="w-[45%] flex justify-end">
             {!isEven && (
-              <div className="bg-white rounded-xl p-6 shadow-sm border border-secondary-dark/30 hover:shadow-md transition-shadow max-w-md w-full">
+              <div className="bg-white rounded-3xl p-6 border border-secondary-dark/40 hover:shadow-md transition-shadow max-w-md w-full">
                 <h3 className="font-bold text-lg text-text-primary">{item.title}</h3>
                 <p className="text-text-secondary text-sm mt-1">{item.description}</p>
               </div>
@@ -75,7 +75,7 @@ function TimelineMilestone({
           {/* END side */}
           <div className="w-[45%] flex justify-start">
             {isEven && (
-              <div className="bg-white rounded-xl p-6 shadow-sm border border-secondary-dark/30 hover:shadow-md transition-shadow max-w-md w-full">
+              <div className="bg-white rounded-3xl p-6 border border-secondary-dark/40 hover:shadow-md transition-shadow max-w-md w-full">
                 <h3 className="font-bold text-lg text-text-primary">{item.title}</h3>
                 <p className="text-text-secondary text-sm mt-1">{item.description}</p>
               </div>
@@ -90,7 +90,7 @@ function TimelineMilestone({
               {item.year}
             </div>
           </div>
-          <div className="flex-1 bg-white rounded-xl p-6 shadow-sm border border-secondary-dark/30 hover:shadow-md transition-shadow">
+          <div className="flex-1 bg-white rounded-3xl p-6 border border-secondary-dark/40 hover:shadow-md transition-shadow">
             <h3 className="font-bold text-lg text-text-primary">{item.title}</h3>
             <p className="text-text-secondary text-sm mt-1">{item.description}</p>
           </div>
@@ -110,7 +110,7 @@ function TimelineMilestone({
               initial={{ opacity: 0, x: desktopOffset }}
               animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: desktopOffset }}
               transition={{ duration: 0.6, ease: "easeOut", delay }}
-              className="bg-white rounded-xl p-6 shadow-sm border border-secondary-dark/30 hover:shadow-md transition-shadow max-w-md w-full"
+              className="bg-white rounded-3xl p-6 border border-secondary-dark/40 hover:shadow-md transition-shadow max-w-md w-full"
             >
               <h3 className="font-bold text-lg text-text-primary">{item.title}</h3>
               <p className="text-text-secondary text-sm mt-1">{item.description}</p>
@@ -137,7 +137,7 @@ function TimelineMilestone({
               initial={{ opacity: 0, x: desktopOffset }}
               animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: desktopOffset }}
               transition={{ duration: 0.6, ease: "easeOut", delay }}
-              className="bg-white rounded-xl p-6 shadow-sm border border-secondary-dark/30 hover:shadow-md transition-shadow max-w-md w-full"
+              className="bg-white rounded-3xl p-6 border border-secondary-dark/40 hover:shadow-md transition-shadow max-w-md w-full"
             >
               <h3 className="font-bold text-lg text-text-primary">{item.title}</h3>
               <p className="text-text-secondary text-sm mt-1">{item.description}</p>
@@ -162,7 +162,7 @@ function TimelineMilestone({
           initial={{ opacity: 0, x: mobileOffset }}
           animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: mobileOffset }}
           transition={{ duration: 0.6, ease: "easeOut", delay }}
-          className="flex-1 bg-white rounded-xl p-6 shadow-sm border border-secondary-dark/30 hover:shadow-md transition-shadow"
+          className="flex-1 bg-white rounded-3xl p-6 border border-secondary-dark/40 hover:shadow-md transition-shadow"
         >
           <h3 className="font-bold text-lg text-text-primary">{item.title}</h3>
           <p className="text-text-secondary text-sm mt-1">{item.description}</p>
@@ -183,7 +183,7 @@ export default function Timeline({ items }: TimelineProps) {
   const skipAnimations = !!prefersReducedMotion;
 
   return (
-    <div className="relative w-full">
+    <div className="relative w-full overflow-x-clip">
       {/* Desktop vertical center line */}
       <div
         className="hidden md:block absolute top-0 bottom-0 w-0.5 bg-secondary-dark"

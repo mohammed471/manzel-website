@@ -6,7 +6,8 @@ import { Playfair_Display, Poppins, Tajawal } from "next/font/google";
 import { routing } from "@/i18n/routing";
 import { notFound } from "next/navigation";
 import "../globals.css";
-import Navbar from "@/components/Navbar";
+import SiteHeader from "@/components/SiteHeader";
+import MobileBottomNav from "@/components/MobileBottomNav";
 import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import PageTransition from "@/components/PageTransition";
@@ -14,6 +15,7 @@ import ScrollToTop from "@/components/ScrollToTop";
 import GlobalSearchLazy from "@/components/GlobalSearchLazy";
 import SplashScreen from "@/components/SplashScreen";
 import Analytics from "@/components/Analytics";
+import { DEVICE_BOOT_SCRIPT } from "@/lib/deviceScript";
 import ar from "@/messages/ar.json";
 import en from "@/messages/en.json";
 
@@ -95,19 +97,24 @@ export default async function LocaleLayout({
   const isRTL = locale === "ar";
 
   return (
-    <html lang={locale} dir={isRTL ? "rtl" : "ltr"}>
+    <html lang={locale} dir={isRTL ? "rtl" : "ltr"} suppressHydrationWarning>
+      <head>
+        {/* Sets html[data-device] (ios | android | mobile | desktop) before first paint */}
+        <script dangerouslySetInnerHTML={{ __html: DEVICE_BOOT_SCRIPT }} />
+      </head>
       <body
         className={`${khalidArt.variable} ${poppins.variable} ${tajawal.variable} ${playfairDisplay.variable} antialiased`}
       >
         <Analytics />
         <NextIntlClientProvider locale={locale} messages={messages}>
           <SplashScreen />
-          <Navbar />
+          <SiteHeader />
           <main className="min-h-screen"><PageTransition>{children}</PageTransition></main>
           <Footer />
           <WhatsAppButton />
           <ScrollToTop />
           <GlobalSearchLazy />
+          <MobileBottomNav />
         </NextIntlClientProvider>
       </body>
     </html>

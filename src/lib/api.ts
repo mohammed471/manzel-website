@@ -6,6 +6,15 @@ const API = process.env.NEXT_PUBLIC_API_URL;
 const READ_TIMEOUT_MS = 5000;
 const WRITE_TIMEOUT_MS = 30000;
 
+export interface ProductColor {
+  id: number;
+  name: string;
+  hex: string;
+  image: string | null;
+  /** Stock reduced to yes/no by the API — the quantity itself is never exposed */
+  available: boolean;
+}
+
 export interface Product {
   id: number;
   name: string;
@@ -13,6 +22,7 @@ export interface Product {
   subcategory: string | null;
   details: string;
   image: string | null;
+  colors: ProductColor[];
 }
 
 export interface Category {
@@ -31,6 +41,19 @@ function mapProduct(raw: any): Product {
     subcategory: raw.subcat_name ?? raw.subcategory ?? null,
     details: raw.details ?? "",
     image: raw.image_path ?? raw.image ?? null,
+    // Older API deployments have no `colors` — treat as a product without colors
+    colors: Array.isArray(raw.colors) ? raw.colors.map(mapColor) : [],
+  };
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function mapColor(raw: any): ProductColor {
+  return {
+    id: raw.id,
+    name: raw.name ?? "",
+    hex: typeof raw.hex === "string" && /^#[0-9a-f]{6}$/i.test(raw.hex) ? raw.hex : "#9e9e9e",
+    image: raw.image_path || null,
+    available: raw.available !== false,
   };
 }
 

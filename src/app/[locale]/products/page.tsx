@@ -1,11 +1,16 @@
 import { Suspense } from "react";
 import { getTranslations } from "next-intl/server";
-import Image from "next/image";
+import { PackageSearch, X } from "lucide-react";
+import { Link } from "@/i18n/navigation";
 import { getCategories, getProducts } from "@/lib/api";
-import AnimatedSection from "@/components/AnimatedSection";
-import MasonryGrid from "@/components/MasonryGrid";
-import MasonryProductCard from "@/components/MasonryProductCard";
-import ProductsFilter from "@/components/ProductsFilter";
+import { queryCatalog, visibleCategories } from "@/lib/catalog";
+import PageHero from "@/components/ui/PageHero";
+import ClosingCTA from "@/components/home/ClosingCTA";
+import CatalogSearch from "@/components/products/CatalogSearch";
+import CategoryNav from "@/components/products/CategoryNav";
+import ProductCard from "@/components/products/ProductCard";
+import CatalogPagination from "@/components/products/CatalogPagination";
+import { catalogHref } from "@/components/products/catalogHref";
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -27,122 +32,122 @@ interface ProductsPageProps {
     category?: string;
     subcategory?: string;
     search?: string;
+    page?: string;
   }>;
 }
 
 export default async function ProductsPage({ searchParams }: ProductsPageProps) {
   const t = await getTranslations("products");
-  const { category, subcategory, search } = await searchParams;
+  const sp = await searchParams;
 
-  const [categoriesData, productsData] = await Promise.all([
-    getCategories(),
-    getProducts({
-      category_id: category ? Number(category) : undefined,
-      subcategory_id: subcategory ? Number(subcategory) : undefined,
-      search: search || undefined,
-    }),
-  ]);
+  // One cached request each; filtering/search/pagination happen in lib/catalog.
+  const [allCategories, products] = await Promise.all([getCategories(), getProducts()]);
 
-  const categories = Array.isArray(categoriesData) ? categoriesData : [];
-  const products = Array.isArray(productsData) ? productsData : [];
+  // Hide empty categories and subcategories (counts computed from real products).
+  const subKeys = new Set(products.filter((p) => p.subcategory).map((p) => `${p.category}|${p.subcategory}`));
+  const categories = visibleCategories(allCategories).map((c) => ({
+    ...c,
+    subcategories: c.subcategories.filter((s) => subKeys.has(`${c.name}|${s.name}`)),
+  }));
+
+  const activeCategory = categories.find((c) => String(c.id) === sp.category);
+  const activeSubcategory = activeCategory?.subcategories.find((s) => String(s.id) === sp.subcategory);
+  const search = sp.search?.trim() || undefined;
+
+  const result = queryCatalog(products, {
+    category: activeCategory,
+    subcategory: activeSubcategory,
+    search,
+    page: Number(sp.page) || 1,
+  });
+
+  const heading = search
+    ? t("search_results_for", { query: search })
+    : (activeSubcategory?.name ?? activeCategory?.name ?? t("all_products"));
+  const hasFilters = Boolean(activeCategory || search);
+  const filterParams = {
+    category: activeCategory ? String(activeCategory.id) : undefined,
+    subcategory: activeSubcategory ? String(activeSubcategory.id) : undefined,
+    search,
+  };
 
   return (
     <>
-      {/* Editorial Hero */}
-      <section className="relative min-h-[50vh] sm:min-h-[55vh] lg:min-h-[60vh] flex items-center overflow-hidden">
-        {/* Background Image */}
-        <Image
-          src="/images/products-hero.webp"
-          alt=""
-          fill
-          className="object-cover"
-          priority
-          sizes="100vw"
-        />
-        {/* Dark overlay */}
-        <div className="absolute inset-0 bg-gradient-to-b from-primary-dark/70 via-primary/50 to-primary-dark/80" />
-        <div className="absolute inset-0 noise-overlay" />
+      <PageHero imageUrl="/images/products-hero.webp" title={t("hero_heading")} description={t("hero_tagline")} compact>
+        <div className="max-w-xl">
+          <Suspense fallback={<div className="h-13 rounded-full bg-white/90" />}>
+            <CatalogSearch key={search ?? ""} initial={search} />
+          </Suspense>
+        </div>
+      </PageHero>
 
-        {/* Hero Content */}
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32 w-full">
-          <div className="max-w-3xl">
-            <AnimatedSection>
-              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold text-white leading-tight whitespace-pre-line">
-                {t("hero_heading")}
-              </h1>
-            </AnimatedSection>
-            <AnimatedSection delay={0.15}>
-              <p className="mt-6 text-lg sm:text-xl text-white/70 max-w-xl leading-relaxed">
-                {t("hero_tagline")}
-              </p>
-            </AnimatedSection>
+      <section id="catalog" className="scroll-mt-20 md:scroll-mt-24 px-4 sm:px-6 lg:px-8 py-8 md:py-14">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-[250px_minmax(0,1fr)] gap-6 lg:gap-10">
+          <aside className="min-w-0">
+            <CategoryNav
+              categories={categories}
+              total={products.length}
+              activeCategory={activeCategory}
+              activeSubcategory={activeSubcategory}
+              search={search}
+            />
+          </aside>
+
+          <div className="min-w-0">
+            {/* Toolbar */}
+            <div className="mb-5 md:mb-6 flex flex-wrap items-end justify-between gap-3">
+              <div className="min-w-0">
+                <h2 className="text-2xl md:text-3xl text-primary leading-tight truncate">{heading}</h2>
+                {result.total > 0 && (
+                  <p className="mt-1 text-sm text-text-secondary tabular-nums">
+                    {t("showing", { from: result.from, to: result.to, total: result.total })}
+                  </p>
+                )}
+              </div>
+              {hasFilters && (
+                <Link
+                  href={catalogHref({}, { anchor: true })}
+                  className="inline-flex h-10 items-center gap-1.5 rounded-full border border-secondary-dark/60 bg-white px-4 text-sm font-medium text-text-secondary transition-colors hover:border-primary/40 hover:text-primary"
+                >
+                  <X className="w-4 h-4" />
+                  {t("clear_filters")}
+                </Link>
+              )}
+            </div>
+
+            {result.items.length > 0 ? (
+              <>
+                <ul className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-4">
+                  {result.items.map((product, i) => (
+                    <li key={product.id}>
+                      <ProductCard product={product} priority={i < 4} />
+                    </li>
+                  ))}
+                </ul>
+                <CatalogPagination page={result.page} pageCount={result.pageCount} params={filterParams} />
+              </>
+            ) : (
+              <div className="rounded-3xl bg-white border border-secondary-dark/40 px-6 py-16 text-center">
+                <span className="mx-auto flex w-16 h-16 items-center justify-center rounded-2xl bg-secondary-light text-primary/40">
+                  <PackageSearch className="w-8 h-8" strokeWidth={1.5} />
+                </span>
+                <h3 className="mt-5 text-xl text-primary">{t("no_products")}</h3>
+                <p className="mt-2 text-text-secondary max-w-sm mx-auto leading-relaxed">{t("no_products_desc")}</p>
+                {hasFilters && (
+                  <Link
+                    href={catalogHref({}, { anchor: true })}
+                    className="mt-6 inline-flex h-11 items-center rounded-full bg-primary px-6 text-sm font-bold text-white transition-colors hover:bg-primary-light"
+                  >
+                    {t("clear_filters")}
+                  </Link>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </section>
 
-      {/* Products Section */}
-      <section id="products" className="py-16 md:py-24 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Section Heading */}
-          <AnimatedSection>
-            <div className="text-center mb-12">
-              <h2 className="text-3xl md:text-4xl font-extrabold text-text-primary">
-                {t("our_products")}
-              </h2>
-              <div className="w-16 h-0.5 bg-accent mx-auto mt-4 rounded-full" />
-            </div>
-          </AnimatedSection>
-
-          {/* Filter — no wrapper card */}
-          <AnimatedSection>
-            <div className="mb-12">
-              <Suspense fallback={null}>
-                <ProductsFilter
-                  categories={categories}
-                  currentCategory={category}
-                  currentSubcategory={subcategory}
-                  currentSearch={search}
-                />
-              </Suspense>
-            </div>
-          </AnimatedSection>
-
-          {/* Product Grid */}
-          {products.length > 0 ? (
-            <MasonryGrid>
-              {products.map((product) => (
-                <MasonryProductCard key={product.id} product={product} />
-              ))}
-            </MasonryGrid>
-          ) : (
-            <AnimatedSection>
-              <div className="text-center py-24">
-                <div className="inline-flex items-center justify-center w-20 h-20 bg-secondary-light rounded-full mb-6">
-                  <svg
-                    className="w-10 h-10 text-text-secondary/30"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={1.5}
-                      d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
-                    />
-                  </svg>
-                </div>
-                <h3 className="text-xl font-bold text-text-primary mb-2">
-                  {t("no_products")}
-                </h3>
-                <p className="text-text-secondary max-w-sm mx-auto">
-                  {t("no_products_desc")}
-                </p>
-              </div>
-            </AnimatedSection>
-          )}
-        </div>
-      </section>
+      <ClosingCTA title={t("inquiry_hint")} />
     </>
   );
 }

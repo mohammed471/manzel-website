@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
 import { Link } from "@/i18n/navigation";
 import { notFound } from "next/navigation";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import AnimatedSection from "@/components/AnimatedSection";
+import PageHero from "@/components/ui/PageHero";
+import ClosingCTA from "@/components/home/ClosingCTA";
 import MasonryGrid from "@/components/MasonryGrid";
 import MasonryProjectCard from "@/components/MasonryProjectCard";
-import { getCategories, getCategory, getProjects } from "@/lib/portfolio";
+import { getCategories, getCategory, getProjects, getProjectImageUrl } from "@/lib/portfolio";
 
 interface PageProps {
   params: Promise<{ locale: string; category: string }>;
@@ -42,6 +44,7 @@ export async function generateMetadata({
 
 export default async function CategoryPage({ params }: PageProps) {
   const { locale, category: categoryId } = await params;
+  setRequestLocale(locale);
   const category = getCategory(categoryId);
 
   if (!category) {
@@ -53,47 +56,33 @@ export default async function CategoryPage({ params }: PageProps) {
   const projects = getProjects(categoryId);
   const translatedName = t(`cat_${categoryId.replace(/-/g, "_")}`);
   const translatedDesc = t(`cat_${categoryId.replace(/-/g, "_")}_desc`);
+  const first = projects[0];
+  const coverUrl = first ? getProjectImageUrl(categoryId, first.id, first.images[0] || "cover.jpg") : null;
 
   return (
     <>
-      <section className="pt-28 pb-20 bg-white">
+      <PageHero
+        imageUrl={coverUrl}
+        badge={t("projects_count", { count: projects.length })}
+        title={translatedName}
+        description={translatedDesc}
+        breadcrumb={
+          <nav className="flex flex-wrap items-center gap-2">
+            <Link href="/" className="hover:text-white transition-colors">
+              {tCommon("home")}
+            </Link>
+            <span className="text-white/30">/</span>
+            <Link href="/portfolio" className="hover:text-white transition-colors">
+              {t("title")}
+            </Link>
+            <span className="text-white/30">/</span>
+            <span className="text-white/90">{translatedName}</span>
+          </nav>
+        }
+      />
+
+      <section className="py-14 md:py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Breadcrumb */}
-          <AnimatedSection>
-            <nav className="flex items-center gap-2 text-sm text-text-secondary mb-12">
-              <Link
-                href="/"
-                className="hover:text-primary transition-colors"
-              >
-                {tCommon("home")}
-              </Link>
-              <span className="text-secondary-dark">/</span>
-              <Link
-                href="/portfolio"
-                className="hover:text-primary transition-colors"
-              >
-                {t("title")}
-              </Link>
-              <span className="text-secondary-dark">/</span>
-              <span className="text-text-primary font-medium">
-                {translatedName}
-              </span>
-            </nav>
-          </AnimatedSection>
-
-          {/* Category Header */}
-          <AnimatedSection delay={0.1}>
-            <div className="mb-14">
-              <h1 className="font-display text-4xl sm:text-5xl md:text-6xl font-bold text-text-primary mb-4">
-                {translatedName}
-              </h1>
-              <p className="text-text-secondary text-lg max-w-2xl leading-relaxed">
-                {translatedDesc}
-              </p>
-              <div className="w-16 h-0.5 bg-accent mt-6" />
-            </div>
-          </AnimatedSection>
-
           {/* Projects Grid */}
           {projects.length > 0 ? (
             <MasonryGrid>
@@ -151,24 +140,7 @@ export default async function CategoryPage({ params }: PageProps) {
         </div>
       </section>
 
-      {/* ── CTA Band ── */}
-      <section className="relative py-24 md:py-32 bg-primary-dark overflow-hidden">
-        <div className="absolute inset-0 bg-geometric opacity-30" />
-        <div className="absolute inset-0 noise-overlay" />
-        <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <AnimatedSection>
-            <h2 className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight whitespace-pre-line">
-              {t("cta_title")}
-            </h2>
-            <Link
-              href="/contact"
-              className="inline-block mt-8 px-8 py-3.5 bg-white text-primary font-semibold rounded-full hover:bg-secondary transition-colors duration-300"
-            >
-              {t("cta_button")}
-            </Link>
-          </AnimatedSection>
-        </div>
-      </section>
+      <ClosingCTA title={t("cta_title")} />
     </>
   );
 }

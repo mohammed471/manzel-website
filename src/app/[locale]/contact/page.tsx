@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { Link } from "@/i18n/navigation";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import AnimatedSection from "@/components/AnimatedSection";
+import PageHero from "@/components/ui/PageHero";
 import ContactForm from "@/components/ContactForm";
 
 export async function generateMetadata({
@@ -23,39 +24,26 @@ export async function generateMetadata({
   };
 }
 
-export default async function ContactPage() {
+export default async function ContactPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+  setRequestLocale(locale);
   const t = await getTranslations("contact");
 
   return (
     <>
-      {/* Page Header */}
-      <section className="relative bg-gradient-to-br from-primary-dark via-primary to-primary-light py-24 md:py-32 overflow-hidden">
-        <div className="absolute inset-0 noise-overlay" />
-        <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute top-10 right-10 w-48 h-48 border border-white/10 rounded-full" />
-          <div className="absolute bottom-10 left-10 w-32 h-32 border border-accent/20 rounded-full" />
-          <div className="absolute -bottom-20 -left-20 w-72 h-72 bg-accent/10 rounded-full blur-3xl" />
-        </div>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <AnimatedSection>
-            <span className="text-accent font-bold text-sm tracking-wider">{t("hero_label")}</span>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white mt-3">
-              {t("title")}
-            </h1>
-            <p className="mt-4 text-lg text-white/70 max-w-xl mx-auto">
-              {t("description")}
-            </p>
-          </AnimatedSection>
-        </div>
-      </section>
+      <PageHero badge={t("hero_label")} title={t("title")} description={t("description")} />
 
       {/* Contact Content */}
-      <section className="py-16 md:py-24 bg-white bg-geometric">
+      <section className="py-16 md:py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16">
             {/* Contact Form */}
             <AnimatedSection variant="slideRight">
-              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 md:p-10">
+              <div className="bg-white rounded-3xl shadow-sm border border-secondary-dark/40 p-8 md:p-10">
                 <h2 className="text-2xl font-bold text-text-primary mb-6">
                   {t("send_message")}
                 </h2>
@@ -166,7 +154,7 @@ export default async function ContactPage() {
                 </div>
 
                 {/* Booking Promotion */}
-                <div className="mt-8 pt-6 border-t border-gray-100">
+                <div className="mt-8 pt-6 border-t border-secondary-dark/40">
                   <div className="bg-accent/5 rounded-xl p-6">
                     <h3 className="font-bold text-text-primary mb-2">{t("booking_promo")}</h3>
                     <p className="text-text-secondary text-sm mb-4">{t("booking_promo_description")}</p>
@@ -188,10 +176,10 @@ export default async function ContactPage() {
       </section>
 
       {/* Google Maps */}
-      <section className="pb-16 md:pb-24 bg-white">
+      <section className="pb-16 md:pb-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <AnimatedSection>
-            <div className="rounded-xl overflow-hidden shadow-sm border border-gray-100">
+            <div className="rounded-xl overflow-hidden shadow-sm border border-secondary-dark/40">
               <iframe
                 src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d800!2d44.3956904!3d35.4502682!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x1554d700122bb0a7%3A0x3b4027df0fd30a83!2sManzel%20Design%20House!5e1!3m2!1sar!2siq"
                 width="100%"

@@ -16,7 +16,7 @@ export default function WhatsAppButton() {
       href="https://wa.me/9647737685000"
       target="_blank"
       rel="noopener noreferrer"
-      className="fixed bottom-6 left-6 z-40 h-14 bg-[#25D366] rounded-full flex items-center shadow-lg hover:shadow-xl transition-shadow overflow-hidden"
+      className="floating-fab fixed bottom-6 left-6 z-40 h-14 bg-[#25D366] rounded-full flex items-center shadow-lg hover:shadow-xl transition-shadow overflow-hidden"
       aria-label={t("aria_label")}
       onClick={() => trackGA4Event("whatsapp_click", { page: pathname })}
       onMouseEnter={() => setIsHovered(true)}

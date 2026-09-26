@@ -111,7 +111,7 @@ export default function BookingForm() {
   ];
 
   const inputClass =
-    "w-full rounded-xl border border-gray-200 px-4 py-3 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition";
+    "w-full rounded-xl border border-secondary-dark/60 px-4 py-3 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition";
 
   if (success) {
     return (

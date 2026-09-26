@@ -92,7 +92,20 @@ src/
 │   ├── sitemap.ts                                 (Auto-generated sitemap — all routes, both locales)
 │   └── robots.ts                                  (Robots.txt — allow all crawlers)
 ├── components/
-│   ├── Navbar.tsx          (client — scroll detection, mobile menu, LanguageToggle, search trigger)
+│   ├── SiteHeader.tsx      (client — fixed header: links, Tools dropdown, search, language, booking CTA;
+│   │                        transparent only over a `data-header-overlay` hero, solid otherwise)
+│   ├── MobileBottomNav.tsx (client — app-style bottom tab bar on < lg + "More" sheet with tools/about/booking)
+│   ├── ui/                 (design-system primitives for the 2026 redesign)
+│   │   ├── PageHero.tsx     (server — rounded green top panel for every inner page; optional photo/breadcrumb)
+│   │   ├── SectionHeader.tsx (server — badge + title + description + optional action)
+│   │   ├── Button.tsx       (ButtonLink / buttonClasses — rounded-full primary|accent|outline|light…)
+│   │   └── Surface.tsx      (surfaceClasses — rounded-3xl white/cream card with hover lift)
+│   ├── home/               (homepage sections — also reused on inner pages)
+│   │   ├── homeData.ts      (getHomeData: services, featured projects, testimonials, stats, FAQ)
+│   │   ├── HomeHero.tsx, QuickAccessBar.tsx, ServicesBento.tsx, ImageTile.tsx, ProjectsShowcase.tsx
+│   │   ├── TrustSection.tsx (green stats + testimonials band — pass testimonials=[] for stats only)
+│   │   ├── ToolsGrid.tsx, VisitSection.tsx (FAQ + map), ClosingCTA.tsx (accepts title/description)
+│   │   └── CountUp.tsx      (client — animated "+500" style counters)
 │   ├── GlobalSearch.tsx    (client — Ctrl+K search overlay, products/portfolio/pages search)
 │   ├── GlobalSearchLazy.tsx (client — lazy loader: imports GlobalSearch only on first open intent)
 │   ├── Footer.tsx          (server — translated links, contact info)
@@ -102,12 +115,10 @@ src/
 │   ├── FAQ.tsx             (client — accordion component, Framer Motion expand/collapse)
 │   ├── ShareButtons.tsx    (client — social sharing: WhatsApp, Facebook, Telegram, copy link)
 │   ├── ContactForm.tsx     (client — form with translated labels)
-│   ├── ProductCard.tsx     (server)
+│   ├── MasonryProductCard.tsx / MasonryProjectCard.tsx (server — grid cards, overlay always visible on touch)
 │   ├── ProductsFilter.tsx  (client — translated search/filter UI)
-│   ├── ProjectCard.tsx     (server — portfolio project card)
 │   ├── ProjectGallery.tsx  (client — lightbox)
 │   ├── VideoSection.tsx    (client — YouTube/local video embeds)
-│   ├── CategoryCard.tsx    (server)
 │   ├── ScrollToTop.tsx     (client — scroll-to-top button, appears after 400px)
 │   ├── WhatsAppButton.tsx  (client)
 │   └── Timeline.tsx        (client — interactive scroll-animated vertical timeline)
@@ -131,7 +142,8 @@ src/
 ### Server vs Client Components
 
 **Server Components by default.** Use `"use client"` ONLY for:
-- `Navbar` — scroll detection, mobile menu toggle, `useTranslations`
+- `SiteHeader` — scroll detection, tools dropdown, `useTranslations`
+- `MobileBottomNav` — active tab, "More" sheet state
 - `AnimatedSection` — Framer Motion intersection observer
 - `ProductsFilter` — URL param updates via `useRouter()`
 - `ContactForm` — form state, submission, validation, `useTranslations`
@@ -207,13 +219,23 @@ All endpoints under `NEXT_PUBLIC_API_URL/api/public/` — used for **products on
 
 | Method | Path | Returns |
 |--------|------|---------|
-| GET | `/products` | Product[] (supports ?category_id, ?subcategory_id, ?search) |
+| GET | `/products` | Product[] (supports ?category_id, ?subcategory_id, ?search) — each with `colors: [{id, name, hex, image_path, available}]` |
 | GET | `/products/<id>` | Product |
 | GET | `/products/images/<path>` | Image file |
 | GET | `/categories` | Category[] with nested subcategories |
 | POST | `/contact` | {success: boolean} — accepts {name, phone, email, message} |
 
 **NEVER exposed by API:** price_cost, price_wholesale, quantity, min_quantity, customer_phone, contract_value, financial data.
+Colour stock is reduced to `available: boolean` by the API (products with `track_stock=0` are always available) — never a quantity. Deployments without the colours change omit `colors`; `mapProduct` treats that as `[]`.
+
+### Products Catalogue (`/products`)
+
+- The page fetches **all** products once (`getProducts()`, ISR-cached, ~200 KB) and filters / searches / paginates in `src/lib/catalog.ts` — no per-filter API calls, so filters never wait on Render's cold start.
+- URL state: `?category=<id>&subcategory=<id>&search=<q>&page=<n>` (24 per page). `catalogHref()` builds links; `{ anchor: true }` jumps to `#catalog`.
+- Order: photographed products first, then products with colours, then name. Empty categories/subcategories are hidden.
+- Search is Arabic-normalised (diacritics, alef/ya/ta-marbuta variants) across name, details, category and colour names; every word must match.
+- Components in `src/components/products/`: `CategoryNav` (sidebar on lg, chips below), `CatalogSearch`, `ProductCard`, `ProductImage` (falls back to a category placeholder if the file 404s), `ColorDots`, `CatalogPagination`, `ProductDetailView` (colour picker swaps photo + WhatsApp text), `categoryIcon`.
+- Product images use optimized `next/image` (not `BlurImage`, which downloads originals).
 
 ## Styling Rules
 
@@ -315,20 +337,33 @@ Font selection is automatic via `[lang="ar"]` and `[lang="en"]` CSS selectors in
 - Empty data: show translated "no results" message, not a blank page
 - Loading states: use spinner (language-agnostic)
 
+## Design System (September 2026 redesign — "Model A")
+
+- Cream page (`body` = `surface`), white rounded-3xl cards, green (`primary`) bands as inset rounded panels, accent for CTAs. Soft rounded corners everywhere.
+- Every inner page starts with `<PageHero badge title description [imageUrl] [breadcrumb] />`. Pages without a dark hero (product detail, project detail) start with a breadcrumb at `pt-24 md:pt-28` — SiteHeader then stays solid automatically.
+- Any new dark top section must carry `data-header-overlay`, otherwise the header renders solid white over it.
+- Reuse `SectionHeader`, `ButtonLink`, `ImageTile`, `TrustSection`, `ClosingCTA` instead of hand-rolling section headers/CTA bands.
+- Hover-only UI must also work on touch: show overlays by default and hide them only under `[@media(hover:hover)]`.
+
 ## Performance Rules (iOS Safari)
 
 Hard-won rules from the July 2026 iPhone performance fix — do not regress these:
+
+- **Device detection:** `src/lib/device.ts` (`useDevice()` → `desktop | ios | android | mobile` + `constrained` for Save-Data/low-memory) and `src/lib/deviceScript.ts` (inline head script setting `html[data-device]` before paint). Gate platform-specific CSS with `html[data-device=…]` — width queries miss iPad Pro. Touch devices get no `backdrop-filter` and no `.noise-overlay`.
+- **HeroVideo:** poster is a real `<Image priority>`; the video fades in only on `playing`, is dropped if autoplay is refused (iOS Low Power Mode → poster stays), is skipped on `constrained` devices, and pauses when the hero leaves the viewport so it never decodes alongside the furniture video.
+- **Horizontal overflow:** `body { overflow-x: clip }` plus `overflow-x-clip` on components with sideways entrance animations (Timeline). Overflow makes iOS zoom the whole page out. Use `clip`, never `hidden` (breaks `position: sticky`).
 
 - **Media budgets:** videos in `public/` ≤ 1.5 MB (H.264, CRF 28, no audio, `+faststart`); images ≤ 300 KB. Originals are backed up in `_media-originals/` (gitignored). Compress with `ffmpeg-static` + `sharp` (devDependencies).
 - **Videos:** always `preload="metadata"` (or `"none"` + IntersectionObserver) with a `poster` image — NEVER `preload="auto"`. Two videos decoding at once exceed iOS Safari's media memory budget and one silently fails to render (this was the original "video not showing" bug).
 - **Video scrubbing** (`ScrollVideoSection`): desktop-only. iOS can't seek programmatically without a user gesture — on mobile/touch the component renders a normal-height section with a lazy autoplaying loop instead.
 - **Scrub video encoding:** `furniture-scrub.mp4` (desktop) MUST be all-intra (`ffmpeg -g 1`) — with sparse keyframes every seek decodes dozens of frames and scrubbing stutters. The mobile loop uses the separate normal-GOP `furniture-mobile.mp4` (3× smaller).
-- **Expensive effects are desktop-only:** large-radius `blur-[100px+]` layers, `.noise-overlay` (feTurbulence), `backdrop-blur` on the fixed navbar, and infinite `background-position` shimmers are all gated behind `md:` / `@media (hover: hover)` / mobile media queries. Do not add new ones over video or fixed elements on mobile.
-- **Scroll/resize listeners:** rAF-throttle them (see `Navbar.tsx`, `HeroVideo.tsx`). iOS fires `resize` continuously while the URL bar collapses during scroll.
+- **Expensive effects are desktop-only:** large-radius `blur-[100px+]` layers, `.noise-overlay` (feTurbulence), `backdrop-blur` on fixed elements, and infinite `background-position` shimmers are all gated behind `md:` / `@media (hover: hover)` / `html[data-device]`. Do not add new ones over video or fixed elements on mobile. SiteHeader and MobileBottomNav use solid backgrounds.
+- **Scroll/resize listeners:** rAF-throttle them (see `SiteHeader.tsx`, `ScrollVideoSection.tsx`). iOS fires `resize` continuously while the URL bar collapses during scroll. Prefer IntersectionObserver where possible.
 - **API fetches:** every fetch in `api.ts` has `AbortSignal.timeout(...)` (5s reads / 30s writes). The Flask API on Render free tier cold-starts for 30-60s — never let a fetch block without a timeout.
 - **Static rendering:** `[locale]/layout.tsx` has `generateStaticParams` + `setRequestLocale(locale)` (also in the home page). Call `setRequestLocale` in new pages that should prerender; without it the page renders dynamically on every request.
 - **GlobalSearch** is mounted via `GlobalSearchLazy` — its bundle (projects.json + framer + icons) loads only on first open (Ctrl+K or navbar button event `open-global-search`). Don't import `GlobalSearch` directly in the layout.
-- **SplashScreen** total duration is 1s and `GeometricShapes` mounts on desktop only (JS-conditional, not CSS-hidden — `display:none` framer animations still consume main thread).
+- **SplashScreen** total duration is 1s, cream background, opacity/transform animations only.
+- **Static rendering:** all pages except `/products` and `/products/[id]` (live Flask data) are SSG — keep `setRequestLocale(locale)` in new pages.
 
 ## Common Pitfalls — Do NOT
 

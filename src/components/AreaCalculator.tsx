@@ -228,7 +228,7 @@ export default function AreaCalculator() {
   return (
     <div className="space-y-8">
       {/* ═══ Room Input Card ═══ */}
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8">
+      <div className="bg-white rounded-3xl shadow-sm border border-secondary-dark/40 p-6 md:p-8">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-bold text-primary">{t("rooms_title")}</h2>
           <span className="text-sm text-gray-400">
@@ -256,7 +256,7 @@ export default function AreaCalculator() {
                       type="text"
                       value={room.name}
                       onChange={(e) => updateRoom(room.id, "name", e.target.value)}
-                      className="w-full rounded-xl border border-gray-200 px-4 py-3 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition text-sm"
+                      className="w-full rounded-xl border border-secondary-dark/60 px-4 py-3 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition text-sm"
                       placeholder={t("default_room", { n: index + 1 })}
                     />
                   </div>
@@ -273,7 +273,7 @@ export default function AreaCalculator() {
                       onChange={(e) =>
                         updateRoom(room.id, "length", Math.max(0, parseFloat(e.target.value) || 0))
                       }
-                      className="w-full rounded-xl border border-gray-200 px-4 py-3 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition text-sm"
+                      className="w-full rounded-xl border border-secondary-dark/60 px-4 py-3 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition text-sm"
                       placeholder="0"
                       min="0"
                       max="100"
@@ -293,7 +293,7 @@ export default function AreaCalculator() {
                       onChange={(e) =>
                         updateRoom(room.id, "width", Math.max(0, parseFloat(e.target.value) || 0))
                       }
-                      className="w-full rounded-xl border border-gray-200 px-4 py-3 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition text-sm"
+                      className="w-full rounded-xl border border-secondary-dark/60 px-4 py-3 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition text-sm"
                       placeholder="0"
                       min="0"
                       max="100"
@@ -355,7 +355,7 @@ export default function AreaCalculator() {
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.4, ease: "easeOut" }}
           >
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8">
+            <div className="bg-white rounded-3xl shadow-sm border border-secondary-dark/40 p-6 md:p-8">
               <h2 className="text-xl font-bold text-primary mb-6">{t("area_summary")}</h2>
 
               {/* Total area */}
@@ -420,7 +420,7 @@ export default function AreaCalculator() {
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.4, ease: "easeOut", delay: 0.1 }}
           >
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8">
+            <div className="bg-white rounded-3xl shadow-sm border border-secondary-dark/40 p-6 md:p-8">
               <h2 className="text-xl font-bold text-primary mb-6">{t("materials_title")}</h2>
 
               {/* Tab selector */}
@@ -578,7 +578,7 @@ function TilesTab({
                 "py-3 px-2 rounded-xl text-sm font-semibold transition-all border",
                 tileSize === size
                   ? "border-primary bg-primary/5 ring-2 ring-primary/20 text-primary"
-                  : "border-gray-200 text-gray-600 hover:border-primary/30"
+                  : "border-secondary-dark/60 text-gray-600 hover:border-primary/30"
               )}
             >
               {size}×{size}
@@ -633,7 +633,7 @@ function PaintTab({
           dir="ltr"
           value={wallHeight}
           onChange={(e) => setWallHeight(Math.max(1, Math.min(10, parseFloat(e.target.value) || 3)))}
-          className="w-full sm:w-48 rounded-xl border border-gray-200 px-4 py-3 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition text-sm"
+          className="w-full sm:w-48 rounded-xl border border-secondary-dark/60 px-4 py-3 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition text-sm"
           min="1"
           max="10"
           step="0.1"
@@ -687,7 +687,7 @@ function FlooringTab({
           dir="ltr"
           value={pricePerSqm || ""}
           onChange={(e) => setPricePerSqm(Math.max(0, parseInt(e.target.value) || 0))}
-          className="w-full sm:w-48 rounded-xl border border-gray-200 px-4 py-3 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition text-sm"
+          className="w-full sm:w-48 rounded-xl border border-secondary-dark/60 px-4 py-3 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition text-sm"
           placeholder="0"
           min="0"
           step="1000"
@@ -731,7 +731,7 @@ function ResultCard({
     <div
       className={cn(
         "rounded-xl p-5 text-center",
-        accent ? "bg-primary/5 border border-primary/10" : "bg-gray-50 border border-gray-100"
+        accent ? "bg-primary/5 border border-primary/10" : "bg-gray-50 border border-secondary-dark/40"
       )}
     >
       <p className="text-xs font-medium text-gray-500 mb-2">{label}</p>

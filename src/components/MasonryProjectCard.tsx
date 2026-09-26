@@ -26,7 +26,7 @@ export default function MasonryProjectCard({
       href={`/portfolio/${project.category}/${project.id}`}
       className="group block"
     >
-      <div className="relative rounded-xl overflow-hidden bg-secondary">
+      <div className="relative rounded-3xl overflow-hidden bg-secondary">
         <BlurImage
           src={coverUrl}
           alt={project.name}
@@ -54,7 +54,7 @@ export default function MasonryProjectCard({
         </div>
 
         {/* Hover overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
+        <div className="absolute inset-0 bg-gradient-to-t from-primary-dark/80 via-primary-dark/20 to-transparent opacity-100 [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
           <h3 className="font-display text-white text-lg font-bold leading-tight">
             {project.name}
           </h3>

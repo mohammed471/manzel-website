@@ -42,7 +42,11 @@ html {
 }
 
 body {
-  background: #ffffff;
+  background: var(--color-surface);
+  /* Entrance animations start elements translated sideways; without this
+     mobile browsers (esp. iOS Safari) widen the layout and zoom the page
+     out. `clip` (not `hidden`) keeps position: sticky working. */
+  overflow-x: clip;
   color: var(--color-text-primary);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -200,4 +204,57 @@ input[type="range"]::-moz-range-thumb {
   cursor: pointer;
   border: 3px solid white;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+/* Redesign: when the mobile bottom tab bar is mounted, reserve space for it
+   and lift the floating WhatsApp / scroll-to-top buttons above it. */
+@media (max-width: 1023px) {
+  body:has(.mobile-bottom-nav) {
+    padding-bottom: calc(4rem + env(safe-area-inset-bottom));
+  }
+  body:has(.mobile-bottom-nav) .floating-fab {
+    bottom: calc(5rem + env(safe-area-inset-bottom));
+  }
+  body:has(.mobile-bottom-nav) .floating-fab-stack {
+    bottom: calc(9rem + env(safe-area-inset-bottom));
+  }
+}
+
+/* Redesign hero entrance — CSS-only so it runs before hydration */
+@keyframes hero-rise {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.hero-rise {
+  animation: hero-rise 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-rise { animation: none; }
+}
+
+/* English headings default to semibold (Arabic uses Khalid Art Bold, which is
+   bold by design). In the base layer so utility classes still override it. */
+@layer base {
+  [lang="en"] h1, [lang="en"] h2, [lang="en"] h3 { font-weight: 600; }
+}
+
+/* Per-device gating via html[data-device] (set by DEVICE_BOOT_SCRIPT before
+   first paint). Width-based `md:` gating misses large tablets such as iPad
+   Pro, which report desktop widths but have phone-class GPUs and iOS Safari's
+   media limits — so gate on the platform instead. */
+html:is([data-device="ios"], [data-device="android"], [data-device="mobile"]) .noise-overlay::before {
+  display: none;
+}
+html:is([data-device="ios"], [data-device="android"], [data-device="mobile"]) * {
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+
+/* Product photo swap when a colour is selected */
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .animate-\[fade-in_0\.3s_ease-out\] { animation: none; }
 }

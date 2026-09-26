@@ -4,6 +4,7 @@ import BlurImage from "@/components/BlurImage";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import AnimatedSection from "@/components/AnimatedSection";
+import ClosingCTA from "@/components/home/ClosingCTA";
 import ProjectGallery from "@/components/ProjectGallery";
 import VideoSection from "@/components/VideoSection";
 import {
@@ -89,7 +90,7 @@ export default async function ProjectDetailPage({ params }: PageProps) {
 
   return (
     <>
-      <section className="pt-28 pb-20 bg-white">
+      <section className="pt-28 pb-20">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Breadcrumb */}
           <AnimatedSection>
@@ -123,7 +124,7 @@ export default async function ProjectDetailPage({ params }: PageProps) {
 
           {/* Hero Image */}
           <AnimatedSection delay={0.1} variant="fadeIn">
-            <div className="relative aspect-[16/9] md:aspect-[2/1] rounded-2xl overflow-hidden bg-secondary mb-10">
+            <div className="relative aspect-[16/9] md:aspect-[2/1] rounded-3xl overflow-hidden bg-secondary mb-10">
               <BlurImage
                 src={coverUrl}
                 alt={project.name}
@@ -220,7 +221,7 @@ export default async function ProjectDetailPage({ params }: PageProps) {
 
               {/* Info Sidebar — Right (1/3) */}
               <div className="lg:col-span-1">
-                <div className="bg-surface rounded-2xl p-6 lg:sticky lg:top-28">
+                <div className="bg-surface rounded-3xl p-6 lg:sticky lg:top-28">
                   <h3 className="text-sm font-semibold text-text-primary uppercase tracking-wider mb-5">
                     {t("project_info")}
                   </h3>
@@ -358,24 +359,7 @@ export default async function ProjectDetailPage({ params }: PageProps) {
         </div>
       </section>
 
-      {/* ── CTA Band ── */}
-      <section className="relative py-24 md:py-32 bg-primary-dark overflow-hidden">
-        <div className="absolute inset-0 bg-geometric opacity-30" />
-        <div className="absolute inset-0 noise-overlay" />
-        <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <AnimatedSection>
-            <h2 className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight whitespace-pre-line">
-              {t("cta_title")}
-            </h2>
-            <Link
-              href="/contact"
-              className="inline-block mt-8 px-8 py-3.5 bg-white text-primary font-semibold rounded-full hover:bg-secondary transition-colors duration-300"
-            >
-              {t("cta_button")}
-            </Link>
-          </AnimatedSection>
-        </div>
-      </section>
+      <ClosingCTA title={t("cta_title")} />
     </>
   );
 }

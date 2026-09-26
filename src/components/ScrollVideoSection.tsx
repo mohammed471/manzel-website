@@ -3,9 +3,13 @@
 import { useRef, useState, useEffect } from "react";
 import { motion, useScroll, useTransform, useMotionValueEvent } from "framer-motion";
 import { useTranslations } from "next-intl";
+import { useDevice } from "@/lib/device";
 
 export default function ScrollVideoSection() {
   const t = useTranslations("scrollVideo");
+  const device = useDevice();
+  // Save-Data / low-memory phones get the poster only
+  const posterOnly = device?.constrained === true;
   const containerRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -102,6 +106,9 @@ export default function ScrollVideoSection() {
     const video = videoRef.current;
     if (!container || !video) return;
 
+    // Play only while clearly on screen. The hero video pauses once it leaves
+    // the viewport, so the two never decode at the same time on iOS. If
+    // autoplay is refused (Low Power Mode) the poster simply stays.
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
@@ -110,11 +117,11 @@ export default function ScrollVideoSection() {
           video.pause();
         }
       },
-      { rootMargin: "200px" }
+      { threshold: 0.35 }
     );
     observer.observe(container);
     return () => observer.disconnect();
-  }, [isMobile]);
+  }, [isMobile, posterOnly]);
 
   // ── Draw frame on `seeked` event — only draws when frame is actually decoded (desktop only) ──
   useEffect(() => {
@@ -263,6 +270,15 @@ export default function ScrollVideoSection() {
           <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-white to-transparent z-10 pointer-events-none" />
 
           {/* Small normal-GOP encode — the all-intra scrub file is desktop-only */}
+          {posterOnly ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src="/images/furniture-poster.jpg"
+              alt=""
+              loading="lazy"
+              className="absolute inset-0 w-full h-full object-cover"
+            />
+          ) : (
           <video
             ref={videoRef}
             src="/furniture-mobile.mp4"
@@ -273,6 +289,7 @@ export default function ScrollVideoSection() {
             poster="/images/furniture-poster.jpg"
             className="absolute inset-0 w-full h-full object-cover"
           />
+          )}
         </div>
 
         <div className="mt-12 px-6 space-y-12">

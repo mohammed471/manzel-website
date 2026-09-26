@@ -506,7 +506,7 @@ export default function Calculator() {
               "rounded-xl p-6 cursor-pointer transition-all text-center border",
               projectType === type
                 ? "border-primary bg-primary/5 ring-2 ring-primary/20"
-                : "border-gray-200 hover:border-primary/30"
+                : "border-secondary-dark/60 hover:border-primary/30"
             )}
           >
             <div
@@ -550,7 +550,7 @@ export default function Calculator() {
               "rounded-xl p-6 cursor-pointer transition-all text-center border",
               propertyType === type
                 ? "border-primary bg-primary/5 ring-2 ring-primary/20"
-                : "border-gray-200 hover:border-primary/30"
+                : "border-secondary-dark/60 hover:border-primary/30"
             )}
           >
             <div
@@ -626,7 +626,7 @@ export default function Calculator() {
               const val = Number(e.target.value);
               if (val >= 50 && val <= 1000) setArea(val);
             }}
-            className="w-32 text-center border border-gray-200 rounded-xl py-3 px-4 text-lg font-semibold text-text-primary focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none"
+            className="w-32 text-center border border-secondary-dark/60 rounded-xl py-3 px-4 text-lg font-semibold text-text-primary focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none"
             dir="ltr"
           />
           <span className="absolute top-1/2 -translate-y-1/2 end-3 text-sm text-text-secondary pointer-events-none">
@@ -663,7 +663,7 @@ export default function Calculator() {
                 "rounded-xl p-6 cursor-pointer transition-all text-center border",
                 qualityLevel === level
                   ? "border-primary bg-primary/5 ring-2 ring-primary/20"
-                  : "border-gray-200 hover:border-primary/30"
+                  : "border-secondary-dark/60 hover:border-primary/30"
               )}
             >
               <div
@@ -716,7 +716,7 @@ export default function Calculator() {
                 "rounded-xl p-5 cursor-pointer transition-all text-start border flex items-center gap-4",
                 isSelected
                   ? "border-primary bg-primary/5"
-                  : "border-gray-200 hover:border-primary/30"
+                  : "border-secondary-dark/60 hover:border-primary/30"
               )}
             >
               {/* Checkbox indicator */}
@@ -799,7 +799,7 @@ export default function Calculator() {
             {t("summary_title")}
           </h3>
           <div className="space-y-3">
-            <div className="flex justify-between items-center py-2 border-b border-gray-100">
+            <div className="flex justify-between items-center py-2 border-b border-secondary-dark/40">
               <span className="text-sm text-text-secondary">
                 {t("summary_project")}
               </span>
@@ -807,7 +807,7 @@ export default function Calculator() {
                 {getProjectName(projectType)}
               </span>
             </div>
-            <div className="flex justify-between items-center py-2 border-b border-gray-100">
+            <div className="flex justify-between items-center py-2 border-b border-secondary-dark/40">
               <span className="text-sm text-text-secondary">
                 {t("summary_property")}
               </span>
@@ -815,7 +815,7 @@ export default function Calculator() {
                 {getPropertyName(propertyType)}
               </span>
             </div>
-            <div className="flex justify-between items-center py-2 border-b border-gray-100">
+            <div className="flex justify-between items-center py-2 border-b border-secondary-dark/40">
               <span className="text-sm text-text-secondary">
                 {t("summary_area")}
               </span>
@@ -823,7 +823,7 @@ export default function Calculator() {
                 {area} {t("area_unit")}
               </span>
             </div>
-            <div className="flex justify-between items-center py-2 border-b border-gray-100">
+            <div className="flex justify-between items-center py-2 border-b border-secondary-dark/40">
               <span className="text-sm text-text-secondary">
                 {t("summary_quality")}
               </span>
@@ -898,7 +898,7 @@ export default function Calculator() {
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-10 max-w-3xl mx-auto">
+    <div className="bg-white rounded-3xl shadow-sm border border-secondary-dark/40 p-6 md:p-10 max-w-3xl mx-auto">
       {/* Progress indicator */}
       {renderProgress()}
 
@@ -925,7 +925,7 @@ export default function Calculator() {
             <button
               type="button"
               onClick={goBack}
-              className="border border-gray-200 text-text-secondary py-3 px-8 rounded-xl hover:bg-surface transition-colors font-medium"
+              className="border border-secondary-dark/60 text-text-secondary py-3 px-8 rounded-xl hover:bg-surface transition-colors font-medium"
             >
               {t("back")}
             </button>

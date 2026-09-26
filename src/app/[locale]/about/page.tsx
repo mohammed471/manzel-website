@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Award, Eye, Lightbulb, Clock } from "lucide-react";
-import { Link } from "@/i18n/navigation";
 import AnimatedSection from "@/components/AnimatedSection";
-import CountUpStats from "@/components/CountUpStats";
+import PageHero from "@/components/ui/PageHero";
+import TrustSection from "@/components/home/TrustSection";
+import ClosingCTA from "@/components/home/ClosingCTA";
 import Timeline from "@/components/Timeline";
 import { getTimeline, getTeam, getValues, getTeamMemberImageUrl } from "@/lib/about";
 import Image from "next/image";
@@ -42,6 +43,7 @@ export default async function AboutPage({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
+  setRequestLocale(locale);
   const t = await getTranslations("about");
   const tStats = await getTranslations("stats");
 
@@ -64,29 +66,10 @@ export default async function AboutPage({
 
   return (
     <>
-      {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-primary-dark via-primary to-primary-light py-24 md:py-32 overflow-hidden">
-        <div className="absolute inset-0 noise-overlay" />
-        {/* Decorative circles */}
-        <div className="absolute top-20 start-10 w-64 h-64 bg-white/5 rounded-full" />
-        <div className="absolute bottom-10 end-20 w-48 h-48 bg-accent/10 rounded-full" />
-        <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <AnimatedSection>
-            <span className="inline-block px-4 py-1.5 bg-white/10 backdrop-blur-sm text-white/90 text-sm font-medium rounded-full mb-6">
-              {t("hero_label")}
-            </span>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white leading-tight whitespace-pre-line">
-              {t("hero_title")}
-            </h1>
-            <p className="mt-6 text-lg md:text-xl text-white/80 max-w-2xl mx-auto">
-              {t("hero_description")}
-            </p>
-          </AnimatedSection>
-        </div>
-      </section>
+      <PageHero badge={t("hero_label")} title={t("hero_title")} description={t("hero_description")} />
 
       {/* Story Section */}
-      <section className="bg-white bg-geometric py-20 md:py-28">
+      <section className="py-20 md:py-28">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             {/* Left Column */}
@@ -109,7 +92,7 @@ export default async function AboutPage({
             <AnimatedSection delay={0.2} variant="fadeIn">
               <div className="space-y-6">
                 {/* Mission Card */}
-                <div className="bg-surface rounded-2xl p-6">
+                <div className="bg-surface rounded-3xl p-6">
                   <h3 className="text-xl font-bold text-text-primary mb-2">
                     {t("mission_title")}
                   </h3>
@@ -119,7 +102,7 @@ export default async function AboutPage({
                 </div>
 
                 {/* Vision Card */}
-                <div className="bg-surface rounded-2xl p-6">
+                <div className="bg-surface rounded-3xl p-6">
                   <h3 className="text-xl font-bold text-text-primary mb-2">
                     {t("vision_title")}
                   </h3>
@@ -134,7 +117,7 @@ export default async function AboutPage({
       </section>
 
       {/* Timeline Section */}
-      <section className="bg-surface py-20 md:py-28">
+      <section className="py-20 md:py-28">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <AnimatedSection>
             <div className="text-center mb-14">
@@ -152,7 +135,7 @@ export default async function AboutPage({
       </section>
 
       {/* Team Section */}
-      <section className="bg-white py-20 md:py-28">
+      <section className="py-20 md:py-28">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <AnimatedSection>
             <div className="text-center mb-14">
@@ -174,7 +157,7 @@ export default async function AboutPage({
 
               return (
                 <AnimatedSection key={member.id} delay={i * 0.15} variant="scaleIn">
-                  <div className="bg-surface rounded-2xl p-8 text-center transition-all duration-300 hover:-translate-y-2 hover:shadow-lg">
+                  <div className="bg-surface rounded-3xl p-8 text-center transition-all duration-300 hover:-translate-y-2 hover:shadow-lg">
                     {/* Avatar / Initials */}
                     <div className="w-24 h-24 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4 overflow-hidden">
                       {member.image ? (
@@ -207,7 +190,7 @@ export default async function AboutPage({
       </section>
 
       {/* Values Section */}
-      <section className="bg-surface py-20 md:py-28">
+      <section className="py-20 md:py-28">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <AnimatedSection>
             <div className="text-center mb-14">
@@ -227,7 +210,7 @@ export default async function AboutPage({
 
               return (
                 <AnimatedSection key={value.icon} delay={i * 0.1}>
-                  <div className="bg-white rounded-2xl p-6 text-center shadow-sm border border-secondary-dark/20">
+                  <div className="bg-white rounded-3xl p-6 text-center shadow-sm border border-secondary-dark/20">
                     <div className="w-14 h-14 rounded-full bg-accent/10 flex items-center justify-center mx-auto mb-4">
                       <IconComponent className="w-7 h-7 text-accent" />
                     </div>
@@ -245,37 +228,9 @@ export default async function AboutPage({
         </div>
       </section>
 
-      {/* Stats Section */}
-      <section className="relative py-20 bg-primary overflow-hidden">
-        <div className="absolute inset-0 noise-overlay" />
-        <div className="absolute top-0 left-0 w-full h-1 accent-shimmer" />
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <CountUpStats stats={stats} />
-        </div>
-      </section>
+      <TrustSection stats={stats} testimonials={[]} />
 
-      {/* CTA Section */}
-      <section className="relative py-20 md:py-28 bg-gradient-to-br from-primary-dark via-primary to-primary-light overflow-hidden">
-        <div className="absolute inset-0 noise-overlay" />
-        <div className="absolute top-10 end-10 w-72 h-72 bg-white/5 rounded-full" />
-        <div className="absolute bottom-10 start-10 w-48 h-48 bg-accent/10 rounded-full" />
-        <div className="relative max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <AnimatedSection>
-            <h2 className="text-3xl md:text-4xl font-extrabold text-white">
-              {t("cta_title")}
-            </h2>
-            <p className="mt-4 text-lg text-white/80">
-              {t("cta_description")}
-            </p>
-            <Link
-              href="/contact"
-              className="inline-block mt-8 px-8 py-3 bg-accent hover:bg-accent-light text-white font-semibold rounded-xl transition-colors duration-300"
-            >
-              {t("cta_button")}
-            </Link>
-          </AnimatedSection>
-        </div>
-      </section>
+      <ClosingCTA title={t("cta_title")} description={t("cta_description")} />
     </>
   );
 }
