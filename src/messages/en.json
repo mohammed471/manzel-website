@@ -281,8 +281,8 @@
     "level_mid": "Mid-range",
     "level_luxury": "Luxury",
     "level_economy_desc": "Local porcelain, standard paint, economy sanitary ware",
-    "level_mid_desc": "Turkish or Spanish porcelain, LED lighting, quality sanitary ware",
-    "level_luxury_desc": "Marble and imported materials, false ceilings, premium sanitary ware",
+    "level_mid_desc": "First-grade Iranian or Saudi porcelain, LED lighting, quality sanitary ware",
+    "level_luxury_desc": "Turkish or Spanish porcelain, marble and imported materials, false ceilings, premium sanitary ware",
     "per_m2_range": "{low} – {high}k IQD / m²",
     "s_details": "Project details",
     "residential": "Residential",
@@ -295,7 +295,6 @@
     "millions": "million IQD",
     "result_empty": "Choose at least one service to see the cost",
     "breakdown": "Breakdown",
-    "surcharge_note": "Includes +{pct}% (renovation / location / commercial)",
     "disclaimer": "A preliminary estimate to help you plan. The final price is set after a site visit and plans.",
     "whatsapp_cta": "Send estimate on WhatsApp",
     "booking_cta": "Book a free consultation",
@@ -322,7 +321,8 @@
     "facade_hint": "Facades are measured by length, not area",
     "sum_facade": "Facade length {length} m",
     "amount_m": "{value}M",
-    "amount_k": "{value}k"
+    "amount_k": "{value}k",
+    "company_fee": "Company & supervision fee ({pct}%)"
   },
   "booking": {
     "hero_label": "Book Consultation",

@@ -21,6 +21,7 @@ export interface CalculatorPricing {
   plans: { base_usd: number; base_area: number; extra_usd_per_m2: number }; // on plot area
   interior_design_usd_per_m2: number; // per built m²
   facade_iqd_per_m: number; // per linear metre of facade
+  company_fee: number; // % of execution cost (turnkey/structure/finishing), shown as its own line
   surcharges: Record<Surcharge, number>; // % added to the total
   usd_rate: number; // IQD per USD — the internal app's exchange-rate setting
 }
@@ -35,10 +36,11 @@ export const DEFAULT_PRICING: CalculatorPricing = {
   turnkey: { economy: band(250_000, 300_000), mid: band(300_000, 350_000), luxury: band(350_000, 425_000) },
   structure_share: 45,
   finishing_share: 55,
-  plans: { base_usd: 100, base_area: 200, extra_usd_per_m2: 0.5 },
+  plans: { base_usd: 100, base_area: 200, extra_usd_per_m2: 1 },
   interior_design_usd_per_m2: 5,
   facade_iqd_per_m: 25_000,
-  surcharges: { renovation: 15, outside_kirkuk: 10, commercial: 10 },
+  company_fee: 10,
+  surcharges: { renovation: 15, outside_kirkuk: 10, commercial: 15 },
   usd_rate: 1500,
 };
 
@@ -54,7 +56,7 @@ export interface EstimateInputs {
   outsideKirkuk: boolean;
 }
 
-export type LineKey = BuildService | DesignService;
+export type LineKey = BuildService | DesignService | "company_fee";
 
 export interface EstimateLine {
   key: LineKey;
@@ -106,6 +108,16 @@ export function computeEstimate(i: EstimateInputs, p: CalculatorPricing): Estima
 
   // Surcharges apply to every line so the breakdown adds up to the total.
   const adjusted = lines.map((l) => ({ ...l, low: round(l.low * factor), high: round(l.high * factor) }));
+
+  // Company / supervision fee: a share of the execution cost only (not plans/design).
+  const execution = adjusted.find((l) => l.key === "turnkey" || l.key === "structure" || l.key === "finishing");
+  if (execution && p.company_fee > 0) {
+    adjusted.push({
+      key: "company_fee",
+      low: round(execution.low * (p.company_fee / 100)),
+      high: round(execution.high * (p.company_fee / 100)),
+    });
+  }
   return {
     builtArea,
     lines: adjusted,

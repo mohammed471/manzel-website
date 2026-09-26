@@ -48,6 +48,7 @@ const LINE_LABEL: Record<string, string> = {
   plans: "svc_plans",
   interior_design: "svc_interior_design",
   exterior_design: "svc_exterior_design",
+  company_fee: "company_fee",
 };
 
 const MIN_AREA = 50;
@@ -77,7 +78,7 @@ export default function Calculator({ pricing }: { pricing: CalculatorPricing }) 
   const hasResult = estimate.lines.length > 0;
   const rangeText = t("range_text", { low: toMillions(estimate.low), high: toMillions(estimate.high) });
 
-  const lineLabel = (key: string) => t(LINE_LABEL[key]);
+  const lineLabel = (key: string) => t(LINE_LABEL[key], { pct: pricing.company_fee });
   const hasFacade = designServices.includes("exterior_design");
   const summary = [
     t("sum_services", { list: estimate.lines.map((l) => lineLabel(l.key)).join("، ") }),
@@ -321,9 +322,6 @@ function ResultCard({
               {toMillions(estimate.low)} – {toMillions(estimate.high)}
             </p>
             <p className="mt-1 text-sm text-white/80">{t("millions")}</p>
-            {estimate.surchargePct > 0 && (
-              <p className="mt-3 text-xs text-secondary/80">{t("surcharge_note", { pct: estimate.surchargePct })}</p>
-            )}
           </>
         ) : (
           <p className="mt-3 text-sm text-white/80">{t("result_empty")}</p>
