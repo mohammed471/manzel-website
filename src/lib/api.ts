@@ -1,3 +1,5 @@
+import { DEFAULT_PRICING, normalizePricing, type CalculatorPricing } from "@/lib/calculator";
+
 const API = process.env.NEXT_PUBLIC_API_URL;
 
 // The Flask API on Render free tier can cold-start for 30-60s — never let a
@@ -114,6 +116,21 @@ export async function getProduct(id: number): Promise<Product | null> {
   }
 }
 
+/** Cost-calculator prices managed in the internal app; defaults if unreachable. */
+export async function getCalculatorPricing(): Promise<CalculatorPricing> {
+  try {
+    const res = await fetch(`${API}/api/public/calculator-pricing`, {
+      next: { revalidate: 3600 },
+      signal: AbortSignal.timeout(READ_TIMEOUT_MS),
+    });
+    if (!res.ok) return DEFAULT_PRICING;
+    const data = await res.json();
+    return normalizePricing(data.pricing ?? data);
+  } catch {
+    return DEFAULT_PRICING;
+  }
+}
+
 export async function getCategories(): Promise<Category[]> {
   try {
     const res = await fetch(`${API}/api/public/categories`, {
@@ -143,8 +160,9 @@ export async function submitContact(data: {
       body: JSON.stringify(data),
       signal: AbortSignal.timeout(WRITE_TIMEOUT_MS),
     });
-    if (!res.ok) return { success: false };
-    return res.json();
+    // Flask answers 201 {ok: true, id} — the HTTP status is the success signal
+    // (reading `success` from the body always reported failure).
+    return { success: res.ok };
   } catch {
     return { success: false };
   }
@@ -182,8 +200,8 @@ export async function submitBooking(data: BookingData): Promise<{ success: boole
       }),
       signal: AbortSignal.timeout(WRITE_TIMEOUT_MS),
     });
-    if (!res.ok) return { success: false };
-    return res.json();
+    // Same contract as submitContact: success = HTTP 2xx
+    return { success: res.ok };
   } catch {
     return { success: false };
   }

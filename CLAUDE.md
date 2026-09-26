@@ -223,10 +223,17 @@ All endpoints under `NEXT_PUBLIC_API_URL/api/public/` — used for **products on
 | GET | `/products/<id>` | Product |
 | GET | `/products/images/<path>` | Image file |
 | GET | `/categories` | Category[] with nested subcategories |
-| POST | `/contact` | {success: boolean} — accepts {name, phone, email, message} |
+| GET | `/calculator-pricing` | {pricing} — cost-calculator prices edited at `/admin/calculator-pricing` in the internal app |
+| POST | `/contact` | 201 {ok, id} — accepts {name, phone, email, message}. `submitContact`/`submitBooking` treat HTTP 2xx as success |
 
 **NEVER exposed by API:** price_cost, price_wholesale, quantity, min_quantity, customer_phone, contract_value, financial data.
 Colour stock is reduced to `available: boolean` by the API (products with `track_stock=0` are always available) — never a quantity. Deployments without the colours change omit `colors`; `mapProduct` treats that as `[]`.
+
+### Cost Calculator (`/calculator`)
+
+- Prices live in the internal app (`core/db/calculator_pricing.py`, admin page `/admin/calculator-pricing`, stored as JSON in `settings.website_calculator_pricing`) and are served by `/api/public/calculator-pricing` (ISR 1h). `src/lib/calculator.ts` holds `DEFAULT_PRICING` (mirror of the Python defaults) used if the API is unreachable, and the pure `computeEstimate()`.
+- Formula: built area = plot × coverage% × floors; turnkey = built × level rate — **all-inclusive** (kitchens, bathrooms, rooms; nothing is added on top); structure/finishing = share% of turnkey; plans = ($base up to base_area of plot + $extra per m² above) × usd_rate; interior design = built × $/m² × usd_rate; exterior (facade) = facade length (linear m) × IQD/m. `usd_rate` is the internal app's exchange-rate setting (fallback 1500). Surcharges (renovation / outside Kirkuk / commercial) multiply every line. Lines ≥5M round to 100k, smaller to 5k; totals in millions, small lines in thousands, Western digits.
+- Single page, live update: sticky result card on lg, fixed `.calc-mobile-bar` above `MobileBottomNav` on mobile (globals.css lifts the floating buttons). "Accurate quote" form posts to `/contact`, landing in the internal app's contact messages.
 
 ### Products Catalogue (`/products`)
 

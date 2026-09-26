@@ -258,3 +258,17 @@ html:is([data-device="ios"], [data-device="android"], [data-device="mobile"]) * 
 @media (prefers-reduced-motion: reduce) {
   .animate-\[fade-in_0\.3s_ease-out\] { animation: none; }
 }
+
+/* Cost calculator: its fixed price bar sits above the bottom nav — lift the
+   floating buttons above both. */
+@media (max-width: 1023px) {
+  body:has(.calc-mobile-bar) .floating-fab {
+    bottom: calc(9.5rem + env(safe-area-inset-bottom));
+  }
+  body:has(.calc-mobile-bar) .floating-fab-stack {
+    bottom: calc(13.5rem + env(safe-area-inset-bottom));
+  }
+  body:has(.calc-mobile-bar) {
+    padding-bottom: calc(9rem + env(safe-area-inset-bottom));
+  }
+}
