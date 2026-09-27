@@ -134,7 +134,7 @@ export default async function Footer() {
           </div>
 
           <div className="mt-14 pt-6 border-t border-white/10 text-center sm:text-start">
-            <p className="text-xs text-white/45">{t("copyright", { year: new Date().getFullYear() })}</p>
+            <p className="text-xs text-white/60">{t("copyright", { year: new Date().getFullYear() })}</p>
           </div>
         </div>
       </div>

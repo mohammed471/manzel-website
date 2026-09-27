@@ -331,7 +331,7 @@ Font selection is automatic via `[lang="ar"]` and `[lang="en"]` CSS selectors in
 - Translation namespace: `share`
 
 ### Loading Skeletons
-- Route-specific `loading.tsx` for: products, portfolio, category, project detail
+- Only `products/loading.tsx` (live Flask data). Do NOT add `loading.tsx` to statically generated routes (or `[locale]/`): it wraps the page in a Suspense boundary, so the first HTML shows the spinner and the real content stays hidden until the whole document has streamed — it cost ~2s LCP on mobile.
 - Uses `.skeleton` CSS class for shimmer animation
 
 ## Conventions
@@ -386,7 +386,10 @@ Hard-won rules from the July 2026 iPhone performance fix — do not regress thes
 - **API fetches:** every fetch in `api.ts` has `AbortSignal.timeout(...)` (5s reads / 30s writes). The Flask API on Render free tier cold-starts for 30-60s — never let a fetch block without a timeout.
 - **Static rendering:** `[locale]/layout.tsx` has `generateStaticParams` + `setRequestLocale(locale)` (also in the home page). Call `setRequestLocale` in new pages that should prerender; without it the page renders dynamically on every request.
 - **GlobalSearch** is mounted via `GlobalSearchLazy` — its bundle (projects.json + framer + icons) loads only on first open (Ctrl+K or navbar button event `open-global-search`). Don't import `GlobalSearch` directly in the layout.
-- **SplashScreen** total duration is 1s, cream background, opacity/transform animations only.
+- **SplashScreen** is a server component + pure CSS (`.splash` in globals.css), ~1s, painted with the first frame. `SPLASH_BOOT_SCRIPT` (`deviceScript.ts`, in `<head>`) adds `html.no-splash` on repeat visits and lets a tap skip it. Never make it client-mounted again: appearing after hydration pushed LCP to ~5s.
+- **Nothing visible may ship `opacity:0` in the server HTML.** framer-motion `initial={{opacity:0}}` keeps content hidden until JavaScript loads (~4–5s on a slow phone). `AnimatedSection` is a CSS scroll-driven reveal (`.reveal`, `animation-timeline: view()`, visible where unsupported), `PageTransition` is a CSS fade (`.page-fade`), `.hero-rise` is CSS. Use these instead of framer entrance animations for content.
+- **Fonts:** Playfair (English `.font-display` only) has `preload: false`; Tajawal loads `arabic` + `latin` (digits inside Arabic text) in weights 400/500/700.
+- **Lighthouse (mobile, Sept 2026):** perf 76–87, accessibility 95–100, best practices 96–100, SEO 100. Measure with `npx lighthouse@12 <url> --throttling-method=devtools` too — the default simulated mode over-weights JS.
 - **Static rendering:** all pages except `/products` and `/products/[id]` (live Flask data) are SSG — keep `setRequestLocale(locale)` in new pages.
 
 ## Common Pitfalls — Do NOT

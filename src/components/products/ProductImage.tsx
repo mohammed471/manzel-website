@@ -39,7 +39,7 @@ export default function ProductImage({
         )}
       >
         <CategoryIcon name={category ?? undefined} className={large ? "w-20 h-20" : "w-12 h-12 md:w-14 md:h-14"} strokeWidth={large ? 1 : 1.25} />
-        <span className={cn("px-3 text-center font-medium text-primary/45 line-clamp-1", large ? "text-sm" : "text-[11px]")}>
+        <span className={cn("px-3 text-center font-medium text-primary/65 line-clamp-1", large ? "text-sm" : "text-[11px]")}>
           {categoryLabel}
         </span>
       </div>

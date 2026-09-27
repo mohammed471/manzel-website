@@ -1,75 +1,30 @@
-"use client";
-
-import { motion, useInView, useReducedMotion } from "framer-motion";
-import { useRef, useState, useEffect, type ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
+import { cn } from "@/lib/utils";
 
 type AnimationVariant = "fadeUp" | "fadeIn" | "scaleIn" | "slideRight";
 
 interface AnimatedSectionProps {
   children: ReactNode;
   className?: string;
+  /** Stagger — shifts where the reveal starts along the scroll (≈ the old seconds × 400px). */
   delay?: number;
   variant?: AnimationVariant;
 }
 
-const variants = {
-  fadeUp: {
-    hidden: { opacity: 0, y: 30 },
-    visible: { opacity: 1, y: 0 },
-  },
-  fadeIn: {
-    hidden: { opacity: 0 },
-    visible: { opacity: 1 },
-  },
-  scaleIn: {
-    hidden: { opacity: 0, scale: 0.9 },
-    visible: { opacity: 1, scale: 1 },
-  },
-  slideRight: {
-    hidden: { opacity: 0, x: -50 },
-    visible: { opacity: 1, x: 0 },
-  },
-};
-
+// Scroll-driven reveal in pure CSS (`.reveal` in globals.css, animation-timeline: view()).
+// Content is visible in the server HTML and never waits for JavaScript — the old
+// framer-motion version shipped `opacity:0` and kept text hidden until hydration
+// (≈5s LCP on a slow phone). Browsers without scroll timelines simply show it.
 export default function AnimatedSection({
   children,
   className,
   delay = 0,
   variant = "fadeUp",
 }: AnimatedSectionProps) {
-  const ref = useRef<HTMLDivElement>(null);
-  const isInView = useInView(ref, { once: true, amount: 0.2 });
-  const prefersReducedMotion = useReducedMotion();
-  const [isRTL, setIsRTL] = useState(false);
-
-  useEffect(() => {
-    setIsRTL(document.documentElement.dir === "rtl");
-  }, []);
-
-  // Skip animations entirely if user prefers reduced motion
-  if (prefersReducedMotion) {
-    return <div className={className}>{children}</div>;
-  }
-
-  const { hidden, visible } = variants[variant];
-
-  // Invert x direction for slideRight in RTL
-  const initial =
-    variant === "slideRight" && isRTL
-      ? { ...hidden, x: 50 }
-      : hidden;
-
-  const animate = isInView ? visible : initial;
-
+  const style = delay ? ({ "--reveal-shift": `${Math.round(delay * 400)}px` } as CSSProperties) : undefined;
   return (
-    <motion.div
-      ref={ref}
-      initial={initial}
-      animate={animate}
-      transition={{ duration: 0.7, ease: "easeOut", delay }}
-      className={className}
-    >
+    <div className={cn("reveal", `reveal-${variant}`, className)} style={style}>
       {children}
-    </motion.div>
+    </div>
   );
 }

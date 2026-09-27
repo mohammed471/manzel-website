@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback, useEffect } from "react";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
@@ -385,7 +386,7 @@ export default function ColorVisualizer() {
       backWall: findColorInfo(zoneColors.back_wall, t),
     });
     return `https://wa.me/${tSite("whatsapp")}?text=${encodeURIComponent(message)}`;
-  }, [zoneColors, t]);
+  }, [zoneColors, t, tSite]);
 
   const currentFamily = COLOR_FAMILIES.find((f) => f.id === activeFamily)!;
 
@@ -403,10 +404,13 @@ export default function ColorVisualizer() {
         <div className="rounded-2xl shadow-lg overflow-hidden border border-secondary-dark/60">
           <div className="relative" style={{ aspectRatio: "1000/666" }}>
             {/* Base room photo */}
-            <img
+            <Image
               src="/images/room-base.jpg"
               alt={t("title")}
-              className="absolute inset-0 w-full h-full object-fill"
+              fill
+              priority
+              sizes="(min-width: 1024px) 60vw, 100vw"
+              className="object-fill"
               draggable={false}
             />
 

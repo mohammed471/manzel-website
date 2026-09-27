@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useSyncExternalStore } from "react";
 import { useTranslations } from "next-intl";
 
 interface ShareButtonsProps {
@@ -9,14 +9,17 @@ interface ShareButtonsProps {
   description?: string;
 }
 
+const noopSubscribe = () => () => {};
+
 export default function ShareButtons({ url, title, description }: ShareButtonsProps) {
   const t = useTranslations("share");
   const [copied, setCopied] = useState(false);
-  const [canNativeShare, setCanNativeShare] = useState(false);
-
-  useEffect(() => {
-    setCanNativeShare(typeof navigator.share === "function");
-  }, []);
+  // false on the server, the real capability after hydration (Web Share API: mostly phones)
+  const canNativeShare = useSyncExternalStore(
+    noopSubscribe,
+    () => typeof navigator.share === "function",
+    () => false,
+  );
 
   const shareText = t("whatsapp_text", { name: title });
 

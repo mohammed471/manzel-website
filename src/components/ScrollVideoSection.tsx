@@ -211,7 +211,6 @@ export default function ScrollVideoSection() {
       cancelAnimationFrame(rafRef.current);
       isAnimatingRef.current = false;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [videoReady, isMobile]);
 
   // ── On scroll → update target time and start loop if idle (desktop only) ──

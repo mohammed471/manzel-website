@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import PageHero from "@/components/ui/PageHero";
+import { Suspense } from "react";
 import ColorVisualizer from "@/components/ColorVisualizer";
 
 export async function generateMetadata({
@@ -37,7 +38,10 @@ export default async function ColorPickerPage({
       {/* Color Visualizer */}
       <section className="py-16 md:py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <ColorVisualizer />
+          {/* useSearchParams (shared colour links) needs its own boundary on a static page */}
+          <Suspense fallback={<div className="skeleton rounded-2xl w-full lg:w-[60%]" style={{ aspectRatio: "1000/666" }} />}>
+            <ColorVisualizer />
+          </Suspense>
         </div>
       </section>
     </>

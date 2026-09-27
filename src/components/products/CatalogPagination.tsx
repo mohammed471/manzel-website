@@ -32,7 +32,7 @@ export default async function CatalogPagination({
   return (
     <nav aria-label={t("pagination")} className="mt-12 flex items-center justify-center gap-1.5 flex-wrap">
       {page > 1 ? (
-        <Link href={catalogHref({ ...params, page: page - 1 }, { anchor: true })} className={cn(base, "gap-1 bg-white border border-secondary-dark/60 text-text-primary hover:border-primary/40")}>
+        <Link href={catalogHref({ ...params, page: page - 1 }, { anchor: true })} aria-label={t("page_prev")} className={cn(base, "gap-1 bg-white border border-secondary-dark/60 text-text-primary hover:border-primary/40")}>
           <ChevronRight className="w-4 h-4 ltr:rotate-180" />
           <span className="hidden sm:inline">{t("page_prev")}</span>
         </Link>
@@ -57,7 +57,7 @@ export default async function CatalogPagination({
       )}
 
       {page < pageCount ? (
-        <Link href={catalogHref({ ...params, page: page + 1 }, { anchor: true })} className={cn(base, "gap-1 bg-white border border-secondary-dark/60 text-text-primary hover:border-primary/40")}>
+        <Link href={catalogHref({ ...params, page: page + 1 }, { anchor: true })} aria-label={t("page_next")} className={cn(base, "gap-1 bg-white border border-secondary-dark/60 text-text-primary hover:border-primary/40")}>
           <span className="hidden sm:inline">{t("page_next")}</span>
           <ChevronLeft className="w-4 h-4 ltr:rotate-180" />
         </Link>

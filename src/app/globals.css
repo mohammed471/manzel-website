@@ -23,7 +23,7 @@
   /* Neutrals */
   --color-surface: #F7F2F1;
   --color-text-primary: #1A1A2E;
-  --color-text-secondary: #6C757D;
+  --color-text-secondary: #5F666D; /* ≥4.5:1 on the cream surface (WCAG AA) */
   --color-success: #27AE60;
 
   /* Fonts */
@@ -232,6 +232,28 @@ input[type="range"]::-moz-range-thumb {
   .hero-rise { animation: none; }
 }
 
+/* AnimatedSection — scroll-driven reveal. Visible by default (no JS, no support,
+   reduced motion); animates only where scroll timelines exist. Elements already
+   on screen at load are past the range, so they paint immediately (good LCP). */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .reveal {
+      animation: reveal-fade-up linear both;
+      animation-timeline: view();
+      animation-range: entry var(--reveal-shift, 0px) entry calc(var(--reveal-shift, 0px) + 220px);
+    }
+    .reveal-fadeIn { animation-name: reveal-fade-in; }
+    .reveal-scaleIn { animation-name: reveal-scale-in; }
+    .reveal-slideRight { animation-name: reveal-slide-right; }
+    [dir="rtl"] .reveal-slideRight { animation-name: reveal-slide-left; }
+  }
+}
+@keyframes reveal-fade-up { from { opacity: 0; transform: translateY(30px); } }
+@keyframes reveal-fade-in { from { opacity: 0; } }
+@keyframes reveal-scale-in { from { opacity: 0; transform: scale(0.94); } }
+@keyframes reveal-slide-right { from { opacity: 0; transform: translateX(-50px); } }
+@keyframes reveal-slide-left { from { opacity: 0; transform: translateX(50px); } }
+
 /* English headings default to semibold (Arabic uses Khalid Art Bold, which is
    bold by design). In the base layer so utility classes still override it. */
 @layer base {
@@ -271,4 +293,47 @@ html:is([data-device="ios"], [data-device="android"], [data-device="mobile"]) * 
   body:has(.calc-mobile-bar) {
     padding-bottom: calc(9rem + env(safe-area-inset-bottom));
   }
+}
+
+/* SplashScreen — server-rendered, CSS-only, ~1s. Hidden on repeat visits
+   (html.no-splash, set in <head>) and for reduced motion. */
+.splash {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-secondary-light);
+  cursor: pointer;
+  animation: splash-out 0.35s ease-in-out 1s forwards;
+}
+.splash.splash-skip { animation-delay: 0s; }
+.no-splash .splash { display: none; }
+.splash-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  animation: splash-rise 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.splash-tagline { animation: splash-fade 0.3s ease 0.25s both; }
+.splash-bar {
+  transform-origin: 0% 50%;
+  animation: splash-bar 0.85s ease-in-out both;
+}
+[dir="rtl"] .splash-bar { transform-origin: 100% 50%; }
+@keyframes splash-out { to { opacity: 0; visibility: hidden; } }
+@keyframes splash-rise { from { opacity: 0; transform: translateY(12px); } }
+@keyframes splash-fade { from { opacity: 0; } }
+@keyframes splash-bar { from { transform: scaleX(0); } }
+@media (prefers-reduced-motion: reduce) {
+  .splash { display: none; }
+}
+
+/* PageTransition — starts with the first paint, no JavaScript needed. */
+.page-fade { animation: splash-fade 0.3s ease-out both; }
+@media (prefers-reduced-motion: reduce) {
+  .page-fade { animation: none; }
 }

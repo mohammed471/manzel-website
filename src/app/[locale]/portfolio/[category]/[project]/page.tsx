@@ -8,7 +8,6 @@ import ClosingCTA from "@/components/home/ClosingCTA";
 import ProjectGallery from "@/components/ProjectGallery";
 import VideoSection from "@/components/VideoSection";
 import {
-  getCategories,
   getCategory,
   getProject,
   getProjects,
@@ -47,7 +46,7 @@ export async function generateMetadata({
       title: project.name,
       description: project.description?.slice(0, 160),
       type: "article",
-      images: [`/portfolio/${project.category}/${project.id}/cover.jpg`],
+      images: project.images[0] ? [getProjectImageUrl(project.category, project.id, project.images[0])] : [],
     },
   };
 }
@@ -67,25 +66,12 @@ export default async function ProjectDetailPage({ params }: PageProps) {
   const tCommon = await getTranslations("common");
   const translatedCatName = t(`cat_${categoryId.replace(/-/g, "_")}`);
 
-  const coverUrl = getProjectImageUrl(
-    project.category,
-    project.id,
-    "cover.jpg",
-  );
-
-  // Build image data for gallery (exclude cover)
-  const galleryImages = project.images
-    .filter((img) => img !== "cover.jpg")
-    .map((img) => ({
-      src: getProjectImageUrl(project.category, project.id, img),
-      alt: `${project.name} - ${img}`,
-    }));
-
-  // All images including cover
-  const allImages = [
-    { src: coverUrl, alt: project.name },
-    ...galleryImages,
-  ];
+  // The first image is the cover (same rule as the portfolio cards); the gallery shows them all
+  const allImages = project.images.map((img, i) => ({
+    src: getProjectImageUrl(project.category, project.id, img),
+    alt: i === 0 ? project.name : `${project.name} - ${i + 1}`,
+  }));
+  const coverUrl = allImages[0]?.src ?? null;
 
   const whatsappMessage = encodeURIComponent(
     t("whatsapp_message", { name: project.name }),
@@ -128,14 +114,16 @@ export default async function ProjectDetailPage({ params }: PageProps) {
           {/* Hero Image */}
           <AnimatedSection delay={0.1} variant="fadeIn">
             <div className="relative aspect-[16/9] md:aspect-[2/1] rounded-3xl overflow-hidden bg-secondary mb-10">
-              <BlurImage
-                src={coverUrl}
-                alt={project.name}
-                fill
-                priority
-                className="object-cover"
-                sizes="(max-width: 1200px) 100vw, 1200px"
-              />
+              {coverUrl && (
+                <BlurImage
+                  src={coverUrl}
+                  alt={project.name}
+                  fill
+                  priority
+                  className="object-cover"
+                  sizes="(max-width: 1200px) 100vw, 1200px"
+                />
+              )}
               {/* Fallback */}
               <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-primary-dark/30 flex items-center justify-center -z-10">
                 <svg

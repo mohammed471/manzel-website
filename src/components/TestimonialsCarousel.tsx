@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
+import { useLocale } from "next-intl";
 
 interface TestimonialItem {
   id: string;
@@ -21,13 +22,8 @@ export default function TestimonialsCarousel({ testimonials }: TestimonialsCarou
   const [currentIndex, setCurrentIndex] = useState(0);
   const [visibleCount, setVisibleCount] = useState(1);
   const [isHovered, setIsHovered] = useState(false);
-  const [isRTL, setIsRTL] = useState(false);
+  const isRTL = useLocale() === "ar";
   const touchStartX = useRef<number>(0);
-
-  // Detect RTL direction
-  useEffect(() => {
-    setIsRTL(document.documentElement.dir === "rtl");
-  }, []);
 
   // Responsive visibleCount based on breakpoints
   useEffect(() => {
@@ -56,11 +52,8 @@ export default function TestimonialsCarousel({ testimonials }: TestimonialsCarou
   }, []);
 
   const maxIndex = Math.max(0, testimonials.length - visibleCount);
-
-  // Reset currentIndex if it exceeds maxIndex after visibleCount changes
-  useEffect(() => {
-    setCurrentIndex((prev) => Math.min(prev, maxIndex));
-  }, [maxIndex]);
+  // Clamped at render time: widening the screen can shrink maxIndex below the stored index
+  const activeIndex = Math.min(currentIndex, maxIndex);
 
   // Auto-scroll
   useEffect(() => {
@@ -92,7 +85,7 @@ export default function TestimonialsCarousel({ testimonials }: TestimonialsCarou
       if (isSwipeNext) {
         setCurrentIndex((prev) => Math.min(prev + 1, maxIndex));
       } else {
-        setCurrentIndex((prev) => Math.max(prev - 1, 0));
+        setCurrentIndex((prev) => Math.max(Math.min(prev, maxIndex) - 1, 0));
       }
     },
     [isRTL, maxIndex]
@@ -100,7 +93,7 @@ export default function TestimonialsCarousel({ testimonials }: TestimonialsCarou
 
   if (!testimonials || testimonials.length === 0) return null;
 
-  const offset = -(currentIndex * (100 / visibleCount));
+  const offset = -(activeIndex * (100 / visibleCount));
   const totalDots = maxIndex + 1;
 
   return (
@@ -182,18 +175,23 @@ export default function TestimonialsCarousel({ testimonials }: TestimonialsCarou
 
       {/* Dots */}
       {totalDots > 1 && (
-        <div className="flex justify-center items-center gap-2 mt-8">
+        <div className="flex justify-center items-center mt-7">
           {Array.from({ length: totalDots }).map((_, i) => (
+            // 24px tap target around the small dot (WCAG target size)
             <button
               key={i}
               onClick={() => setCurrentIndex(i)}
-              className={`rounded-full transition-all duration-300 ${
-                i === currentIndex
-                  ? "bg-primary w-3 h-3"
-                  : "bg-secondary-dark w-2 h-2 hover:bg-primary/50"
-              }`}
+              className="group flex items-center justify-center w-6 h-6"
               aria-label={`Go to slide ${i + 1}`}
-            />
+            >
+              <span
+                className={`rounded-full transition-all duration-300 ${
+                  i === activeIndex
+                    ? "bg-primary w-3 h-3"
+                    : "bg-secondary-dark w-2 h-2 group-hover:bg-primary/50"
+                }`}
+              />
+            </button>
           ))}
         </div>
       )}

@@ -1,7 +1,8 @@
 "use client";
 
 import { motion, useInView, useReducedMotion } from "framer-motion";
-import { useRef, useState, useEffect } from "react";
+import { useRef } from "react";
+import { useLocale } from "next-intl";
 
 interface TimelineItem {
   year: string;
@@ -174,11 +175,7 @@ function TimelineMilestone({
 
 export default function Timeline({ items }: TimelineProps) {
   const prefersReducedMotion = useReducedMotion();
-  const [isRTL, setIsRTL] = useState(false);
-
-  useEffect(() => {
-    setIsRTL(document.documentElement.dir === "rtl");
-  }, []);
+  const isRTL = useLocale() === "ar";
 
   const skipAnimations = !!prefersReducedMotion;
 

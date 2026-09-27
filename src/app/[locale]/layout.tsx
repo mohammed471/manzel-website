@@ -15,7 +15,7 @@ import ScrollToTop from "@/components/ScrollToTop";
 import GlobalSearchLazy from "@/components/GlobalSearchLazy";
 import SplashScreen from "@/components/SplashScreen";
 import Analytics from "@/components/Analytics";
-import { DEVICE_BOOT_SCRIPT } from "@/lib/deviceScript";
+import { DEVICE_BOOT_SCRIPT, SPLASH_BOOT_SCRIPT } from "@/lib/deviceScript";
 import { getSiteMessages } from "@/lib/siteContent";
 import { SITE_URL } from "@/lib/siteUrl";
 
@@ -33,9 +33,11 @@ const poppins = Poppins({
   display: "swap",
 });
 
+// "latin" too: digits and Latin letters inside Arabic text (+500, phone numbers)
+// would otherwise be discovered late from the CSS instead of preloaded.
 const tajawal = Tajawal({
-  subsets: ["arabic"],
-  weight: ["300", "400", "500", "700"],
+  subsets: ["arabic", "latin"],
+  weight: ["400", "500", "700"],
   variable: "--font-arabic-body",
   display: "swap",
 });
@@ -45,6 +47,8 @@ const playfairDisplay = Playfair_Display({
   weight: ["400", "500", "600", "700"],
   variable: "--font-english-display",
   display: "swap",
+  // Only English `.font-display` headings use it — don't preload it on every page
+  preload: false,
 });
 
 // Pre-render both locales statically — without this every request renders
@@ -100,6 +104,8 @@ export default async function LocaleLayout({
       <head>
         {/* Sets html[data-device] (ios | android | mobile | desktop) before first paint */}
         <script dangerouslySetInnerHTML={{ __html: DEVICE_BOOT_SCRIPT }} />
+        {/* Once-per-session CSS splash: html.no-splash on repeat visits */}
+        <script dangerouslySetInnerHTML={{ __html: SPLASH_BOOT_SCRIPT }} />
       </head>
       <body
         className={`${khalidArt.variable} ${poppins.variable} ${tajawal.variable} ${playfairDisplay.variable} antialiased`}
