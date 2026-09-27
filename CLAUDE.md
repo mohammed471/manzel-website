@@ -235,6 +235,12 @@ Colour stock is reduced to `available: boolean` by the API (products with `track
 - Formula: built area = plot × coverage% × floors; turnkey = built × level rate — **all-inclusive** (kitchens, bathrooms, rooms; nothing is added on top); structure/finishing = share% of turnkey; plans = ($100 up to 200 m² of plot + $1 per m² above) × usd_rate; interior design = built × $/m² × usd_rate; exterior (facade) = facade length (linear m) × IQD/m. `usd_rate` is the internal app's exchange-rate setting (fallback 1500). Surcharges (renovation 15% / outside Kirkuk 10% / commercial 15%) multiply every line and are not shown as a note. Company/supervision fee (`company_fee`, 10%) is added as its own line on the execution cost only (turnkey/structure/finishing, after surcharges) — not on plans/design. Lines ≥5M round to 100k, smaller to 5k; totals in millions, small lines in thousands, Western digits.
 - Single page, live update: sticky result card on lg, fixed `.calc-mobile-bar` above `MobileBottomNav` on mobile (globals.css lifts the floating buttons). "Accurate quote" form posts to `/contact`, landing in the internal app's contact messages.
 
+### Area Calculator (`/area-calculator`)
+
+- Factors (pieces per box per tile size, waste %, adhesive/grout kg per m² and bag sizes, silicone per wet room, paint coverage/coats, door/window m², bathroom/kitchen tiling heights) live under `area` in the same internal-app pricing JSON / admin page and `/api/public/calculator-pricing`; defaults mirrored in `DEFAULT_PRICING.area`.
+- `src/lib/areaCalculator.ts` `computeArea()`: rooms (type room/bathroom/kitchen, L×W, doors, windows) → floor tiles (all floors), wall tiles (bathroom: perimeter × tile height − openings; kitchen: perimeter × backsplash height), adhesive/grout bags on tiled area, silicone per wet room, paint = ceilings + untiled walls − openings. Zero divisors fall back to defaults.
+- Each material links to the catalogue: the page matches the porcelain category and its size subcategory ("60*60", "60 في 120 سم" → `60x60`, `60x120`) and the adhesives subcategory by name; paint links to a search. Shared UI (`Section`, `Segmented`, `OptionCard`, `OfferForm`) is in `src/components/calc/CalcUI.tsx`.
+
 ### Products Catalogue (`/products`)
 
 - The page fetches **all** products once (`getProducts()`, ISR-cached, ~200 KB) and filters / searches / paginates in `src/lib/catalog.ts` — no per-filter API calls, so filters never wait on Render's cold start.

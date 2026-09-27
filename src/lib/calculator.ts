@@ -23,7 +23,28 @@ export interface CalculatorPricing {
   facade_iqd_per_m: number; // per linear metre of facade
   company_fee: number; // % of execution cost (turnkey/structure/finishing), shown as its own line
   surcharges: Record<Surcharge, number>; // % added to the total
+  area: AreaFactors; // area & quantities calculator
   usd_rate: number; // IQD per USD — the internal app's exchange-rate setting
+}
+
+export const TILE_SIZES = ["60x60", "60x120", "80x80", "120x120", "30x60", "25x40"] as const;
+export type TileSize = (typeof TILE_SIZES)[number];
+
+/** Quantity factors for the area calculator — edited in the internal app. */
+export interface AreaFactors {
+  waste_pct: number;
+  tile_pieces_per_box: Record<TileSize, number>;
+  adhesive_kg_per_m2: number;
+  adhesive_bag_kg: number;
+  grout_kg_per_m2: number;
+  grout_bag_kg: number;
+  silicone_tubes_per_wet_room: number;
+  paint_m2_per_gallon: number;
+  paint_coats: number;
+  door_m2: number;
+  window_m2: number;
+  bathroom_tile_height: number;
+  kitchen_tile_height: number;
 }
 
 export const LEVELS: Level[] = ["economy", "mid", "luxury"];
@@ -41,6 +62,21 @@ export const DEFAULT_PRICING: CalculatorPricing = {
   facade_iqd_per_m: 25_000,
   company_fee: 10,
   surcharges: { renovation: 15, outside_kirkuk: 10, commercial: 15 },
+  area: {
+    waste_pct: 10,
+    tile_pieces_per_box: { "60x60": 4, "60x120": 2, "80x80": 2, "120x120": 1, "30x60": 8, "25x40": 15 },
+    adhesive_kg_per_m2: 5,
+    adhesive_bag_kg: 25,
+    grout_kg_per_m2: 0.5,
+    grout_bag_kg: 5,
+    silicone_tubes_per_wet_room: 2,
+    paint_m2_per_gallon: 12,
+    paint_coats: 2,
+    door_m2: 2,
+    window_m2: 1.8,
+    bathroom_tile_height: 2.4,
+    kitchen_tile_height: 1.2,
+  },
   usd_rate: 1500,
 };
 
