@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { useDevice } from "@/lib/device";
@@ -18,6 +18,15 @@ import { useDevice } from "@/lib/device";
 //    (two concurrent decodes exceed iOS Safari's media budget).
 //  - Constrained devices (Save-Data, low memory, low-end Android) get the
 //    poster only.
+//  - The video is only attached after the window `load` event, so its download
+//    never competes with the page's own scripts, fonts and images on a slow phone.
+function subscribeLoad(onChange: () => void) {
+  window.addEventListener("load", onChange);
+  return () => window.removeEventListener("load", onChange);
+}
+const pageLoaded = () => document.readyState === "complete";
+const notLoadedOnServer = () => false;
+
 export default function HeroVideo() {
   const device = useDevice();
   // Editable from the internal app («الموقع» → الصور)
@@ -27,7 +36,8 @@ export default function HeroVideo() {
   const [playing, setPlaying] = useState(false);
   const [failed, setFailed] = useState(false);
 
-  const useVideo = device !== null && !device.constrained && !failed;
+  const loaded = useSyncExternalStore(subscribeLoad, pageLoaded, notLoadedOnServer);
+  const useVideo = loaded && device !== null && !device.constrained && !failed;
 
   useEffect(() => {
     if (!useVideo) return;

@@ -15,7 +15,9 @@ export default function ScrollVideoSection() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [activeSlide, setActiveSlide] = useState(0);
   const [videoReady, setVideoReady] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
+  // null until measured on the client — the server HTML must not carry the 1MB desktop
+  // scrub video (autoPlay made phones download it before hydration switched them to mobile)
+  const [isMobile, setIsMobile] = useState<boolean | null>(null);
 
   // Smooth scrubbing refs (desktop only)
   const targetTimeRef = useRef(0);
@@ -72,7 +74,7 @@ export default function ScrollVideoSection() {
 
   // ── Desktop: pause video once decodable so the scrub loop owns playback ──
   useEffect(() => {
-    if (isMobile) return;
+    if (isMobile !== false) return;
 
     const video = videoRef.current;
     if (!video) return;
@@ -125,7 +127,7 @@ export default function ScrollVideoSection() {
 
   // ── Draw frame on `seeked` event — only draws when frame is actually decoded (desktop only) ──
   useEffect(() => {
-    if (!videoReady || isMobile) return;
+    if (!videoReady || isMobile !== false) return;
 
     const video = videoRef.current;
     const canvas = canvasRef.current;
@@ -174,7 +176,7 @@ export default function ScrollVideoSection() {
 
   // ── On-demand smooth animation loop — desktop only; iOS can't seek without a gesture ──
   useEffect(() => {
-    if (!videoReady || isMobile) return;
+    if (!videoReady || isMobile !== false) return;
 
     const video = videoRef.current;
     if (!video) return;
@@ -215,7 +217,7 @@ export default function ScrollVideoSection() {
 
   // ── On scroll → update target time and start loop if idle (desktop only) ──
   useMotionValueEvent(scrollYProgress, "change", (latest) => {
-    if (isMobile) return;
+    if (isMobile !== false) return;
 
     const video = videoRef.current;
     if (!video || !videoReady || !video.duration) return;
@@ -337,7 +339,7 @@ export default function ScrollVideoSection() {
               dozens of frames and the scrub stutters */}
           <video
             ref={videoRef}
-            src="/furniture-scrub.mp4"
+            src={isMobile === false ? "/furniture-scrub.mp4" : undefined}
             muted
             playsInline
             autoPlay
