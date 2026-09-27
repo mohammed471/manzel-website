@@ -1,13 +1,13 @@
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import {
   getCategories as getPortfolioCategories,
   getProjects,
   getProjectImageUrl,
 } from "@/lib/portfolio";
-import { getTestimonials, getTestimonialImageUrl } from "@/lib/testimonials";
+import { getTestimonials } from "@/lib/testimonials";
 
 // Data loader for the homepage sections.
-// Portfolio data is file-based, so nothing here depends on the Flask API.
+// Projects and testimonials come from the internal app (with bundled fallbacks).
 export async function getHomeData() {
   const allProjects = await getProjects();
   const tStats = await getTranslations("stats");
@@ -32,15 +32,7 @@ export async function getHomeData() {
 
   const featuredProjects = allProjects.filter((p) => p.featured);
 
-  const testimonialData = getTestimonials().map((item) => ({
-    id: item.id,
-    name: item.name,
-    role: item.role,
-    location: item.location,
-    rating: item.rating,
-    text: item.text,
-    imageUrl: item.image ? getTestimonialImageUrl(item.image) : null,
-  }));
+  const testimonialData = await getTestimonials(await getLocale());
 
   const stats = [
     { numberText: tStats("products_count"), label: tStats("products_label") },

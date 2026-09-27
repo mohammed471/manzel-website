@@ -131,7 +131,7 @@ src/
 ├── lib/
 │   ├── api.ts              (Flask API calls for products, categories, contact, client-side search)
 │   ├── portfolio.ts        (Portfolio data helpers — reads from projects.json)
-│   ├── about.ts            (About page data helpers — reads from about.json)
+│   ├── about.ts            (getAboutContent(locale) — internal app, fallback about.json)
 │   └── utils.ts            (formatPrice, cn)
 ├── messages/
 │   ├── ar.json             (Arabic translations)
@@ -232,10 +232,11 @@ Colour stock is reduced to `available: boolean` by the API (products with `track
 
 ### Website management in the internal app («الموقع» menu, admin only)
 
-- Sidebar group «الموقع» (`blueprints/website_admin.py`, `NAV_WEBSITE` in base.html): لوحة الموقع (site URL, publish key, «انشر الآن»), مشاريع المعرض (CRUD + images / YouTube videos / before-after pairs; tables `website_projects`, `website_project_media`), حاسبات الموقع, رسائل التواصل. Phase 2 adds النصوص والعناوين (90 marketing texts, AR+EN, catalogue generated from the translation files into `core/db/website_texts_catalog.py`), معلومات التواصل, الصور الرئيسية. Phase 3 (testimonials, About) will land here too.
+- Sidebar group «الموقع» (`blueprints/website_admin.py`, `NAV_WEBSITE` in base.html): لوحة الموقع (site URL, publish key, «انشر الآن»), مشاريع المعرض (CRUD + images / YouTube videos / before-after pairs; tables `website_projects`, `website_project_media`), حاسبات الموقع, رسائل التواصل. Phase 2 adds النصوص والعناوين (90 marketing texts, AR+EN, catalogue generated from the translation files into `core/db/website_texts_catalog.py`), معلومات التواصل, الصور الرئيسية. Phase 3 adds آراء العملاء and صفحة من نحن (timeline / team / values) — flat items with `<field>_ar` / `<field>_en`, stored in `settings.website_sections` (`core/db/website_sections.py`, shared row editor `templates/_website_rows.html`). The About story/mission/vision and section headings are in النصوص والعناوين.
 - Portfolio functions in `src/lib/portfolio.ts` are **async** (`getProjects`, `getProject`, `getFeaturedProjects`, `getProjectsByCategory`); categories stay static. Images are full URLs (ImgBB / `/api/public/website/media/…`) or `/portfolio/…` site paths — `getProjectImageUrl` passes both through. An empty list from a healthy API is respected (no fallback resurrection).
 - «انشر الآن» → `POST {site}/api/revalidate` with header `x-revalidate-secret` (= env `REVALIDATE_SECRET` on the website host = «مفتاح النشر» in the app) → `revalidateTag(SITE_CONTENT_TAG)` + `revalidatePath("/", "layout")`. All API fetches carry the `site-content` tag (`src/lib/cacheTags.ts` — kept separate so client bundles don't pull portfolio data).
 - **Texts / contact / images overrides:** `src/lib/siteContent.ts` fetches `/api/public/website/content` (`{texts:{ar,en}:{"ns.key": text}, site:{…}}`, ISR 1h, tag site-content) and `getSiteMessages(locale)` merges it over the bundled translation files — used by BOTH `src/i18n/request.ts` and `[locale]/layout.tsx`. Only existing string keys are overridden. Contact details and main images live in the `site` namespace (`site.phone_1`, `site.whatsapp`, `site.email`, `site.facebook`, `site.instagram`, `site.map_url`, `site.map_embed`, `site.hero_image`, `site.products_image`) — **never hardcode them**; use `t("site.…")` / `telHref()`.
+- **Testimonials / About lists** arrive in the same content response as `sections: {testimonials, timeline, team, values}`. `getTestimonials(locale)` (`src/lib/testimonials.ts`) and `getAboutContent(locale)` (`src/lib/about.ts`) are **async** and localize with `localized(item, field, locale)` (blank English → Arabic). `sections` missing (API down / older API) → `src/data/testimonials.json` / `about.json` + `about.*_N_*` translation keys. An emptied list is respected: the testimonials band / About section is hidden. Value icons: `iconMap` in the About page must match `VALUE_ICONS` in the internal app.
 - GlobalSearch reads projects from `/api/portfolio-index` (cached route) instead of bundling projects.json.
 - Tests: `npm test` (vitest) — `src/__tests__/portfolio.test.ts` covers API / empty-list / fallback / image URLs.
 

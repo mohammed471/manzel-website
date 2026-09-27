@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import ar from "@/messages/ar.json";
-import { applyOverrides, telHref } from "@/lib/siteContent";
+import { applyOverrides, localized, parseSections, telHref } from "@/lib/siteContent";
 
 describe("applyOverrides (texts & contact from the internal app)", () => {
   it("returns the bundled messages when the API is unreachable", () => {
@@ -42,5 +42,28 @@ describe("telHref", () => {
   it("converts Iraqi local numbers to international tel links", () => {
     expect(telHref("0773 768 5000")).toBe("tel:+9647737685000");
     expect(telHref("+964 773 768 5000")).toBe("tel:+9647737685000");
+  });
+});
+
+describe("sections (testimonials & About lists from the internal app)", () => {
+  it("is null for an older API without sections, so the bundled data is used", () => {
+    expect(parseSections(undefined)).toBeNull();
+  });
+
+  it("keeps empty lists (a section emptied in the app stays hidden) and drops junk items", () => {
+    expect(parseSections({ testimonials: [], team: [null, 3, { name_ar: "علي" }] })).toEqual({
+      testimonials: [],
+      timeline: [],
+      team: [{ name_ar: "علي" }],
+      values: [],
+    });
+  });
+
+  it("falls back to Arabic when the English field is blank", () => {
+    const item = { title_ar: "الجودة", title_en: "  ", year: "2018" };
+    expect(localized(item, "title", "en")).toBe("الجودة");
+    expect(localized({ ...item, title_en: "Quality" }, "title", "en")).toBe("Quality");
+    expect(localized(item, "year", "en")).toBe("2018");
+    expect(localized(item, "missing", "ar")).toBe("");
   });
 });

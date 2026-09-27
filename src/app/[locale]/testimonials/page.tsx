@@ -3,7 +3,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import Image from "next/image";
 import AnimatedSection from "@/components/AnimatedSection";
 import PageHero from "@/components/ui/PageHero";
-import { getTestimonials, getTestimonialImageUrl } from "@/lib/testimonials";
+import { getTestimonials } from "@/lib/testimonials";
 
 export async function generateMetadata({
   params,
@@ -32,7 +32,7 @@ export default async function TestimonialsPage({
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations("testimonials");
-  const testimonials = getTestimonials();
+  const testimonials = await getTestimonials(locale);
 
   return (
     <>
@@ -76,10 +76,10 @@ export default async function TestimonialsPage({
 
                     {/* Author */}
                     <div className="flex items-center gap-3 mt-auto">
-                      {testimonial.image ? (
+                      {testimonial.imageUrl ? (
                         <div className="relative w-12 h-12 rounded-full overflow-hidden flex-shrink-0">
                           <Image
-                            src={getTestimonialImageUrl(testimonial.image)}
+                            src={testimonial.imageUrl}
                             alt={testimonial.name}
                             fill
                             className="object-cover"
@@ -98,7 +98,7 @@ export default async function TestimonialsPage({
                           {testimonial.name}
                         </p>
                         <p className="text-text-secondary text-xs">
-                          {testimonial.role} &middot; {testimonial.location}
+                          {[testimonial.role, testimonial.location].filter(Boolean).join(" · ")}
                         </p>
                       </div>
                     </div>

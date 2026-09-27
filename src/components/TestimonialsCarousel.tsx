@@ -170,7 +170,7 @@ export default function TestimonialsCarousel({ testimonials }: TestimonialsCarou
                   <div>
                     <p className="font-semibold text-text-primary text-sm">{testimonial.name}</p>
                     <p className="text-text-secondary text-xs">
-                      {testimonial.role} &middot; {testimonial.location}
+                      {[testimonial.role, testimonial.location].filter(Boolean).join(" · ")}
                     </p>
                   </div>
                 </div>
