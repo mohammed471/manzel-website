@@ -311,7 +311,7 @@ Font selection is automatic via `[lang="ar"]` and `[lang="en"]` CSS selectors in
 ## SEO & Structured Data
 
 - All pages have `generateMetadata()` with OpenGraph tags
-- `metadataBase` set in layout.tsx (currently `https://example.com` — update for production)
+- Site address `https://www.manzel360.com` lives in `src/lib/siteUrl.ts` (`SITE_URL`) — used by `metadataBase`, sitemap, robots, JSON-LD and share links. Never hardcode the domain.
 - Home page includes JSON-LD: Organization + LocalBusiness (HomeAndConstructionBusiness)
 - `/sitemap.xml` auto-generated from portfolio data + static routes (both locales, hreflang)
 - `/robots.txt` allows all crawlers

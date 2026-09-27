@@ -16,6 +16,7 @@ import {
 } from "@/lib/portfolio";
 import BeforeAfterSlider from "@/components/BeforeAfterSlider";
 import ShareButtons from "@/components/ShareButtons";
+import { SITE_URL } from "@/lib/siteUrl";
 
 interface PageProps {
   params: Promise<{ locale: string; category: string; project: string }>;
@@ -280,7 +281,7 @@ export default async function ProjectDetailPage({ params }: PageProps) {
                   </a>
 
                   <ShareButtons
-                    url={`https://example.com/${locale}/portfolio/${categoryId}/${projectId}`}
+                    url={`${SITE_URL}/${locale}/portfolio/${categoryId}/${projectId}`}
                     title={project.name}
                     description={project.description?.slice(0, 100)}
                   />

@@ -1,7 +1,8 @@
 import type { MetadataRoute } from "next";
 import { getCategories, getProjects } from "@/lib/portfolio";
+import { SITE_URL } from "@/lib/siteUrl";
 
-const BASE_URL = "https://example.com";
+const BASE_URL = SITE_URL;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const locales = ["ar", "en"];

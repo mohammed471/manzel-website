@@ -17,6 +17,7 @@ import SplashScreen from "@/components/SplashScreen";
 import Analytics from "@/components/Analytics";
 import { DEVICE_BOOT_SCRIPT } from "@/lib/deviceScript";
 import { getSiteMessages } from "@/lib/siteContent";
+import { SITE_URL } from "@/lib/siteUrl";
 
 
 const khalidArt = localFont({
@@ -62,7 +63,7 @@ export async function generateMetadata({
 
   const isAR = locale === "ar";
   return {
-    metadataBase: new URL("https://example.com"),
+    metadataBase: new URL(SITE_URL),
     title: t("home_title"),
     description: t("home_description"),
     keywords: t("home_keywords"),

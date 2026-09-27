@@ -10,6 +10,7 @@ import TrustSection from "@/components/home/TrustSection";
 import ToolsGrid from "@/components/home/ToolsGrid";
 import VisitSection from "@/components/home/VisitSection";
 import ClosingCTA from "@/components/home/ClosingCTA";
+import { SITE_URL } from "@/lib/siteUrl";
 
 export default async function Home({
   params,
@@ -32,8 +33,8 @@ export default async function Home({
               "@context": "https://schema.org",
               "@type": "Organization",
               name: locale === "ar" ? "منزل" : "Manzel",
-              url: "https://example.com",
-              logo: "https://example.com/images/logo-dark.png",
+              url: SITE_URL,
+              logo: `${SITE_URL}/images/logo-dark.png`,
               contactPoint: {
                 "@type": "ContactPoint",
                 telephone: telHref(tSite("phone_1")).slice(4),
@@ -48,7 +49,7 @@ export default async function Home({
               "@context": "https://schema.org",
               "@type": "HomeAndConstructionBusiness",
               name: locale === "ar" ? "منزل" : "Manzel",
-              image: "https://example.com/images/logo-dark.png",
+              image: `${SITE_URL}/images/logo-dark.png`,
               address: {
                 "@type": "PostalAddress",
                 addressLocality: locale === "ar" ? "كركوك" : "Kirkuk",
