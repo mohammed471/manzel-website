@@ -1,7 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import {
   getCategories as getPortfolioCategories,
-  getFeaturedProjects,
   getProjects,
   getProjectImageUrl,
 } from "@/lib/portfolio";
@@ -10,13 +9,15 @@ import { getTestimonials, getTestimonialImageUrl } from "@/lib/testimonials";
 // Data loader for the homepage sections.
 // Portfolio data is file-based, so nothing here depends on the Flask API.
 export async function getHomeData() {
+  const allProjects = await getProjects();
   const tStats = await getTranslations("stats");
   const tPortfolio = await getTranslations("portfolio");
   const tFaq = await getTranslations("faq");
 
   // Service cards = portfolio categories, each with the cover of its first project
   const services = getPortfolioCategories().map((category) => {
-    const first = getProjects(category.id)[0];
+    const inCategory = allProjects.filter((p) => p.category === category.id);
+    const first = inCategory[0];
     const key = category.id.replace(/-/g, "_");
     return {
       id: category.id,
@@ -25,11 +26,11 @@ export async function getHomeData() {
       imageUrl: first
         ? getProjectImageUrl(category.id, first.id, first.images[0] || "cover.jpg")
         : null,
-      count: getProjects(category.id).length,
+      count: inCategory.length,
     };
   });
 
-  const featuredProjects = getFeaturedProjects();
+  const featuredProjects = allProjects.filter((p) => p.featured);
 
   const testimonialData = getTestimonials().map((item) => ({
     id: item.id,

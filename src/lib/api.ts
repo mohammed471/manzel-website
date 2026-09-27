@@ -1,4 +1,5 @@
 import { DEFAULT_PRICING, normalizePricing, type CalculatorPricing } from "@/lib/calculator";
+import { SITE_CONTENT_TAG } from "@/lib/cacheTags";
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
@@ -70,7 +71,7 @@ export async function getProducts(params?: {
     if (params?.subcategory_id) searchParams.set("subcategory_id", String(params.subcategory_id));
     if (params?.search) searchParams.set("search", params.search);
     const res = await fetch(`${API}/api/public/products?${searchParams}`, {
-      next: { revalidate: 3600 },
+      next: { revalidate: 3600, tags: [SITE_CONTENT_TAG] },
       signal: AbortSignal.timeout(READ_TIMEOUT_MS),
     });
     if (!res.ok) return [];
@@ -104,7 +105,7 @@ export async function searchProductsClient(query: string): Promise<Product[]> {
 export async function getProduct(id: number): Promise<Product | null> {
   try {
     const res = await fetch(`${API}/api/public/products/${id}`, {
-      next: { revalidate: 3600 },
+      next: { revalidate: 3600, tags: [SITE_CONTENT_TAG] },
       signal: AbortSignal.timeout(READ_TIMEOUT_MS),
     });
     if (!res.ok) return null;
@@ -120,7 +121,7 @@ export async function getProduct(id: number): Promise<Product | null> {
 export async function getCalculatorPricing(): Promise<CalculatorPricing> {
   try {
     const res = await fetch(`${API}/api/public/calculator-pricing`, {
-      next: { revalidate: 3600 },
+      next: { revalidate: 3600, tags: [SITE_CONTENT_TAG] },
       signal: AbortSignal.timeout(READ_TIMEOUT_MS),
     });
     if (!res.ok) return DEFAULT_PRICING;
@@ -134,7 +135,7 @@ export async function getCalculatorPricing(): Promise<CalculatorPricing> {
 export async function getCategories(): Promise<Category[]> {
   try {
     const res = await fetch(`${API}/api/public/categories`, {
-      next: { revalidate: 3600 },
+      next: { revalidate: 3600, tags: [SITE_CONTENT_TAG] },
       signal: AbortSignal.timeout(READ_TIMEOUT_MS),
     });
     if (!res.ok) return [];

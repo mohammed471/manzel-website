@@ -53,7 +53,7 @@ export default async function CategoryPage({ params }: PageProps) {
 
   const t = await getTranslations("portfolio");
   const tCommon = await getTranslations("common");
-  const projects = getProjects(categoryId);
+  const projects = await getProjects(categoryId);
   const translatedName = t(`cat_${categoryId.replace(/-/g, "_")}`);
   const translatedDesc = t(`cat_${categoryId.replace(/-/g, "_")}_desc`);
   const first = projects[0];

@@ -3,7 +3,7 @@ import { getCategories, getProjects } from "@/lib/portfolio";
 
 const BASE_URL = "https://example.com";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const locales = ["ar", "en"];
 
   // Static routes
@@ -52,7 +52,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   }
 
   // Portfolio project routes
-  const projects = getProjects();
+  const projects = await getProjects();
   for (const project of projects) {
     entries.push({
       url: `${BASE_URL}/ar/portfolio/${project.category}/${project.id}`,

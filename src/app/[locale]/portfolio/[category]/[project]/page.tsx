@@ -22,7 +22,7 @@ interface PageProps {
 }
 
 export async function generateStaticParams() {
-  return getProjects().map((p) => ({
+  return (await getProjects()).map((p) => ({
     category: p.category,
     project: p.id,
   }));
@@ -33,7 +33,7 @@ export async function generateMetadata({
 }: PageProps): Promise<Metadata> {
   const { locale, project: projectId } = await params;
   const tMeta = await getTranslations({ locale, namespace: "metadata" });
-  const project = getProject(projectId);
+  const project = await getProject(projectId);
 
   if (!project) {
     return { title: tMeta("project_not_found") };
@@ -53,7 +53,7 @@ export async function generateMetadata({
 
 export default async function ProjectDetailPage({ params }: PageProps) {
   const { locale, category: categoryId, project: projectId } = await params;
-  const project = getProject(projectId);
+  const project = await getProject(projectId);
   const category = getCategory(categoryId);
 
   if (!project || !category || project.category !== categoryId) {

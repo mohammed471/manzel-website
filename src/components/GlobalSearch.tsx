@@ -8,7 +8,6 @@ import { Search, X, Package, Briefcase, FileText, Clock, Trash2 } from "lucide-r
 import { cn } from "@/lib/utils";
 import { searchProductsClient } from "@/lib/api";
 import type { Product } from "@/lib/api";
-import projectsData from "@/data/projects.json";
 import type { PortfolioProject } from "@/lib/portfolio";
 
 interface PageResult {
@@ -39,6 +38,19 @@ interface FlatResult {
   href: string;
   label: string;
   sublabel?: string;
+}
+
+// Fetched once per page load, on the first search.
+let projectIndex: Promise<PortfolioProject[]> | null = null;
+function loadProjectIndex(): Promise<PortfolioProject[]> {
+  projectIndex ??= fetch("/api/portfolio-index")
+    .then((r) => (r.ok ? r.json() : { projects: [] }))
+    .then((d) => (Array.isArray(d.projects) ? d.projects : []))
+    .catch(() => {
+      projectIndex = null; // retry next time
+      return [];
+    });
+  return projectIndex;
 }
 
 export default function GlobalSearch() {
@@ -123,8 +135,8 @@ export default function GlobalSearch() {
       const products = await searchProductsClient(q);
       setProductResults(products.slice(0, MAX_RESULTS_PER_GROUP));
 
-      // Portfolio: local filter
-      const allProjects = projectsData.projects as unknown as PortfolioProject[];
+      // Portfolio: filter the site's cached project index (managed in the internal app)
+      const allProjects = await loadProjectIndex();
       const filtered = allProjects.filter(
         (p) =>
           p.name.toLowerCase().includes(q) ||

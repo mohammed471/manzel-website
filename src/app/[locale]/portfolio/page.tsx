@@ -38,11 +38,11 @@ export default async function PortfolioPage({
   setRequestLocale(locale);
   const t = await getTranslations("portfolio");
   const categories = getCategories();
-  const allProjects = getProjects();
+  const allProjects = await getProjects();
 
   const categoryCards = categories.map((c) => {
     const key = c.id.replace(/-/g, "_");
-    const projects = getProjects(c.id);
+    const projects = allProjects.filter((p) => p.category === c.id);
     const first = projects[0];
     return {
       id: c.id,

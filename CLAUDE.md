@@ -163,9 +163,10 @@ src/
 Flask API (localhost:5000) → src/lib/api.ts → Server Component → props → Client Component
 ```
 
-**Portfolio (File-based):**
+**Portfolio (internal app, «الموقع» → مشاريع المعرض):**
 ```
-src/data/projects.json → src/lib/portfolio.ts → Server Component → props → Client Component
+Flask /api/public/website/portfolio → src/lib/portfolio.ts (async, ISR 1h, tag site-content) → Server Component
+                                   ↳ fallback: src/data/projects.json (only when the API is unreachable)
 ```
 
 - Product pages call typed fetch functions from `api.ts` (ISR, `revalidate: 3600`)
@@ -228,6 +229,14 @@ All endpoints under `NEXT_PUBLIC_API_URL/api/public/` — used for **products on
 
 **NEVER exposed by API:** price_cost, price_wholesale, quantity, min_quantity, customer_phone, contract_value, financial data.
 Colour stock is reduced to `available: boolean` by the API (products with `track_stock=0` are always available) — never a quantity. Deployments without the colours change omit `colors`; `mapProduct` treats that as `[]`.
+
+### Website management in the internal app («الموقع» menu, admin only)
+
+- Sidebar group «الموقع» (`blueprints/website_admin.py`, `NAV_WEBSITE` in base.html): لوحة الموقع (site URL, publish key, «انشر الآن»), مشاريع المعرض (CRUD + images / YouTube videos / before-after pairs; tables `website_projects`, `website_project_media`), حاسبات الموقع, رسائل التواصل. Phase 2 (texts/headers, contact info, hero images) and phase 3 (testimonials, About) will land here too.
+- Portfolio functions in `src/lib/portfolio.ts` are **async** (`getProjects`, `getProject`, `getFeaturedProjects`, `getProjectsByCategory`); categories stay static. Images are full URLs (ImgBB / `/api/public/website/media/…`) or `/portfolio/…` site paths — `getProjectImageUrl` passes both through. An empty list from a healthy API is respected (no fallback resurrection).
+- «انشر الآن» → `POST {site}/api/revalidate` with header `x-revalidate-secret` (= env `REVALIDATE_SECRET` on the website host = «مفتاح النشر» in the app) → `revalidateTag(SITE_CONTENT_TAG)` + `revalidatePath("/", "layout")`. All API fetches carry the `site-content` tag (`src/lib/cacheTags.ts` — kept separate so client bundles don't pull portfolio data).
+- GlobalSearch reads projects from `/api/portfolio-index` (cached route) instead of bundling projects.json.
+- Tests: `npm test` (vitest) — `src/__tests__/portfolio.test.ts` covers API / empty-list / fallback / image URLs.
 
 ### Cost Calculator (`/calculator`)
 
@@ -398,7 +407,7 @@ The Flask app MUST be running for:
 - `npm run dev` (fetches product/category data on each request)
 - Product images (served from Flask)
 
-Portfolio pages do NOT depend on Flask — data is in `src/data/projects.json`, images in `public/portfolio/`.
+Portfolio pages read from Flask but fall back to `src/data/projects.json` (images of the original projects stay in `public/portfolio/`).
 
 If Flask is down, product pages render with empty/fallback content (no crash). Portfolio pages work normally.
 
