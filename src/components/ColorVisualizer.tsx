@@ -319,6 +319,7 @@ const MINI_POLYGONS: Record<ZoneId, string> = {
 
 export default function ColorVisualizer() {
   const t = useTranslations("color_picker");
+  const tSite = useTranslations("site");
   const searchParams = useSearchParams();
 
   // Parse initial colors from URL params
@@ -383,7 +384,7 @@ export default function ColorVisualizer() {
       rightWall: findColorInfo(zoneColors.right_wall, t),
       backWall: findColorInfo(zoneColors.back_wall, t),
     });
-    return `https://wa.me/9647737685000?text=${encodeURIComponent(message)}`;
+    return `https://wa.me/${tSite("whatsapp")}?text=${encodeURIComponent(message)}`;
   }, [zoneColors, t]);
 
   const currentFamily = COLOR_FAMILIES.find((f) => f.id === activeFamily)!;

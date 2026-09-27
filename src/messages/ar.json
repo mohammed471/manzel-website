@@ -660,5 +660,17 @@
     "link_copied": "تم نسخ الرابط!",
     "whatsapp_cta": "أعجبك التصميم؟ تواصل معنا",
     "whatsapp_message": "مرحباً، أعجبني هذا التنسيق اللوني لغرفتي:\nالجدار الأيسر: {leftWall}\nالجدار الأيمن: {rightWall}\nالجدار الخلفي: {backWall}\nأرغب بمناقشة تنفيذه."
+  },
+  "site": {
+    "phone_1": "0773 768 5000",
+    "phone_2": "0773 768 6000",
+    "whatsapp": "9647737685000",
+    "email": "contact.manzel@gmail.com",
+    "facebook": "https://www.facebook.com/Manzel.Design.House/",
+    "instagram": "https://www.instagram.com/manzel.design.house/",
+    "map_url": "https://maps.app.goo.gl/qajNmbhiGRAPTasa7",
+    "map_embed": "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d800!2d44.3956904!3d35.4502682!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x1554d700122bb0a7%3A0x3b4027df0fd30a83!2sManzel%20Design%20House!5e1!3m2!1sar!2siq",
+    "hero_image": "/images/hero-poster.jpg",
+    "products_image": "/images/products-hero.webp"
   }
 }

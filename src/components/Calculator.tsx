@@ -33,7 +33,6 @@ import {
 } from "@/lib/calculator";
 import { cn } from "@/lib/utils";
 
-const WHATSAPP = "9647737685000";
 
 const BUILD_OPTIONS: { key: BuildService; icon: LucideIcon }[] = [
   { key: "turnkey", icon: Building2 },
@@ -58,6 +57,7 @@ const MAX_AREA = 2000;
 // Prices come from the internal app (see lib/calculator.ts).
 export default function Calculator({ pricing }: { pricing: CalculatorPricing }) {
   const t = useTranslations("calculator");
+  const tSite = useTranslations("site");
 
   const [build, setBuild] = useState<BuildService | null>("turnkey");
   const [designServices, setDesignServices] = useState<DesignService[]>([]);
@@ -87,7 +87,7 @@ export default function Calculator({ pricing }: { pricing: CalculatorPricing }) 
     t("sum_level", { level: t(`level_${level}`) }),
     [commercial ? t("commercial") : t("residential"), renovation ? t("renovation") : t("new_build"), outsideKirkuk ? t("outside_kirkuk") : t("in_kirkuk")].join(" — "),
   ].join("\n");
-  const whatsappUrl = `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(t("whatsapp_message", { summary, range: rangeText }))}`;
+  const whatsappUrl = `https://wa.me/${tSite("whatsapp")}?text=${encodeURIComponent(t("whatsapp_message", { summary, range: rangeText }))}`;
 
   const toggleDesign = (s: DesignService) =>
     setDesignServices((prev) => (prev.includes(s) ? prev.filter((x) => x !== s) : [...prev, s]));

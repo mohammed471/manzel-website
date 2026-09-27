@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import { useDevice } from "@/lib/device";
 
 // Full-bleed hero background.
@@ -19,6 +20,8 @@ import { useDevice } from "@/lib/device";
 //    poster only.
 export default function HeroVideo() {
   const device = useDevice();
+  // Editable from the internal app («الموقع» → الصور)
+  const poster = useTranslations("site")("hero_image");
   const containerRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const [playing, setPlaying] = useState(false);
@@ -50,7 +53,7 @@ export default function HeroVideo() {
   return (
     <div ref={containerRef} className="absolute inset-0 overflow-hidden bg-primary-dark">
       <Image
-        src="/images/hero-poster.jpg"
+        src={poster}
         alt=""
         fill
         priority
@@ -65,7 +68,7 @@ export default function HeroVideo() {
           loop
           playsInline
           preload="metadata"
-          poster="/images/hero-poster.jpg"
+          poster={poster}
           src="/hero_video.mp4"
           onPlaying={() => setPlaying(true)}
           onError={() => setFailed(true)}

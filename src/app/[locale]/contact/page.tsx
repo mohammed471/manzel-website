@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Link } from "@/i18n/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { telHref } from "@/lib/siteContent";
 import AnimatedSection from "@/components/AnimatedSection";
 import PageHero from "@/components/ui/PageHero";
 import ContactForm from "@/components/ContactForm";
@@ -32,6 +33,7 @@ export default async function ContactPage({
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations("contact");
+  const tSite = await getTranslations("site");
 
   return (
     <>
@@ -69,11 +71,11 @@ export default async function ContactPage({
                     <div>
                       <h3 className="font-semibold text-text-primary mb-1">{t("phone")}</h3>
                       <a
-                        href="tel:+9647737685000"
+                        href={telHref(tSite("phone_1"))}
                         className="text-text-secondary hover:text-primary transition-colors"
                         dir="ltr"
                       >
-                        0773 768 5000
+                        {tSite("phone_1")}
                       </a>
                     </div>
                   </div>
@@ -88,13 +90,13 @@ export default async function ContactPage({
                     <div>
                       <h3 className="font-semibold text-text-primary mb-1">{t("whatsapp")}</h3>
                       <a
-                        href="https://wa.me/9647737685000"
+                        href={`https://wa.me/${tSite("whatsapp")}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-text-secondary hover:text-success transition-colors"
                         dir="ltr"
                       >
-                        0773 768 5000
+                        {tSite("phone_1")}
                       </a>
                     </div>
                   </div>
@@ -109,11 +111,11 @@ export default async function ContactPage({
                     <div>
                       <h3 className="font-semibold text-text-primary mb-1">{t("email_label")}</h3>
                       <a
-                        href="mailto:contact.manzel@gmail.com"
+                        href={`mailto:${tSite("email")}`}
                         className="text-text-secondary hover:text-primary transition-colors"
                         dir="ltr"
                       >
-                        contact.manzel@gmail.com
+                        {tSite("email")}
                       </a>
                     </div>
                   </div>
@@ -129,7 +131,7 @@ export default async function ContactPage({
                     <div>
                       <h3 className="font-semibold text-text-primary mb-1">{t("address")}</h3>
                       <a
-                        href="https://maps.app.goo.gl/qajNmbhiGRAPTasa7"
+                        href={tSite("map_url")}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-text-secondary hover:text-primary transition-colors"
@@ -181,7 +183,7 @@ export default async function ContactPage({
           <AnimatedSection>
             <div className="rounded-xl overflow-hidden shadow-sm border border-secondary-dark/40">
               <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d800!2d44.3956904!3d35.4502682!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x1554d700122bb0a7%3A0x3b4027df0fd30a83!2sManzel%20Design%20House!5e1!3m2!1sar!2siq"
+                src={tSite("map_embed")}
                 width="100%"
                 height="450"
                 style={{ border: 0 }}

@@ -61,6 +61,8 @@ export default async function ProjectDetailPage({ params }: PageProps) {
   }
 
   const t = await getTranslations("portfolio");
+
+  const tSite = await getTranslations("site");
   const tCommon = await getTranslations("common");
   const translatedCatName = t(`cat_${categoryId.replace(/-/g, "_")}`);
 
@@ -262,7 +264,7 @@ export default async function ProjectDetailPage({ params }: PageProps) {
 
                   {/* WhatsApp Button */}
                   <a
-                    href={`https://wa.me/9647737685000?text=${whatsappMessage}`}
+                    href={`https://wa.me/${tSite("whatsapp")}?text=${whatsappMessage}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center justify-center gap-2 w-full mt-6 bg-[#25D366] hover:bg-[#20BD5A] text-white font-semibold px-5 py-3 rounded-xl transition-colors text-sm"

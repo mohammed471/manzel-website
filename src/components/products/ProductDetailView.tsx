@@ -7,13 +7,13 @@ import type { Product } from "@/lib/api";
 import { cn } from "@/lib/utils";
 import ProductImage from "@/components/products/ProductImage";
 
-const WHATSAPP = "9647737685000";
 
 // Product media + colour picker + inquiry. Selecting a colour swaps the photo
 // (when that colour has one), shows its availability, and puts the colour in
 // the WhatsApp message.
 export default function ProductDetailView({ product }: { product: Product }) {
   const t = useTranslations("products");
+  const tSite = useTranslations("site");
   const { colors } = product;
   const [selectedId, setSelectedId] = useState<number | null>(
     (colors.find((c) => c.available) ?? colors[0])?.id ?? null,
@@ -24,7 +24,7 @@ export default function ProductDetailView({ product }: { product: Product }) {
   const message = selected
     ? t("whatsapp_message_color", { name: product.name, color: selected.name })
     : t("whatsapp_message", { name: product.name });
-  const whatsappUrl = `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(message)}`;
+  const whatsappUrl = `https://wa.me/${tSite("whatsapp")}?text=${encodeURIComponent(message)}`;
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-12">

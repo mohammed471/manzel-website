@@ -38,6 +38,7 @@ interface ProductsPageProps {
 
 export default async function ProductsPage({ searchParams }: ProductsPageProps) {
   const t = await getTranslations("products");
+  const tSite = await getTranslations("site");
   const sp = await searchParams;
 
   // One cached request each; filtering/search/pagination happen in lib/catalog.
@@ -73,7 +74,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
 
   return (
     <>
-      <PageHero imageUrl="/images/products-hero.webp" title={t("hero_heading")} description={t("hero_tagline")} compact>
+      <PageHero imageUrl={tSite("products_image")} title={t("hero_heading")} description={t("hero_tagline")} compact>
         <div className="max-w-xl">
           <Suspense fallback={<div className="h-13 rounded-full bg-white/90" />}>
             <CatalogSearch key={search ?? ""} initial={search} />

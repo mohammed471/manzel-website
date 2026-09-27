@@ -1,9 +1,6 @@
 import { getRequestConfig } from 'next-intl/server';
 import { routing } from './routing';
-import ar from '@/messages/ar.json';
-import en from '@/messages/en.json';
-
-const messagesMap: Record<string, typeof ar> = { ar, en };
+import { getSiteMessages } from '@/lib/siteContent';
 
 export default getRequestConfig(async ({ requestLocale }) => {
   let locale = await requestLocale;
@@ -14,6 +11,7 @@ export default getRequestConfig(async ({ requestLocale }) => {
 
   return {
     locale,
-    messages: messagesMap[locale] ?? ar,
+    // Bundled translations + edits from the internal app («الموقع» → النصوص)
+    messages: await getSiteMessages(locale),
   };
 });

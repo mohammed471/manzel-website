@@ -11,6 +11,7 @@ export default async function ServicesBento({ services }: { services: HomeServic
   const t = await getTranslations("home");
   const tNav = await getTranslations("nav");
   const tPortfolio = await getTranslations("portfolio");
+  const tSite = await getTranslations("site");
 
   const [s1, s2, s3, s4, s5] = services;
 
@@ -29,7 +30,7 @@ export default async function ServicesBento({ services }: { services: HomeServic
           <AnimatedSection className="col-span-2 row-span-2">
             <ImageTile
               href="/products"
-              imageUrl="/images/products-hero.webp"
+              imageUrl={tSite("products_image")}
               eyebrow={tNav("products")}
               title={t("products_card_title")}
               description={t("products_card_desc")}

@@ -16,10 +16,8 @@ import GlobalSearchLazy from "@/components/GlobalSearchLazy";
 import SplashScreen from "@/components/SplashScreen";
 import Analytics from "@/components/Analytics";
 import { DEVICE_BOOT_SCRIPT } from "@/lib/deviceScript";
-import ar from "@/messages/ar.json";
-import en from "@/messages/en.json";
+import { getSiteMessages } from "@/lib/siteContent";
 
-const messagesMap: Record<string, typeof ar> = { ar, en };
 
 const khalidArt = localFont({
   src: "../../fonts/khalid-art-bold.ttf",
@@ -93,7 +91,7 @@ export default async function LocaleLayout({
 
   setRequestLocale(locale);
 
-  const messages = messagesMap[locale] ?? ar;
+  const messages = await getSiteMessages(locale);
   const isRTL = locale === "ar";
 
   return (

@@ -4,15 +4,13 @@ import AnimatedSection from "@/components/AnimatedSection";
 import SectionHeader from "@/components/ui/SectionHeader";
 import FAQ from "@/components/FAQ";
 import { buttonClasses } from "@/components/ui/Button";
+import { telHref } from "@/lib/siteContent";
 
-const MAP_EMBED =
-  "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d800!2d44.3956904!3d35.4502682!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x1554d700122bb0a7%3A0x3b4027df0fd30a83!2sManzel%20Design%20House!5e1!3m2!1sar!2siq";
-const MAP_LINK = "https://maps.app.goo.gl/qajNmbhiGRAPTasa7";
-const PHONE = "+9647737685000";
 
 async function MapCard() {
   const t = await getTranslations("home");
   const tContact = await getTranslations("contact");
+  const tSite = await getTranslations("site");
 
   const rows = [
     { icon: MapPin, label: tContact("address"), value: tContact("address_value") },
@@ -23,7 +21,7 @@ async function MapCard() {
     <div className="overflow-hidden rounded-3xl bg-white border border-secondary-dark/40">
       <div className="relative h-64 md:h-72 bg-secondary">
         <iframe
-          src={MAP_EMBED}
+          src={tSite("map_embed")}
           className="absolute inset-0 w-full h-full"
           style={{ border: 0 }}
           loading="lazy"
@@ -46,11 +44,11 @@ async function MapCard() {
           ))}
         </ul>
         <div className="mt-6 flex flex-wrap gap-2">
-          <a href={MAP_LINK} target="_blank" rel="noopener noreferrer" className={buttonClasses("primary", "md")}>
+          <a href={tSite("map_url")} target="_blank" rel="noopener noreferrer" className={buttonClasses("primary", "md")}>
             <Navigation className="w-4 h-4" />
             {t("directions")}
           </a>
-          <a href={`tel:${PHONE}`} className={buttonClasses("outline", "md")}>
+          <a href={telHref(tSite("phone_1"))} className={buttonClasses("outline", "md")}>
             <Phone className="w-4 h-4" />
             {t("call_us")}
           </a>

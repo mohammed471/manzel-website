@@ -33,7 +33,6 @@ export interface MaterialLinks {
   paint: Href;
 }
 
-const WHATSAPP = "9647737685000";
 const MAX_ROOMS = 20;
 const ROOM_TYPES: RoomType[] = ["room", "bathroom", "kitchen"];
 
@@ -44,6 +43,7 @@ const fmt = (n: number) => formatNumber(Math.round(n * 100) / 100);
 // Factors come from the internal app; each material links to its products.
 export default function AreaCalculator({ factors, links }: { factors: AreaFactors; links: MaterialLinks }) {
   const t = useTranslations("area_calculator");
+  const tSite = useTranslations("site");
   const nextId = useRef(4);
   const [rooms, setRooms] = useState<Room[]>([
     { id: "1", type: "room", length: 4, width: 4, doors: 1, windows: 1 },
@@ -139,7 +139,7 @@ export default function AreaCalculator({ factors, links }: { factors: AreaFactor
     t("sum_floor", { area: fmt(result.floorArea) }),
     ...materials.map((m) => t("sum_line", { label: m.label, value: m.value })),
   ].join("\n");
-  const whatsappUrl = `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(t("whatsapp_message", { summary }))}`;
+  const whatsappUrl = `https://wa.me/${tSite("whatsapp")}?text=${encodeURIComponent(t("whatsapp_message", { summary }))}`;
   const [offerOpen, setOfferOpen] = useState(false);
 
   return (

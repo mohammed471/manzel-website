@@ -8,12 +8,13 @@ import { trackGA4Event } from "@/lib/analytics";
 
 export default function WhatsAppButton() {
   const t = useTranslations("whatsapp");
+  const tSite = useTranslations("site");
   const pathname = usePathname();
   const [isHovered, setIsHovered] = useState(false);
 
   return (
     <motion.a
-      href="https://wa.me/9647737685000"
+      href={`https://wa.me/${tSite("whatsapp")}`}
       target="_blank"
       rel="noopener noreferrer"
       className="floating-fab fixed bottom-6 left-6 z-40 h-14 bg-[#25D366] rounded-full flex items-center shadow-lg hover:shadow-xl transition-shadow overflow-hidden"

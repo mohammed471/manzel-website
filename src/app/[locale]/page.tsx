@@ -1,5 +1,6 @@
-import { setRequestLocale } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { getHomeData } from "@/components/home/homeData";
+import { telHref } from "@/lib/siteContent";
 import ScrollVideoSection from "@/components/ScrollVideoSection";
 import HomeHero from "@/components/home/HomeHero";
 import QuickAccessBar from "@/components/home/QuickAccessBar";
@@ -18,6 +19,7 @@ export default async function Home({
   const { locale } = await params;
   setRequestLocale(locale);
   const { services, featuredProjects, testimonialData, stats, faqItems } = await getHomeData();
+  const tSite = await getTranslations("site");
 
   return (
     <div className="bg-surface">
@@ -34,12 +36,12 @@ export default async function Home({
               logo: "https://example.com/images/logo-dark.png",
               contactPoint: {
                 "@type": "ContactPoint",
-                telephone: "+964-773-768-5000",
+                telephone: telHref(tSite("phone_1")).slice(4),
                 contactType: "customer service",
               },
               sameAs: [
-                "https://www.facebook.com/Manzel.Design.House/",
-                "https://www.instagram.com/manzel.design.house/",
+                tSite("facebook"),
+                tSite("instagram"),
               ],
             },
             {
@@ -57,8 +59,8 @@ export default async function Home({
                 latitude: 35.4502682,
                 longitude: 44.3956904,
               },
-              hasMap: "https://maps.app.goo.gl/qajNmbhiGRAPTasa7",
-              telephone: "+964-773-768-5000",
+              hasMap: tSite("map_url"),
+              telephone: telHref(tSite("phone_1")).slice(4),
               openingHoursSpecification: {
                 "@type": "OpeningHoursSpecification",
                 dayOfWeek: [
