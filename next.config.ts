@@ -22,6 +22,12 @@ const nextConfig: NextConfig = {
         hostname: "i.ibb.co",
         pathname: "/**",
       },
+      // Cloudflare R2 — product, colour and website images uploaded from the app
+      {
+        protocol: "https",
+        hostname: "img.manzel360.com",
+        pathname: "/**",
+      },
     ],
   },
 };
