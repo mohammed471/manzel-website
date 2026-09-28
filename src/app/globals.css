@@ -272,6 +272,16 @@ html:is([data-device="ios"], [data-device="android"], [data-device="mobile"]) * 
   backdrop-filter: none !important;
 }
 
+/* ScrollVideoSection scroll length. Sized here, not in React, so the server HTML
+   already has each device's height and nothing jumps at hydration. Phones scrub
+   still frames over a shorter distance. Must match scrubMode() in scrubFrames.ts. */
+.scrub-section {
+  height: 500vh;
+}
+html:is([data-device="ios"], [data-device="android"], [data-device="mobile"]) .scrub-section {
+  height: 300vh;
+}
+
 /* Product photo swap when a colour is selected */
 @keyframes fade-in {
   from { opacity: 0; }
