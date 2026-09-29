@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useLocale } from "next-intl";
 import { cn } from "@/lib/utils";
+import { toDateKey } from "@/lib/dateKey";
 
 interface CalendarPickerProps {
   value: string | null;
@@ -114,7 +115,7 @@ export default function CalendarPicker({
   function handleDayClick(day: number) {
     const date = new Date(year, month, day);
     if (isDisabled(date)) return;
-    onChange(date.toISOString().split("T")[0]);
+    onChange(toDateKey(date));
   }
 
   return (

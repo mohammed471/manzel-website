@@ -15,9 +15,10 @@ function toICSDateUTC(dateStr: string, timeStr: string): string {
   const [year, month, day] = dateStr.split('-').map(Number);
   const [hours, minutes] = timeStr.split(':').map(Number);
 
-  const localDate = new Date(year, month - 1, day, hours, minutes, 0);
-  // Subtract 3 hours for Iraq (UTC+3) to get UTC
-  const utcDate = new Date(localDate.getTime() - 3 * 60 * 60 * 1000);
+  // Build from UTC fields, never `new Date(y, m, d, h)`: that reads the
+  // browser's zone, which in Iraq is already UTC+3 — subtracting 3 again
+  // put every appointment three hours early.
+  const utcDate = new Date(Date.UTC(year, month - 1, day, hours - 3, minutes, 0));
 
   const y = utcDate.getUTCFullYear();
   const m = pad(utcDate.getUTCMonth() + 1);
