@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import Image from "next/image";
+import Image from "@/components/SiteImage";
 import { useLocale } from "next-intl";
 
 interface TestimonialItem {

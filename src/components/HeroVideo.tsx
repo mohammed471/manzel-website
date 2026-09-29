@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
-import Image from "next/image";
+import Image from "@/components/SiteImage";
 import { useTranslations } from "next-intl";
 import { useDevice } from "@/lib/device";
 

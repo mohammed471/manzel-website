@@ -1,19 +1,28 @@
 import type { DeviceProfile } from "@/lib/device";
 
-// Phones scrub the furniture section through still frames drawn on a canvas instead of
-// seeking a video: iOS seeks stuttered the scroll and need a playing video, which Low
-// Power Mode refuses. Frames are every 2nd frame of the original from frame 4 (the first
-// 4 are blank white), 640px WebP — regenerate with the command in CLAUDE.md.
+// The furniture section scrubs still frames drawn on a canvas, not a video: iOS seeks
+// stuttered the scroll and need a playing video (Low Power Mode refuses), and at the same
+// quality WebP stills are half the size of an all-intra video (1440: 1.9 MB vs 4 MB — the
+// old 960px desktop video looked blurry). Frames are every 2nd frame of the original from
+// frame 4 (the first 4 are blank white), square WebP in one folder per size: 1080 for
+// phones/tablets (sharp on a 3× phone; square so tablets' square box isn't cropped), 1440
+// (the original's size) for desktop. Regenerate with the command in CLAUDE.md.
 export const SCRUB_FRAME_COUNT = 59;
+export const SCRUB_FRAME_SIZES = [1080, 1440] as const;
+export type ScrubFrameSize = (typeof SCRUB_FRAME_SIZES)[number];
 
 // The finished room (last frame). Shown before JavaScript, while frames load, and to
 // phones that get no frames — never the blank first frame.
 export const SCRUB_POSTER_URL = "/images/furniture-poster.jpg";
 
-export type ScrubMode = "pending" | "video" | "frames" | "poster";
+export type ScrubMode = "pending" | "frames" | "poster";
 
-export function scrubFrameUrl(index: number): string {
-  return `/scrub-frames/${String(index).padStart(3, "0")}.webp`;
+export function scrubFrameUrl(index: number, size: ScrubFrameSize): string {
+  return `/scrub-frames/${size}/${String(index).padStart(3, "0")}.webp`;
+}
+
+export function scrubFrameSize(device: DeviceProfile | null): ScrubFrameSize {
+  return device?.kind === "desktop" ? 1440 : 1080;
 }
 
 export function frameForProgress(progress: number, count: number): number {
@@ -43,6 +52,7 @@ export function nearestLoadedFrame(target: number, loaded: readonly boolean[]): 
 
 export function scrubMode(device: DeviceProfile | null): ScrubMode {
   if (!device) return "pending";
-  if (device.kind === "desktop") return "video";
+  // A low-memory desktop still has the bandwidth and memory for frames; phones don't
+  if (device.kind === "desktop") return "frames";
   return device.constrained ? "poster" : "frames";
 }

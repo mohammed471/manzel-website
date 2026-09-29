@@ -1,33 +1,23 @@
 "use client";
 
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState } from "react";
 import { motion, useScroll, useTransform, useMotionValueEvent } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { useDevice } from "@/lib/device";
-import { SCRUB_POSTER_URL, scrubMode } from "@/lib/scrubFrames";
+import { SCRUB_POSTER_URL, scrubFrameSize, scrubMode } from "@/lib/scrubFrames";
 import { useFrameScrub } from "@/lib/useFrameScrub";
 
 export default function ScrollVideoSection() {
   const t = useTranslations("scrollVideo");
-  // desktop → video scrub · phones → still-frame scrub · Save-Data/low-end phones → poster.
-  // "pending" until hydration, so the server HTML is the same for every device (poster, no
-  // video src — phones must never download the 1MB desktop scrub video). The section's
-  // height comes from CSS per html[data-device], so nothing jumps when React takes over.
-  const mode = scrubMode(useDevice());
+  // Still frames on every device (1440px desktop, 1080px phones/tablets) · Save-Data/low-end
+  // phones → poster only. "pending" until hydration, so the server HTML is the same for every
+  // device (poster, no frames). The section's height comes from CSS per html[data-device], so
+  // nothing jumps when React takes over.
+  const device = useDevice();
+  const mode = scrubMode(device);
   const containerRef = useRef<HTMLElement>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [activeSlide, setActiveSlide] = useState(0);
-  const [videoReady, setVideoReady] = useState(false);
-
-  // Smooth scrubbing refs (desktop only)
-  const targetTimeRef = useRef(0);
-  const currentTimeRef = useRef(0);
-  const rafRef = useRef<number>(0);
-  const lastSeekRef = useRef(0);
-  const pendingDrawRef = useRef(false);
-  const isAnimatingRef = useRef(false);
-  const animateFnRef = useRef<() => void>(() => {});
 
   const slides = [
     {
@@ -52,147 +42,14 @@ export default function ScrollVideoSection() {
     offset: ["start start", "end end"],
   });
 
-  // ── Phones: still frames drawn on the canvas (no video seeking, no autoplay needed) ──
-  const framesReady = useFrameScrub(mode === "frames", scrollYProgress, containerRef, canvasRef);
-  const canvasVisible = mode === "video" ? videoReady : framesReady;
+  // ── Still frames drawn on the canvas by scroll position (no video, no seeking, no autoplay) ──
+  const canvasVisible = useFrameScrub(mode === "frames", scrubFrameSize(device), scrollYProgress, containerRef, canvasRef);
 
-  // ── Desktop: pause video once decodable so the scrub loop owns playback ──
-  useEffect(() => {
-    if (mode !== "video") return;
-
-    const video = videoRef.current;
-    if (!video) return;
-
-    const markReady = () => {
-      if (video.readyState >= 2) {
-        video.pause();
-        setVideoReady(true);
-      }
-    };
-
-    if (video.readyState >= 2) {
-      markReady();
-    } else {
-      video.addEventListener("loadeddata", markReady);
-      video.addEventListener("canplay", markReady);
-    }
-
-    return () => {
-      video.removeEventListener("loadeddata", markReady);
-      video.removeEventListener("canplay", markReady);
-    };
-  }, [mode]);
-
-  // ── Draw frame on `seeked` event — only draws when frame is actually decoded (desktop only) ──
-  useEffect(() => {
-    if (!videoReady || mode !== "video") return;
-
-    const video = videoRef.current;
-    const canvas = canvasRef.current;
-    if (!video || !canvas) return;
-
-    const ctx = canvas.getContext("2d", { alpha: false });
-    if (!ctx) return;
-
-    // Match canvas to video dimensions
-    const updateSize = () => {
-      canvas.width = video.videoWidth || 1920;
-      canvas.height = video.videoHeight || 1080;
-    };
-    updateSize();
-
-    const drawFrame = () => {
-      try {
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-        pendingDrawRef.current = false;
-      } catch {
-        // Frame not ready — skip
-      }
-    };
-
-    // Use requestVideoFrameCallback if available (much smoother)
-    const rvfc = (video as HTMLVideoElement & { requestVideoFrameCallback?: (cb: () => void) => number })
-      .requestVideoFrameCallback;
-    if (rvfc) {
-      const onVideoFrame = () => {
-        drawFrame();
-        rvfc.call(video, onVideoFrame);
-      };
-      rvfc.call(video, onVideoFrame);
-    } else {
-      // Fallback: draw on seeked event
-      video.addEventListener("seeked", drawFrame);
-    }
-
-    // Draw the initial frame
-    drawFrame();
-
-    return () => {
-      video.removeEventListener("seeked", drawFrame);
-    };
-  }, [videoReady, mode]);
-
-  // ── On-demand smooth animation loop — desktop only; iOS can't seek without a gesture ──
-  useEffect(() => {
-    if (!videoReady || mode !== "video") return;
-
-    const video = videoRef.current;
-    if (!video) return;
-
-    const LERP_SPEED = 0.12;
-    const THRESHOLD = 0.005;
-    const MIN_SEEK_INTERVAL = 40;
-
-    const animate = () => {
-      const diff = targetTimeRef.current - currentTimeRef.current;
-
-      if (Math.abs(diff) > THRESHOLD) {
-        currentTimeRef.current += diff * LERP_SPEED;
-
-        const now = performance.now();
-        if (now - lastSeekRef.current >= MIN_SEEK_INTERVAL) {
-          video.currentTime = currentTimeRef.current;
-          lastSeekRef.current = now;
-          pendingDrawRef.current = true;
-        }
-        rafRef.current = requestAnimationFrame(animate);
-      } else {
-        // Snap to final position and stop the loop — no wasted frames on idle
-        currentTimeRef.current = targetTimeRef.current;
-        video.currentTime = currentTimeRef.current;
-        pendingDrawRef.current = true;
-        isAnimatingRef.current = false;
-      }
-    };
-
-    animateFnRef.current = animate;
-
-    return () => {
-      cancelAnimationFrame(rafRef.current);
-      isAnimatingRef.current = false;
-    };
-  }, [videoReady, mode]);
-
-  // ── On scroll → track the active slide; on desktop also update the target time and
-  //    start the loop if idle ──
+  // ── On scroll → track the active slide ──
   useMotionValueEvent(scrollYProgress, "change", (latest) => {
     if (latest < 0.33) setActiveSlide(0);
     else if (latest < 0.63) setActiveSlide(1);
     else setActiveSlide(2);
-
-    if (mode !== "video") return;
-
-    const video = videoRef.current;
-    if (!video || !videoReady || !video.duration) return;
-
-    targetTimeRef.current = latest * video.duration;
-
-    // Start the animation loop only when there's something to animate
-    if (!isAnimatingRef.current && animateFnRef.current) {
-      isAnimatingRef.current = true;
-      cancelAnimationFrame(rafRef.current);
-      rafRef.current = requestAnimationFrame(animateFnRef.current);
-    }
   });
 
   // ── Text slides — appear OVER the video ──
@@ -243,22 +100,7 @@ export default function ScrollVideoSection() {
             className="absolute inset-0 w-full h-full object-cover"
           />
 
-          {/* Video element (desktop only) — hidden, feeds the canvas; autoPlay forces data load so canplay
-              fires, then we pause. furniture-scrub.mp4 MUST stay all-intra (ffmpeg -g 1) — sparse keyframes
-              make every seek decode dozens of frames and the scrub stutters */}
-          {mode === "video" && (
-            <video
-              ref={videoRef}
-              src="/furniture-scrub.mp4"
-              muted
-              playsInline
-              autoPlay
-              preload="metadata"
-              className="absolute w-0 h-0 opacity-0 pointer-events-none"
-            />
-          )}
-
-          {/* Canvas for smooth frame rendering — video frames on desktop, still frames on phones */}
+          {/* Canvas the still frames are drawn on */}
           <canvas
             ref={canvasRef}
             className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ${

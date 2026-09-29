@@ -274,7 +274,7 @@ html:is([data-device="ios"], [data-device="android"], [data-device="mobile"]) * 
 
 /* ScrollVideoSection scroll length. Sized here, not in React, so the server HTML
    already has each device's height and nothing jumps at hydration. Phones scrub
-   still frames over a shorter distance. Must match scrubMode() in scrubFrames.ts. */
+   still frames over a shorter distance. Must match the device kinds in scrubFrames.ts. */
 .scrub-section {
   height: 500vh;
 }

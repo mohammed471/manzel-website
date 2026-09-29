@@ -4,7 +4,9 @@ import path from "path";
 import sharp from "sharp";
 import {
   SCRUB_FRAME_COUNT,
+  SCRUB_FRAME_SIZES,
   SCRUB_POSTER_URL,
+  scrubFrameSize,
   frameForProgress,
   frameLoadOrder,
   nearestLoadedFrame,
@@ -64,9 +66,17 @@ describe("scrubMode (which experience each device gets)", () => {
     expect(scrubMode(null)).toBe("pending");
   });
 
-  it("keeps the video scrub on desktop, even a low-memory one", () => {
-    expect(scrubMode({ kind: "desktop", isTouch: false, constrained: false })).toBe("video");
-    expect(scrubMode({ kind: "desktop", isTouch: true, constrained: true })).toBe("video");
+  it("scrubs frames on desktop too, even a low-memory one", () => {
+    expect(scrubMode({ kind: "desktop", isTouch: false, constrained: false })).toBe("frames");
+    expect(scrubMode({ kind: "desktop", isTouch: true, constrained: true })).toBe("frames");
+  });
+
+  // The 960px desktop video and 640px phone frames both looked blurry
+  it("gives desktop the full-size 1440 frames and phones/tablets 1080", () => {
+    expect(scrubFrameSize({ kind: "desktop", isTouch: false, constrained: false })).toBe(1440);
+    expect(scrubFrameSize({ kind: "ios", isTouch: true, constrained: false })).toBe(1080);
+    expect(scrubFrameSize({ kind: "android", isTouch: true, constrained: false })).toBe(1080);
+    expect(scrubFrameSize({ kind: "mobile", isTouch: true, constrained: false })).toBe(1080);
   });
 
   it("scrubs image frames on phones and tablets instead of seeking a video", () => {
@@ -81,12 +91,34 @@ describe("scrubMode (which experience each device gets)", () => {
 });
 
 describe("scrub assets in public/", () => {
-  it("ships exactly SCRUB_FRAME_COUNT frames at the URLs the component requests", () => {
+  it.each(SCRUB_FRAME_SIZES)("ships exactly SCRUB_FRAME_COUNT %i frames at the URLs the component requests", (size) => {
     for (let i = 0; i < SCRUB_FRAME_COUNT; i++) {
-      expect(fs.existsSync(publicFile(scrubFrameUrl(i))), scrubFrameUrl(i)).toBe(true);
+      expect(fs.existsSync(publicFile(scrubFrameUrl(i, size))), scrubFrameUrl(i, size)).toBe(true);
     }
-    const dir = path.dirname(publicFile(scrubFrameUrl(0)));
+    const dir = path.dirname(publicFile(scrubFrameUrl(0, size)));
     expect(fs.readdirSync(dir).filter((f) => f.endsWith(".webp"))).toHaveLength(SCRUB_FRAME_COUNT);
+  });
+
+  // Blurry frames were the bug; every frame must match the canvas size it is drawn at
+  it.each(SCRUB_FRAME_SIZES)("ships every %i frame at exactly that size", async (size) => {
+    for (let i = 0; i < SCRUB_FRAME_COUNT; i++) {
+      const { width, height } = await sharp(publicFile(scrubFrameUrl(i, size))).metadata();
+      expect([width, height], scrubFrameUrl(i, size)).toEqual([size, size]);
+    }
+  });
+
+  // Phones: 1.5 MB (the site's video budget). Desktop: 2 MB — still half a 1440 all-intra video.
+  it.each([
+    [1080, 1.5],
+    [1440, 2],
+  ] as const)("keeps the %i frame set within %s MB", (size, mb) => {
+    let total = 0;
+    for (let i = 0; i < SCRUB_FRAME_COUNT; i++) total += fs.statSync(publicFile(scrubFrameUrl(i, size))).size;
+    expect(total).toBeLessThanOrEqual(mb * 1024 * 1024);
+  });
+
+  it("no longer ships the desktop scrub video (desktop scrubs frames)", () => {
+    expect(fs.existsSync(publicFile("/furniture-scrub.mp4"))).toBe(false);
   });
 
   // The reported bug: the fallback image was the video's first frame — plain white on a
@@ -97,7 +129,7 @@ describe("scrub assets in public/", () => {
   });
 
   it("starts the frame sequence on furniture, not on the blank opening frames", async () => {
-    const { channels } = await sharp(publicFile(scrubFrameUrl(0))).stats();
+    const { channels } = await sharp(publicFile(scrubFrameUrl(0, 1080))).stats();
     expect(channels[0].min).toBeLessThan(100);
   });
 });

@@ -3,17 +3,21 @@
 import Image from "next/image";
 import { type ComponentProps, useState } from "react";
 import { cn } from "@/lib/utils";
+import { loaderFor } from "@/lib/imageLoader";
 
 export default function BlurImage(props: ComponentProps<typeof Image>) {
   const [loaded, setLoaded] = useState(false);
   const { className, onLoad, alt, ...rest } = props;
   const src = typeof props.src === "string" ? props.src : "";
-  const isExternal = src.startsWith("http://") || src.startsWith("https://");
+  const loader = loaderFor(src);
+  // Other external hosts (old ImgBB links) load as-is; R2 images get their thumb via the loader
+  const isExternal = !loader && (src.startsWith("http://") || src.startsWith("https://"));
 
   return (
     <Image
       {...rest}
       alt={alt}
+      loader={loader}
       unoptimized={isExternal}
       className={cn(
         "transition-all duration-500 ease-out",

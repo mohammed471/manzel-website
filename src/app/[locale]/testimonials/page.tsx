@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import Image from "next/image";
+import Image from "@/components/SiteImage";
 import AnimatedSection from "@/components/AnimatedSection";
 import PageHero from "@/components/ui/PageHero";
 import { getTestimonials } from "@/lib/testimonials";

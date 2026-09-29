@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import { getProductImageUrl } from "@/lib/api";
+import { loaderFor } from "@/lib/imageLoader";
 import { cn } from "@/lib/utils";
 import { CategoryIcon } from "@/components/products/categoryIcon";
 
@@ -29,6 +30,8 @@ export default function ProductImage({
   className?: string;
 }) {
   const [failedSrc, setFailedSrc] = useState<string | null>(null);
+  // An R2 image whose thumb failed is retried full-size before giving up on it
+  const [fullOnlySrc, setFullOnlySrc] = useState<string | null>(null);
 
   if (!image || failedSrc === image) {
     return (
@@ -46,15 +49,21 @@ export default function ProductImage({
     );
   }
 
+  const src = getProductImageUrl(image);
+  const loader = loaderFor(src);
+  const fullOnly = fullOnlySrc === image;
+
   return (
     <Image
-      key={image}
-      src={getProductImageUrl(image)}
+      key={fullOnly ? `${image}#full` : image}
+      src={src}
       alt={alt}
       fill
       priority={priority}
       sizes={sizes}
-      onError={() => setFailedSrc(image)}
+      loader={fullOnly ? undefined : loader}
+      unoptimized={fullOnly}
+      onError={() => (loader && !fullOnly ? setFullOnlySrc(image) : setFailedSrc(image))}
       className={className}
     />
   );

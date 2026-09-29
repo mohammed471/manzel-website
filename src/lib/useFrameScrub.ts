@@ -8,13 +8,13 @@ import {
   frameLoadOrder,
   nearestLoadedFrame,
   scrubFrameUrl,
+  type ScrubFrameSize,
 } from "@/lib/scrubFrames";
 
-const FRAME_SIZE = 640;
 const CONCURRENT_LOADS = 4;
 
 /**
- * Phone scrubbing: draws the still frame for the current scroll position on the canvas.
+ * Scroll scrubbing: draws the still frame for the current scroll position on the canvas.
  * Frames start downloading when the section is one screen away, a coarse pass first, and
  * the closest loaded frame stands in until the exact one arrives. Nothing is drawn until a
  * frame has loaded (or ever, if all fail), so the poster underneath stays visible.
@@ -22,6 +22,7 @@ const CONCURRENT_LOADS = 4;
  */
 export function useFrameScrub(
   enabled: boolean,
+  size: ScrubFrameSize,
   progress: MotionValue<number>,
   sectionRef: RefObject<HTMLElement | null>,
   canvasRef: RefObject<HTMLCanvasElement | null>,
@@ -34,8 +35,8 @@ export function useFrameScrub(
     const canvas = canvasRef.current;
     const ctx = canvas?.getContext("2d", { alpha: false });
     if (!section || !canvas || !ctx) return;
-    canvas.width = FRAME_SIZE;
-    canvas.height = FRAME_SIZE;
+    canvas.width = size;
+    canvas.height = size;
 
     const images: HTMLImageElement[] = [];
     const loaded: boolean[] = new Array(SCRUB_FRAME_COUNT).fill(false);
@@ -48,7 +49,7 @@ export function useFrameScrub(
       raf = 0;
       const index = nearestLoadedFrame(target, loaded);
       if (index < 0 || index === drawn) return;
-      ctx.drawImage(images[index], 0, 0, FRAME_SIZE, FRAME_SIZE);
+      ctx.drawImage(images[index], 0, 0, size, size);
       if (drawn < 0) setHasFrame(true);
       drawn = index;
     };
@@ -70,7 +71,7 @@ export function useFrameScrub(
         const index = order[next++];
         const img = new Image();
         img.decoding = "async";
-        img.src = scrubFrameUrl(index);
+        img.src = scrubFrameUrl(index, size);
         images[index] = img;
         active++;
         img
@@ -106,7 +107,7 @@ export function useFrameScrub(
       unsubscribe();
       cancelAnimationFrame(raf);
     };
-  }, [enabled, progress, sectionRef, canvasRef]);
+  }, [enabled, size, progress, sectionRef, canvasRef]);
 
   return hasFrame;
 }

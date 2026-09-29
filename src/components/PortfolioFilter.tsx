@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import Image from "next/image";
+import Image from "@/components/SiteImage";
 import { Link } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 

@@ -7,7 +7,7 @@ import TrustSection from "@/components/home/TrustSection";
 import ClosingCTA from "@/components/home/ClosingCTA";
 import Timeline from "@/components/Timeline";
 import { getAboutContent } from "@/lib/about";
-import Image from "next/image";
+import Image from "@/components/SiteImage";
 
 export async function generateMetadata({
   params,

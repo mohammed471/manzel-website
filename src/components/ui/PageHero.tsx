@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import Image from "next/image";
+import Image from "@/components/SiteImage";
 import { cn } from "@/lib/utils";
 
 // Shared top-of-page header for inner pages: an inset, rounded green panel
