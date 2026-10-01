@@ -3,7 +3,7 @@
 import type { ReactNode } from "react";
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { Check, type LucideIcon } from "lucide-react";
+import { Check, ChevronDown, Info, type LucideIcon } from "lucide-react";
 import { submitContact } from "@/lib/api";
 import { cn } from "@/lib/utils";
 
@@ -92,6 +92,38 @@ export function Section({ title, hint, children }: { title: string; hint?: strin
       </div>
       {children}
     </section>
+  );
+}
+
+// Plain-language help for visitors who don't know building terms. Native
+// <details>, so it works without JavaScript and on touch. Each line is
+// "term: explanation" (the term is bolded) or a plain sentence.
+export function Explain({ label, lines, className }: { label: string; lines: string[]; className?: string }) {
+  return (
+    <details className={cn("group rounded-2xl bg-secondary-light px-4 py-3", className)}>
+      <summary className="flex cursor-pointer list-none items-center gap-2 text-sm font-bold text-primary [&::-webkit-details-marker]:hidden">
+        <Info className="w-4 h-4 shrink-0" />
+        {label}
+        <ChevronDown className="ms-auto w-4 h-4 shrink-0 transition-transform group-open:rotate-180" />
+      </summary>
+      <ul className="mt-3 space-y-2 text-sm leading-relaxed text-text-secondary">
+        {lines.map((line) => {
+          const cut = line.indexOf(":");
+          return (
+            <li key={line}>
+              {cut > 0 ? (
+                <>
+                  <strong className="text-text-primary">{line.slice(0, cut)}:</strong>
+                  {line.slice(cut + 1)}
+                </>
+              ) : (
+                line
+              )}
+            </li>
+          );
+        })}
+      </ul>
+    </details>
   );
 }
 

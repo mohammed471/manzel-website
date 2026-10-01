@@ -23,8 +23,16 @@ export interface CalculatorPricing {
   facade_iqd_per_m: number; // per linear metre of facade
   company_fee: number; // % of execution cost (turnkey/structure/finishing), shown as its own line
   surcharges: Record<Surcharge, number>; // % added to the total
+  duration: DurationFactors; // rough build time shown with the estimate
   area: AreaFactors; // area & quantities calculator
   usd_rate: number; // IQD per USD — the internal app's exchange-rate setting
+}
+
+/** Build-time factors — edited in the internal app. Months = base + built m² ÷ pace. */
+export interface DurationFactors {
+  structure: { base_months: number; m2_per_month: number };
+  finishing: { base_months: number; m2_per_month: number };
+  spread_pct: number; // widens the result into a range: 7 months + 25% → "7 – 9"
 }
 
 export const TILE_SIZES = ["60x60", "60x120", "80x80", "120x120", "30x60", "25x40"] as const;
@@ -62,6 +70,12 @@ export const DEFAULT_PRICING: CalculatorPricing = {
   facade_iqd_per_m: 25_000,
   company_fee: 10,
   surcharges: { renovation: 15, outside_kirkuk: 10, commercial: 15 },
+  // Owner's reference: 200 m² plot, two floors (320 m² built), turnkey = 7 – 9 months.
+  duration: {
+    structure: { base_months: 1.5, m2_per_month: 160 },
+    finishing: { base_months: 1.5, m2_per_month: 160 },
+    spread_pct: 25,
+  },
   area: {
     waste_pct: 10,
     tile_pieces_per_box: { "60x60": 4, "60x120": 2, "80x80": 2, "120x120": 1, "30x60": 8, "25x40": 15 },
@@ -161,6 +175,57 @@ export function computeEstimate(i: EstimateInputs, p: CalculatorPricing): Estima
     low: adjusted.reduce((s, l) => s + l.low, 0),
     high: adjusted.reduce((s, l) => s + l.high, 0),
   };
+}
+
+// Rough build time, from the internal app's `duration` factors. Months = fixed
+// start-up time + built area ÷ pace; turnkey is structure then finishing.
+export function estimateDuration(
+  build: BuildService | null,
+  builtArea: number,
+  d: DurationFactors,
+): { low: number; high: number } | null {
+  if (!build || builtArea <= 0) return null;
+  const months = (stage: "structure" | "finishing") => {
+    // A zero pace would give an infinite build time — fall back to the default.
+    const pace = d[stage].m2_per_month > 0 ? d[stage].m2_per_month : DEFAULT_PRICING.duration[stage].m2_per_month;
+    return d[stage].base_months + builtArea / pace;
+  };
+  const total = build === "turnkey" ? months("structure") + months("finishing") : months(build);
+  const low = Math.max(1, Math.round(total));
+  // (100 + pct) / 100 last, so 5 months + 20% is exactly 6, not 6.000000000000001 → 7.
+  return { low, high: Math.ceil((low * (100 + d.spread_pct)) / 100) };
+}
+
+export type BudgetFit = "within" | "close" | "over";
+
+/** Within = even the top of the range fits; close = only the bottom does. */
+export function budgetFit(low: number, high: number, budget: number): BudgetFit {
+  return high <= budget ? "within" : low <= budget ? "close" : "over";
+}
+
+/**
+ * Largest plot area (in `step` m² increments between min and max) whose
+ * estimate stays within the budget even at the top of its range. 0 = even the
+ * smallest plot is over budget.
+ */
+export function maxPlotAreaForBudget(
+  i: EstimateInputs,
+  p: CalculatorPricing,
+  budget: number,
+  min: number,
+  max: number,
+  step = 10,
+): number {
+  const fits = (plotArea: number) => computeEstimate({ ...i, plotArea }, p).high <= budget;
+  if (!fits(min)) return 0;
+  let lo = 0;
+  let hi = Math.floor((max - min) / step);
+  while (lo < hi) {
+    const mid = Math.ceil((lo + hi) / 2);
+    if (fits(min + mid * step)) lo = mid;
+    else hi = mid - 1;
+  }
+  return min + lo * step;
 }
 
 // Western digits in both locales — matches the rest of the site (stats, prices).

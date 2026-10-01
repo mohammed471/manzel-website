@@ -1,16 +1,20 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { OfferForm, OptionCard, Section, Segmented } from "@/components/calc/CalcUI";
+import { Explain, OfferForm, OptionCard, Section, Segmented } from "@/components/calc/CalcUI";
 import { useTranslations } from "next-intl";
 import {
   Building2,
   HardHat,
+  KeyRound,
   PaintRoller,
+  PencilRuler,
   Ruler,
   Sofa,
   Trees,
   Check,
+  Clock,
+  X,
   MessageCircle,
   CalendarCheck,
   Send,
@@ -21,10 +25,14 @@ import { Link } from "@/i18n/navigation";
 import {
   DESIGN_SERVICES,
   LEVELS,
+  budgetFit,
   computeEstimate,
+  estimateDuration,
   formatNumber,
+  maxPlotAreaForBudget,
   splitAmount,
   toMillions,
+  type BudgetFit,
   type BuildService,
   type CalculatorPricing,
   type EstimateInputs,
@@ -50,8 +58,32 @@ const LINE_LABEL: Record<string, string> = {
   company_fee: "company_fee",
 };
 
+// "Where are you starting from?" — one tap sets the services for visitors who
+// don't know which ones they need. They can still change every option below.
+const PRESETS: { key: string; icon: LucideIcon; build: BuildService | null; design: DesignService[] }[] = [
+  { key: "new", icon: KeyRound, build: "turnkey", design: ["plans"] },
+  { key: "finish", icon: PaintRoller, build: "finishing", design: [] },
+  { key: "design", icon: PencilRuler, build: null, design: ["plans", "interior_design", "exterior_design"] },
+];
+
 const MIN_AREA = 50;
 const MAX_AREA = 2000;
+const COMMON_AREAS = [100, 150, 200, 250, 300];
+const FLOOR_OPTIONS = [1, 1.5, 2, 3, 4];
+const NEXT_STEPS = [1, 2, 3];
+const FIT_STYLE: Record<BudgetFit, string> = {
+  within: "bg-success/10 text-success",
+  close: "bg-secondary text-text-primary",
+  over: "bg-accent/10 text-accent",
+};
+
+// Lists and help texts are one string with an item per line, editable in the
+// internal app — a blank line or a stray \r must not become an empty bullet.
+const textLines = (text: string) =>
+  text
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean);
 
 // Single-page cost calculator: every choice updates the estimate instantly.
 // Prices come from the internal app (see lib/calculator.ts).
@@ -68,6 +100,10 @@ export default function Calculator({ pricing }: { pricing: CalculatorPricing }) 
   const [commercial, setCommercial] = useState(false);
   const [renovation, setRenovation] = useState(false);
   const [outsideKirkuk, setOutsideKirkuk] = useState(false);
+  const [dimsOpen, setDimsOpen] = useState(false);
+  const [plotLength, setPlotLength] = useState(0);
+  const [plotWidth, setPlotWidth] = useState(0);
+  const [budgetM, setBudgetM] = useState(0); // millions of IQD, 0 = not set
 
   const inputs: EstimateInputs = { build, designServices, plotArea, facadeLength, floors, level, commercial, renovation, outsideKirkuk };
   const estimate = useMemo(
@@ -76,7 +112,22 @@ export default function Calculator({ pricing }: { pricing: CalculatorPricing }) 
     [build, designServices, plotArea, facadeLength, floors, level, commercial, renovation, outsideKirkuk, pricing],
   );
   const hasResult = estimate.lines.length > 0;
-  const rangeText = t("range_text", { low: toMillions(estimate.low), high: toMillions(estimate.high) });
+  // Design-only estimates have no range (low === high): show one number, in
+  // thousands when it is under a million, instead of "2.3 – 2.3".
+  const single = estimate.low === estimate.high ? splitAmount(estimate.high) : null;
+  const rangeText = single
+    ? t(single.unit === "m" ? "total_m" : "total_k", { value: single.text })
+    : t("range_text", { low: toMillions(estimate.low), high: toMillions(estimate.high) });
+  const duration = estimateDuration(build, estimate.builtArea, pricing.duration);
+
+  // Same project at each finish level — only construction depends on the level.
+  const levelTotals = build ? LEVELS.map((l) => ({ level: l, ...computeEstimate({ ...inputs, level: l }, pricing) })) : [];
+  const maxLevelHigh = Math.max(1, ...levelTotals.map((x) => x.high));
+
+  const budget = budgetM * 1_000_000;
+  const showBudget = budget > 0 && hasResult;
+  const budgetArea = showBudget ? maxPlotAreaForBudget(inputs, pricing, budget, MIN_AREA, MAX_AREA) : 0;
+  const budgetBuilt = computeEstimate({ ...inputs, plotArea: budgetArea }, pricing).builtArea;
 
   const lineLabel = (key: string) => t(LINE_LABEL[key], { pct: pricing.company_fee });
   const hasFacade = designServices.includes("exterior_design");
@@ -92,11 +143,39 @@ export default function Calculator({ pricing }: { pricing: CalculatorPricing }) 
   const toggleDesign = (s: DesignService) =>
     setDesignServices((prev) => (prev.includes(s) ? prev.filter((x) => x !== s) : [...prev, s]));
   const clampArea = (v: number) => Math.min(MAX_AREA, Math.max(0, Math.round(v || 0)));
+  const isPreset = (p: (typeof PRESETS)[number]) =>
+    build === p.build && designServices.length === p.design.length && p.design.every((s) => designServices.includes(s));
+  const setDims = (length: number, width: number) => {
+    setPlotLength(length);
+    setPlotWidth(width);
+    if (length > 0 && width > 0) setPlotArea(clampArea(length * width));
+  };
+  const dimInput =
+    "w-24 h-11 rounded-xl border border-secondary-dark/60 bg-white px-3 text-base font-bold text-primary tabular-nums focus:outline-none focus:border-primary";
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_380px] gap-6 lg:gap-10 items-start">
       {/* ── Options ── */}
       <div className="space-y-5 md:space-y-6">
+        <Section title={t("s_start")} hint={t("s_start_hint")}>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3" role="radiogroup" aria-label={t("s_start")}>
+            {PRESETS.map((p) => (
+              <OptionCard
+                key={p.key}
+                role="radio"
+                selected={isPreset(p)}
+                onClick={() => {
+                  setBuild(p.build);
+                  setDesignServices(p.design);
+                }}
+                icon={p.icon}
+                title={t(`start_${p.key}`)}
+                desc={t(`start_${p.key}_desc`)}
+              />
+            ))}
+          </div>
+        </Section>
+
         <Section title={t("s_services")} hint={t("s_services_hint")}>
           <p className="mb-3 text-xs font-bold text-text-secondary">{t("build_label")}</p>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3" role="radiogroup" aria-label={t("build_label")}>
@@ -145,6 +224,7 @@ export default function Calculator({ pricing }: { pricing: CalculatorPricing }) 
               <span className="basis-full text-xs text-text-secondary">{t("facade_hint")}</span>
             </div>
           )}
+          <Explain className="mt-5" label={t("explain")} lines={textLines(t("help_services"))} />
         </Section>
 
         <Section title={t("s_size")}>
@@ -176,6 +256,66 @@ export default function Calculator({ pricing }: { pricing: CalculatorPricing }) 
                 aria-label={t("plot_area")}
                 className="mt-4 w-full accent-primary cursor-pointer"
               />
+              <div className="mt-3 flex flex-wrap gap-2" role="group" aria-label={t("area_presets")}>
+                {COMMON_AREAS.map((a) => (
+                  <button
+                    key={a}
+                    type="button"
+                    aria-pressed={plotArea === a}
+                    onClick={() => setPlotArea(a)}
+                    className={cn(
+                      "h-10 rounded-full border px-4 text-sm font-bold tabular-nums transition-colors cursor-pointer",
+                      plotArea === a
+                        ? "border-primary bg-primary text-white"
+                        : "border-secondary-dark/60 bg-white text-text-secondary hover:border-primary/40 hover:text-primary",
+                    )}
+                  >
+                    {a} {t("area_unit")}
+                  </button>
+                ))}
+              </div>
+              <button
+                type="button"
+                aria-expanded={dimsOpen}
+                onClick={() => setDimsOpen(!dimsOpen)}
+                className="mt-3 text-sm font-bold text-accent underline underline-offset-4 cursor-pointer"
+              >
+                {t("area_unknown")}
+              </button>
+              {dimsOpen && (
+                <div className="mt-3 flex flex-wrap items-end gap-3 rounded-2xl bg-secondary-light px-4 py-3">
+                  <label className="block">
+                    <span className="text-xs font-bold text-text-primary">
+                      {t("plot_length")} ({t("length_unit")})
+                    </span>
+                    <input
+                      type="number"
+                      inputMode="decimal"
+                      min={1}
+                      value={plotLength || ""}
+                      onChange={(e) => setDims(Math.max(0, Number(e.target.value) || 0), plotWidth)}
+                      className={cn(dimInput, "mt-1 block")}
+                    />
+                  </label>
+                  <span className="pb-2.5 text-lg font-bold text-text-secondary" aria-hidden="true">
+                    ×
+                  </span>
+                  <label className="block">
+                    <span className="text-xs font-bold text-text-primary">
+                      {t("plot_width")} ({t("length_unit")})
+                    </span>
+                    <input
+                      type="number"
+                      inputMode="decimal"
+                      min={1}
+                      value={plotWidth || ""}
+                      onChange={(e) => setDims(plotLength, Math.max(0, Number(e.target.value) || 0))}
+                      className={cn(dimInput, "mt-1 block")}
+                    />
+                  </label>
+                  <span className="basis-full text-xs text-text-secondary">{t("area_dims_hint")}</span>
+                </div>
+              )}
             </div>
             <div>
               <p className="text-sm font-bold text-text-primary">{t("floors")}</p>
@@ -183,7 +323,7 @@ export default function Calculator({ pricing }: { pricing: CalculatorPricing }) 
                 className="mt-2"
                 value={floors}
                 onChange={setFloors}
-                options={[1, 2, 3, 4].map((n) => ({ value: n, label: String(n) }))}
+                options={FLOOR_OPTIONS.map((n) => ({ value: n, label: String(n) }))}
                 ariaLabel={t("floors")}
               />
             </div>
@@ -193,7 +333,9 @@ export default function Calculator({ pricing }: { pricing: CalculatorPricing }) 
               {t("built_area")}: {formatNumber(estimate.builtArea)} {t("area_unit")}
             </span>
             <span className="text-text-secondary">({t("built_area_hint", { coverage: pricing.coverage, floors })})</span>
+            {floors === 1.5 && <span className="basis-full text-xs text-text-secondary">{t("floors_half_hint")}</span>}
           </p>
+          <Explain className="mt-3" label={t("explain")} lines={textLines(t("help_size", { coverage: pricing.coverage }))} />
         </Section>
 
         <Section title={t("s_level")}>
@@ -216,12 +358,6 @@ export default function Calculator({ pricing }: { pricing: CalculatorPricing }) 
                     <span className="text-base font-bold">{t(`level_${l}`)}</span>
                     {selected && <Check className="w-4 h-4" strokeWidth={3} />}
                   </span>
-                  <span className={cn("mt-1 text-xs font-bold tabular-nums", selected ? "text-secondary" : "text-accent")}>
-                    {t("per_m2_range", {
-                      low: formatNumber(pricing.turnkey[l].low / 1000),
-                      high: formatNumber(pricing.turnkey[l].high / 1000),
-                    })}
-                  </span>
                   <span className={cn("mt-2 text-xs leading-relaxed", selected ? "text-white/75" : "text-text-secondary")}>
                     {t(`level_${l}_desc`)}
                   </span>
@@ -229,6 +365,44 @@ export default function Calculator({ pricing }: { pricing: CalculatorPricing }) 
               );
             })}
           </div>
+          {levelTotals.length > 0 && (
+            <div className="mt-6">
+              <p className="text-sm font-bold text-text-primary">{t("compare_title")}</p>
+              <p className="mt-0.5 text-xs text-text-secondary">{t("compare_hint")}</p>
+              <ul className="mt-3 space-y-2">
+                {levelTotals.map((x) => (
+                  <li
+                    key={x.level}
+                    className={cn(
+                      "rounded-2xl border px-4 py-3",
+                      x.level === level ? "border-primary bg-primary/[0.05]" : "border-secondary-dark/40",
+                    )}
+                  >
+                    <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
+                      <span className="text-sm font-bold text-text-primary">{t(`level_${x.level}`)}</span>
+                      <span className="text-sm font-bold text-primary tabular-nums">
+                        {t("amount_m", { value: `${toMillions(x.low)} – ${toMillions(x.high)}` })}
+                      </span>
+                    </div>
+                    <div className="mt-2 h-1.5 rounded-full bg-secondary-dark/40" aria-hidden="true">
+                      <div className="h-full rounded-full bg-primary" style={{ width: `${(x.high / maxLevelHigh) * 100}%` }} />
+                    </div>
+                    {showBudget && (
+                      <span
+                        className={cn(
+                          "mt-2 inline-block rounded-full px-2.5 py-0.5 text-xs font-bold",
+                          FIT_STYLE[budgetFit(x.low, x.high, budget)],
+                        )}
+                      >
+                        {t(`fit_${budgetFit(x.low, x.high, budget)}`)}
+                      </span>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+          <Explain className="mt-5" label={t("explain")} lines={textLines(t("help_level"))} />
         </Section>
 
         <Section title={t("s_details")}>
@@ -253,6 +427,101 @@ export default function Calculator({ pricing }: { pricing: CalculatorPricing }) 
             />
           </div>
         </Section>
+
+        <Section title={t("s_budget")} hint={t("s_budget_hint")}>
+          <div className="flex flex-wrap items-center gap-3">
+            <label htmlFor="budget" className="text-sm font-bold text-text-primary">
+              {t("budget_label")}
+            </label>
+            <input
+              id="budget"
+              type="number"
+              inputMode="decimal"
+              min={0}
+              value={budgetM || ""}
+              onChange={(e) => setBudgetM(Math.max(0, Number(e.target.value) || 0))}
+              className="w-28 h-12 rounded-xl border border-secondary-dark/60 bg-white px-3 text-lg font-bold text-primary tabular-nums focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10"
+            />
+            <span className="text-sm text-text-secondary">{t("millions")}</span>
+          </div>
+          {showBudget && (
+            <div className="mt-4 space-y-2 rounded-2xl bg-secondary-light px-4 py-3 text-sm" role="status">
+              <p>
+                <span
+                  className={cn(
+                    "inline-block rounded-full px-2.5 py-0.5 text-xs font-bold",
+                    FIT_STYLE[budgetFit(estimate.low, estimate.high, budget)],
+                  )}
+                >
+                  {t(`fit_${budgetFit(estimate.low, estimate.high, budget)}`)}
+                </span>{" "}
+                <span className="text-text-primary">{t(`budget_${budgetFit(estimate.low, estimate.high, budget)}`)}</span>
+              </p>
+              {budgetArea > 0 ? (
+                <p className="flex flex-wrap items-center gap-x-3 gap-y-2 text-text-secondary">
+                  {t("budget_max_area", { area: formatNumber(budgetArea), built: formatNumber(budgetBuilt) })}
+                  {budgetArea !== plotArea && (
+                    <button
+                      type="button"
+                      onClick={() => setPlotArea(budgetArea)}
+                      className="h-9 rounded-full border border-primary/25 px-4 text-xs font-bold text-primary transition-colors hover:border-primary hover:bg-primary/5 cursor-pointer"
+                    >
+                      {t("budget_apply")}
+                    </button>
+                  )}
+                </p>
+              ) : (
+                <p className="text-text-secondary">{t("budget_too_low")}</p>
+              )}
+            </div>
+          )}
+        </Section>
+
+        {build && (
+          <Section title={t("s_includes")} hint={t(`build_${build}`)}>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              <div>
+                <p className="text-sm font-bold text-primary">{t("includes_title")}</p>
+                <ul className="mt-2 space-y-2 text-sm text-text-primary">
+                  {textLines(t(`includes_${build}`)).map((item) => (
+                    <li key={item} className="flex items-start gap-2">
+                      <Check className="mt-0.5 w-4 h-4 shrink-0 text-success" strokeWidth={3} />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div>
+                <p className="text-sm font-bold text-accent">{t("excludes_title")}</p>
+                <ul className="mt-2 space-y-2 text-sm text-text-secondary">
+                  {textLines(t("excludes")).map((item) => (
+                    <li key={item} className="flex items-start gap-2">
+                      <X className="mt-0.5 w-4 h-4 shrink-0 text-accent" strokeWidth={3} />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+            <p className="mt-4 text-xs leading-relaxed text-text-secondary">{t("includes_note")}</p>
+          </Section>
+        )}
+
+        <Section title={t("s_next")}>
+          <ol className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            {NEXT_STEPS.map((n) => (
+              <li key={n} className="flex items-start gap-3 sm:block">
+                <span className="flex w-9 h-9 shrink-0 items-center justify-center rounded-full bg-primary text-sm font-bold text-white tabular-nums">
+                  {n}
+                </span>
+                <span className="min-w-0 sm:mt-3 sm:block">
+                  <span className="block text-sm font-bold text-text-primary">{t(`next_${n}_title`)}</span>
+                  <span className="mt-0.5 block text-xs leading-relaxed text-text-secondary">{t(`next_${n}_desc`)}</span>
+                </span>
+              </li>
+            ))}
+          </ol>
+        </Section>
       </div>
 
       {/* ── Result ── */}
@@ -260,6 +529,7 @@ export default function Calculator({ pricing }: { pricing: CalculatorPricing }) 
         <ResultCard
           hasResult={hasResult}
           estimate={estimate}
+          duration={duration}
           lineLabel={lineLabel}
           whatsappUrl={whatsappUrl}
           leadMessage={t("lead_message", { summary, range: rangeText })}
@@ -290,18 +560,21 @@ export default function Calculator({ pricing }: { pricing: CalculatorPricing }) 
 function ResultCard({
   hasResult,
   estimate,
+  duration,
   lineLabel,
   whatsappUrl,
   leadMessage,
 }: {
   hasResult: boolean;
   estimate: ReturnType<typeof computeEstimate>;
+  duration: ReturnType<typeof estimateDuration>;
   lineLabel: (key: string) => string;
   whatsappUrl: string;
   leadMessage: string;
 }) {
   const t = useTranslations("calculator");
   const [offerOpen, setOfferOpen] = useState(false);
+  const single = estimate.low === estimate.high ? splitAmount(estimate.high) : null;
 
   // "96 – 112 مليون" / "155 ألف" — one unit per line, the smaller value's unit
   // follows the larger so a range never mixes units.
@@ -319,9 +592,9 @@ function ResultCard({
         {hasResult ? (
           <>
             <p className="mt-2 text-3xl md:text-4xl font-bold tabular-nums leading-tight">
-              {toMillions(estimate.low)} – {toMillions(estimate.high)}
+              {single ? single.text : `${toMillions(estimate.low)} – ${toMillions(estimate.high)}`}
             </p>
-            <p className="mt-1 text-sm text-white/80">{t("millions")}</p>
+            <p className="mt-1 text-sm text-white/80">{t(single?.unit === "k" ? "thousands" : "millions")}</p>
           </>
         ) : (
           <p className="mt-3 text-sm text-white/80">{t("result_empty")}</p>
@@ -339,6 +612,15 @@ function ResultCard({
               </li>
             ))}
           </ul>
+          {duration && (
+            <p className="mt-3 flex items-center justify-between gap-3 rounded-2xl bg-secondary-light px-4 py-3 text-sm">
+              <span className="flex items-center gap-2 text-text-primary">
+                <Clock className="w-4 h-4 shrink-0 text-primary" />
+                {t("duration")}
+              </span>
+              <span className="shrink-0 font-bold text-primary tabular-nums">{t("duration_months", duration)}</span>
+            </p>
+          )}
         </div>
       )}
 
