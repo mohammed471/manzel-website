@@ -226,6 +226,41 @@ describe("projects from the internal app", () => {
     expect(await mod.getProjects()).toHaveLength(5);
   });
 
+  it("reads the filter fields of a project and leaves unset ones out", async () => {
+    const plan = { ...apiProject, id: "plan-200", category: "floor-plan", type: "house", area: 200,
+      frontage: 10, depth: 20, floors: 1.5, bedrooms: 4 };
+    const bare = { ...apiProject, type: "", area: 0, frontage: 0, depth: 0, floors: 0, bedrooms: 0 };
+    vi.stubGlobal("fetch", vi.fn(async () => new Response(JSON.stringify({ projects: [plan, bare] }))));
+    const mod = await import("@/lib/portfolio");
+    expect(await mod.getProject("plan-200")).toMatchObject({
+      type: "house", area: 200, frontage: 10, depth: 20, floors: 1.5, bedrooms: 4 });
+    const old = await mod.getProject("villa-kirkuk");
+    expect([old!.type, old!.area, old!.floors, old!.bedrooms]).toEqual([undefined, undefined, undefined, undefined]);
+  });
+
+  it("reads the types and area ranges the app publishes", async () => {
+    const filters = {
+      types: [{ id: "cafe", category: "interior-design", name_ar: "كافيهات", name_en: "Cafés" }, { name_ar: "بلا معرّف" }],
+      area_bounds: [200, 100, 100, "x", -5],
+    };
+    vi.stubGlobal("fetch", vi.fn(async () => new Response(JSON.stringify({ projects: [apiProject], filters }))));
+    const mod = await import("@/lib/portfolio");
+    const result = await mod.getPortfolioFilters();
+    expect(result.types.map((t) => t.id)).toEqual(["cafe"]);
+    expect(result.areaBounds).toEqual([100, 200]);
+  });
+
+  it("has no types and the default ranges when the API predates filters or is down", async () => {
+    vi.stubGlobal("fetch", vi.fn(async () => new Response(JSON.stringify({ projects: [apiProject] }))));
+    let mod = await import("@/lib/portfolio");
+    expect(await mod.getPortfolioFilters()).toEqual({ types: [], areaBounds: [100, 150, 200, 300] });
+
+    vi.resetModules();
+    vi.stubGlobal("fetch", vi.fn(async () => { throw new Error("offline"); }));
+    mod = await import("@/lib/portfolio");
+    expect(await mod.getPortfolioFilters()).toEqual({ types: [], areaBounds: [100, 150, 200, 300] });
+  });
+
   it("passes absolute and site-path image URLs through", async () => {
     const { getProjectImageUrl: url } = await import("@/lib/portfolio");
     expect(url("x", "y", "https://i.ibb.co/a.jpg")).toBe("https://i.ibb.co/a.jpg");

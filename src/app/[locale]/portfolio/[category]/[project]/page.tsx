@@ -9,10 +9,13 @@ import ProjectGallery from "@/components/ProjectGallery";
 import VideoSection from "@/components/VideoSection";
 import {
   getCategory,
+  getPortfolioFilters,
   getProject,
   getProjects,
   getProjectImageUrl,
 } from "@/lib/portfolio";
+import { projectSpecs } from "@/lib/portfolioFilters";
+import { localized } from "@/lib/siteContent";
 import BeforeAfterSlider from "@/components/BeforeAfterSlider";
 import ShareButtons from "@/components/ShareButtons";
 import { SITE_URL } from "@/lib/siteUrl";
@@ -65,6 +68,19 @@ export default async function ProjectDetailPage({ params }: PageProps) {
   const tSite = await getTranslations("site");
   const tCommon = await getTranslations("common");
   const translatedCatName = t(`cat_${categoryId.replace(/-/g, "_")}`);
+
+  // Type and specs entered in the internal app — only the ones this project has
+  const specs = projectSpecs(project, t);
+  const projectType = (await getPortfolioFilters()).types.find(
+    (type) => type.id === project.type && type.category === project.category,
+  );
+  const specRows = [
+    [t("spec_type"), projectType ? localized(projectType, "name", locale) : undefined],
+    [t(categoryId === "floor-plan" ? "spec_area_plot" : "spec_area"), specs.area],
+    [t("spec_dims"), specs.dims],
+    [t("spec_floors"), specs.floors],
+    [t("spec_bedrooms"), project.bedrooms ? String(project.bedrooms) : undefined],
+  ].filter((row): row is [string, string] => Boolean(row[1]));
 
   // The first image is the cover (same rule as the portfolio cards); the gallery shows them all
   const allImages = project.images.map((img, i) => ({
@@ -241,6 +257,15 @@ export default async function ProjectDetailPage({ params }: PageProps) {
                         {project.year}
                       </span>
                     </div>
+                    {specRows.map(([label, value]) => (
+                      <div
+                        key={label}
+                        className="flex justify-between items-center gap-3 border-b border-secondary-dark/30 pb-3"
+                      >
+                        <span className="text-text-secondary text-sm">{label}</span>
+                        <span className="text-text-primary font-medium text-sm text-end">{value}</span>
+                      </div>
+                    ))}
                     <div className="flex justify-between items-center">
                       <span className="text-text-secondary text-sm">
                         {t("photo_gallery")}

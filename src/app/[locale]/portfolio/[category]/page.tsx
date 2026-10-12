@@ -5,9 +5,15 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import AnimatedSection from "@/components/AnimatedSection";
 import PageHero from "@/components/ui/PageHero";
 import ClosingCTA from "@/components/home/ClosingCTA";
-import MasonryGrid from "@/components/MasonryGrid";
-import MasonryProjectCard from "@/components/MasonryProjectCard";
-import { getCategories, getCategory, getProjects, getProjectImageUrl } from "@/lib/portfolio";
+import ProjectsBrowser from "@/components/portfolio/ProjectsBrowser";
+import {
+  getCategories,
+  getCategory,
+  getPortfolioFilters,
+  getProjects,
+  getProjectImageUrl,
+} from "@/lib/portfolio";
+import { localized } from "@/lib/siteContent";
 
 interface PageProps {
   params: Promise<{ locale: string; category: string }>;
@@ -54,6 +60,10 @@ export default async function CategoryPage({ params }: PageProps) {
   const t = await getTranslations("portfolio");
   const tCommon = await getTranslations("common");
   const projects = await getProjects(categoryId);
+  const filters = await getPortfolioFilters();
+  const types = filters.types
+    .filter((type) => type.category === categoryId)
+    .map((type) => ({ id: String(type.id), name: localized(type, "name", locale) }));
   const translatedName = t(`cat_${categoryId.replace(/-/g, "_")}`);
   const translatedDesc = t(`cat_${categoryId.replace(/-/g, "_")}_desc`);
   const first = projects[0];
@@ -83,13 +93,9 @@ export default async function CategoryPage({ params }: PageProps) {
 
       <section className="py-14 md:py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Projects Grid */}
+          {/* Projects grid, with type / area filters when the category has them */}
           {projects.length > 0 ? (
-            <MasonryGrid>
-              {projects.map((project) => (
-                <MasonryProjectCard key={project.id} project={project} />
-              ))}
-            </MasonryGrid>
+            <ProjectsBrowser projects={projects} types={types} areaBounds={filters.areaBounds} />
           ) : (
             <AnimatedSection delay={0.2}>
               <div className="text-center py-20">

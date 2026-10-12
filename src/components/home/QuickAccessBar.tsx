@@ -5,7 +5,7 @@ import {
   Building2,
   HardHat,
   Calculator,
-  CalendarCheck,
+  DraftingCompass,
   type LucideIcon,
 } from "lucide-react";
 import { Link } from "@/i18n/navigation";
@@ -24,7 +24,7 @@ export default async function QuickAccessBar() {
     { href: "/portfolio/exterior-design", label: tPortfolio("cat_exterior_design"), icon: Building2 },
     { href: "/portfolio/execution", label: tPortfolio("cat_execution"), icon: HardHat },
     { href: "/calculator", label: tNav("calculator"), icon: Calculator },
-    { href: "/booking", label: tNav("booking"), icon: CalendarCheck, accent: true },
+    { href: "/portfolio/floor-plan", label: tPortfolio("cat_floor_plan"), icon: DraftingCompass, accent: true },
   ];
 
   return (

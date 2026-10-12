@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import BlurImage from "@/components/BlurImage";
 import type { PortfolioProject } from "@/lib/portfolio";
 import { getProjectImageUrl } from "@/lib/portfolio";
+import { projectSpecs } from "@/lib/portfolioFilters";
 
 interface MasonryProjectCardProps {
   project: PortfolioProject;
@@ -20,6 +21,8 @@ export default function MasonryProjectCard({
     project.id,
     project.images[0] || "cover.jpg"
   );
+  const specs = projectSpecs(project, t);
+  const details = [specs.dims, specs.floors, specs.bedrooms].filter(Boolean).join(" · ");
 
   return (
     <Link
@@ -53,11 +56,19 @@ export default function MasonryProjectCard({
           </svg>
         </div>
 
+        {/* Area — what visitors pick a plan by, so it shows without hovering */}
+        {specs.area && (
+          <span className="absolute top-3 start-3 z-10 rounded-full bg-primary px-3 py-1 text-xs font-bold text-white shadow-sm">
+            {specs.area}
+          </span>
+        )}
+
         {/* Hover overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-primary-dark/80 via-primary-dark/20 to-transparent opacity-100 [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
           <h3 className="font-display text-white text-lg font-bold leading-tight">
             {project.name}
           </h3>
+          {details && <span className="text-white text-sm mt-1">{details}</span>}
           <span className="text-white/80 text-sm mt-1">
             {t("view_details")}
           </span>

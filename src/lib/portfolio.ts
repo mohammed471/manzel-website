@@ -1,5 +1,7 @@
 import { cache } from "react";
 import { SITE_CONTENT_TAG } from "@/lib/cacheTags";
+import { DEFAULT_AREA_BOUNDS } from "@/lib/portfolioFilters";
+import type { SectionItem } from "@/lib/siteContent";
 import data from "@/data/projects.json";
 
 export interface PortfolioCategory {
@@ -31,6 +33,24 @@ export interface PortfolioProject {
   videos: ProjectVideo[];
   featured: boolean;
   beforeAfter?: BeforeAfterPair[];
+  // Filter fields and specs from the internal app — absent when not set there
+  /** Id of one of its category's types (`getPortfolioFilters().types`) */
+  type?: string;
+  /** m² — the plot area for floor plans */
+  area?: number;
+  /** Plot frontage × depth, m */
+  frontage?: number;
+  depth?: number;
+  /** 1.5 = a floor and a half */
+  floors?: number;
+  bedrooms?: number;
+}
+
+export interface PortfolioFilters {
+  /** Project types of every category: `{ id, category, name_ar, name_en }` */
+  types: SectionItem[];
+  /** Ascending upper bounds of the area ranges, m² */
+  areaBounds: number[];
 }
 
 export function getCategories(): PortfolioCategory[] {
@@ -42,12 +62,16 @@ export function getCategory(categoryId: string): PortfolioCategory | undefined {
 }
 
 // ── Projects: managed in the internal app («الموقع» → مشاريع المعرض) ──────────
-// Served by /api/public/website/portfolio in the same shape as projects.json.
-// projects.json is only a fallback for when the API can't be reached — an
-// empty list from a healthy API is respected (all projects deleted).
+// Served by /api/public/website/portfolio in the same shape as projects.json,
+// plus `filters` (project types per category and the area ranges — «الأنواع
+// ونطاقات المساحة» in the app). projects.json is only a fallback for when the
+// API can't be reached — an empty list from a healthy API is respected (all
+// projects deleted).
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 export { SITE_CONTENT_TAG };
+
+const positive = (v: unknown) => (typeof v === "number" && v > 0 ? v : undefined);
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function toProject(raw: any): PortfolioProject | null {
@@ -63,10 +87,33 @@ function toProject(raw: any): PortfolioProject | null {
     videos: Array.isArray(raw.videos) ? raw.videos : [],
     featured: Boolean(raw.featured),
     beforeAfter: Array.isArray(raw.beforeAfter) ? raw.beforeAfter : [],
+    type: typeof raw.type === "string" && raw.type ? raw.type : undefined,
+    area: positive(raw.area),
+    frontage: positive(raw.frontage),
+    depth: positive(raw.depth),
+    floors: positive(raw.floors),
+    bedrooms: positive(raw.bedrooms),
   };
 }
 
-async function loadProjects(): Promise<PortfolioProject[]> {
+// No types and the default ranges: an API that predates filters, or the bundled fallback
+const NO_FILTERS: PortfolioFilters = { types: [], areaBounds: DEFAULT_AREA_BOUNDS };
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function toFilters(raw: any): PortfolioFilters {
+  if (!raw || typeof raw !== "object") return NO_FILTERS;
+  const bounds: number[] = Array.isArray(raw.area_bounds)
+    ? raw.area_bounds.filter((n: unknown) => Number.isInteger(n) && (n as number) > 0)
+    : [];
+  return {
+    types: Array.isArray(raw.types)
+      ? raw.types.filter((t: SectionItem | null) => typeof t?.id === "string" && typeof t.category === "string")
+      : [],
+    areaBounds: bounds.length ? [...new Set(bounds)].sort((a, b) => a - b) : DEFAULT_AREA_BOUNDS,
+  };
+}
+
+async function loadPortfolio(): Promise<{ projects: PortfolioProject[]; filters: PortfolioFilters }> {
   try {
     const res = await fetch(`${API}/api/public/website/portfolio`, {
       next: { revalidate: 3600, tags: [SITE_CONTENT_TAG] },
@@ -75,17 +122,29 @@ async function loadProjects(): Promise<PortfolioProject[]> {
     if (res.ok) {
       const body = await res.json();
       if (Array.isArray(body?.projects)) {
-        return body.projects.map(toProject).filter((p: PortfolioProject | null): p is PortfolioProject => p !== null);
+        return {
+          projects: body.projects.map(toProject).filter((p: PortfolioProject | null): p is PortfolioProject => p !== null),
+          filters: toFilters(body.filters),
+        };
       }
     }
   } catch {
     // API unreachable — fall through to the bundled copy
   }
-  return data.projects as PortfolioProject[];
+  return { projects: data.projects as PortfolioProject[], filters: NO_FILTERS };
 }
 
-/** All projects, deduplicated per request. */
-export const getAllProjects = cache(loadProjects);
+// Projects and filters come from one response, deduplicated per request
+const getPortfolio = cache(loadPortfolio);
+
+export async function getAllProjects(): Promise<PortfolioProject[]> {
+  return (await getPortfolio()).projects;
+}
+
+/** Project types and area ranges the category pages filter by. */
+export async function getPortfolioFilters(): Promise<PortfolioFilters> {
+  return (await getPortfolio()).filters;
+}
 
 export async function getProjects(categoryId?: string): Promise<PortfolioProject[]> {
   const projects = await getAllProjects();

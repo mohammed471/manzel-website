@@ -106,6 +106,8 @@ src/
 │   │   ├── TrustSection.tsx (green stats + testimonials band — pass testimonials=[] for stats only)
 │   │   ├── ToolsGrid.tsx, VisitSection.tsx (FAQ + map), ClosingCTA.tsx (accepts title/description)
 │   │   └── CountUp.tsx      (client — animated "+500" style counters)
+│   ├── portfolio/
+│   │   └── ProjectsBrowser.tsx (client — category grid with its type / area filters behind one "Filter" button)
 │   ├── GlobalSearch.tsx    (client — Ctrl+K search overlay, products/portfolio/pages search)
 │   ├── GlobalSearchLazy.tsx (client — lazy loader: imports GlobalSearch only on first open intent)
 │   ├── Footer.tsx          (server — translated links, contact info)
@@ -130,7 +132,8 @@ src/
 │   └── about.json          (About page data — timeline, team, values)
 ├── lib/
 │   ├── api.ts              (Flask API calls for products, categories, contact, client-side search)
-│   ├── portfolio.ts        (Portfolio data helpers — reads from projects.json)
+│   ├── portfolio.ts        (Portfolio data helpers — internal app API, fallback projects.json)
+│   ├── portfolioFilters.ts (areaRangeIndex, filterProjects, projectSpecs — pure, no data imports)
 │   ├── about.ts            (getAboutContent(locale) — internal app, fallback about.json)
 │   └── utils.ts            (formatPrice, cn)
 ├── messages/
@@ -155,6 +158,7 @@ src/
 - `ScrollToTop` — scroll detection, Framer Motion
 - `Timeline` — Framer Motion scroll-triggered animations, RTL detection
 - `GlobalSearch` — Ctrl+K overlay, debounced search, keyboard navigation, recent searches
+- `ProjectsBrowser` — portfolio category filters (type / area), state read from the URL
 
 ### Data Flow
 
@@ -190,14 +194,25 @@ Portfolio uses category-based URL segments instead of query params:
 - `interior-design` — التصميم الداخلي
 - `exterior-design` — التصميم الخارجي
 - `execution` — التنفيذ
-- `Floor-plan` — الخرائط
+- `floor-plan` — الخرائط
 - `finishing` — التشطيبات
 
 Images stored in `public/portfolio/{category-id}/{project-id}/` (cover.jpg, 1.jpg, etc.)
 
 Data managed in `src/data/projects.json`, accessed via `src/lib/portfolio.ts` helpers:
 - `getCategories()`, `getCategory(id)`, `getProjects(categoryId?)`, `getProject(id)`
-- `getFeaturedProjects()`, `getProjectImageUrl(cat, proj, file)`, `getProjectsByCategory()`
+- `getFeaturedProjects()`, `getProjectImageUrl(cat, proj, file)`, `getProjectsByCategory()`, `getPortfolioFilters()`
+
+### Portfolio Filters (`/portfolio/<category>`)
+
+- A project can carry a `type` (id of one of its category's types) and specs: `area` (m² — the plot area for floor plans), `frontage` × `depth` (m), `floors` (1.5 = a floor and a half), `bedrooms`. They are entered in the internal app's project form; 0 / empty = not set, and `toProject` drops unset ones. In the app they are columns on `website_projects`, added by their own migration (`website_portfolio_specs_v1`) — `run_migration` never re-runs a recorded name, so a new column needs a new migration name, not a line in an old function.
+- `/api/public/website/portfolio` returns `{ projects, filters: { types: [{id, category, name_ar, name_en}], area_bounds: [100, 150, 200, 300] } }`. Bounds `[100, 150]` mean: up to 100, 101–150, over 150. `getPortfolioFilters()` reads them; an API without `filters` (or the bundled fallback) gives no types and `DEFAULT_AREA_BOUNDS`, so no filter shows.
+- Types and bounds are edited in the app: «الموقع» → مشاريع المعرض → «الأنواع ونطاقات المساحة» (`website_admin.project_filters`; types are the `project_types` list in `core/db/website_sections.py` — default ids are fixed because projects point at them — and bounds the `website_area_bounds` setting).
+- `ProjectsBrowser` keeps the filters behind one "Filter" button (native `<details>` — the owner asked for a single button). A chip exists only if a project carries it, a row only if it offers a choice (≥ 2 options), and the button only if a row does: a category with nothing entered in the app shows the plain grid. A chip that would give no result with the other filter is disabled.
+- Filter state lives in the URL (`?type=cafe&area=200`; `area` = the range's upper bound, `more` for the open range) through `history.replaceState` + `useSyncExternalStore` on `window.location.search`, so "back" from a project keeps it and a filtered view can be shared. Don't switch to `useSearchParams`: on these static pages it takes the grid out of the server HTML.
+- Specs show on the card (`MasonryProjectCard`: area badge always visible, the rest in the overlay) and in the project page's info box; the labels come from `projectSpecs()`. Numbers are passed to the translator as strings so they stay Western digits.
+- Images uploaded to a floor-plan project are watermarked by the app with the Manzel logo (`watermark_image` in `core/image_shrink.py`, centred, 15% opacity) — at upload only; images already uploaded are not re-processed.
+- Home `QuickAccessBar`: the accent tile links to `/portfolio/floor-plan` (it used to be booking). The booking CTA stays in the header, mobile nav, tools grid, closing CTA and footer.
 
 ### Key Files
 
@@ -238,7 +253,8 @@ Colour stock is reduced to `available: boolean` by the API (products with `track
 - **Texts / contact / images overrides:** `src/lib/siteContent.ts` fetches `/api/public/website/content` (`{texts:{ar,en}:{"ns.key": text}, site:{…}}`, ISR 1h, tag site-content) and `getSiteMessages(locale)` merges it over the bundled translation files — used by BOTH `src/i18n/request.ts` and `[locale]/layout.tsx`. Only existing string keys are overridden. Contact details and main images live in the `site` namespace (`site.phone_1`, `site.whatsapp`, `site.email`, `site.facebook`, `site.instagram`, `site.map_url`, `site.map_embed`, `site.hero_image`, `site.products_image`) — **never hardcode them**; use `t("site.…")` / `telHref()`.
 - **Testimonials / About lists** arrive in the same content response as `sections: {testimonials, timeline, team, values}`. `getTestimonials(locale)` (`src/lib/testimonials.ts`) and `getAboutContent(locale)` (`src/lib/about.ts`) are **async** and localize with `localized(item, field, locale)` (blank English → Arabic). `sections` missing (API down / older API) → `src/data/testimonials.json` / `about.json` + `about.*_N_*` translation keys. An emptied list is respected: the testimonials band / About section is hidden. Value icons: `iconMap` in the About page must match `VALUE_ICONS` in the internal app.
 - GlobalSearch reads projects from `/api/portfolio-index` (cached route) instead of bundling projects.json.
-- Tests: `npm test` (vitest) — `src/__tests__/portfolio.test.ts` covers API / empty-list / fallback / image URLs.
+- Tests: `npm test` (vitest) — `src/__tests__/portfolio.test.ts` covers API / empty-list / fallback / image URLs / filter fields; `portfolioFilters.test.ts` the area ranges, filtering and spec labels.
+- Project types, area ranges and the floor-plan watermark: see "Portfolio Filters" above.
 
 ### Cost Calculator (`/calculator`)
 
