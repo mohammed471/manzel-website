@@ -17,6 +17,7 @@ export default function SiteHeader() {
   const pathname = usePathname();
   const t = useTranslations("nav");
   const [solid, setSolid] = useState(false);
+  const [inset, setInset] = useState(false);
   const [toolsOpen, setToolsOpen] = useState(false);
 
   const navLinks = [
@@ -40,13 +41,19 @@ export default function SiteHeader() {
   // Transparent only while at the top of a page whose first section is dark
   // and marked `data-header-overlay` (HomeHero, PageHero); solid everywhere
   // else. rAF-throttled — iOS fires scroll continuously (CLAUDE.md perf rules).
+  // Over PageHero's inset rounded panel (`data-header-overlay="inset"`) the bar
+  // takes the panel's own margins, so logo and CTA line up with the hero text
+  // instead of sitting in the panel's rounded corners.
   useEffect(() => {
     let raf = 0;
     const update = () => {
       cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(() =>
-        setSolid(window.scrollY > 40 || !document.querySelector("[data-header-overlay]")),
-      );
+      raf = requestAnimationFrame(() => {
+        const hero = document.querySelector<HTMLElement>("[data-header-overlay]");
+        const overlay = window.scrollY <= 40 && !!hero;
+        setSolid(!overlay);
+        setInset(overlay && hero.dataset.headerOverlay === "inset");
+      });
     };
     update();
     window.addEventListener("scroll", update, { passive: true });
@@ -72,7 +79,13 @@ export default function SiteHeader() {
         solid ? "bg-white shadow-[0_1px_0_rgba(21,60,56,0.08)]" : "bg-transparent",
       )}
     >
-      <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16 md:h-20 gap-4">
+      <nav
+        className={cn(
+          "mx-auto flex items-center justify-between h-16 md:h-20 gap-4 transition-[padding,margin,max-width] duration-300",
+          // inset = PageHero's section padding + panel padding (and its pt-3)
+          inset ? "max-w-[87rem] px-8 sm:px-12 lg:px-14 mt-3" : "max-w-7xl px-4 sm:px-6 lg:px-8",
+        )}
+      >
         <Link href="/" className="flex items-center shrink-0">
           <Logo
             variant={solid ? "dark" : "light"}

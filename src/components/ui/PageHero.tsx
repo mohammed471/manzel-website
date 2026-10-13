@@ -30,7 +30,7 @@ export default function PageHero({
   const centered = align === "center";
 
   return (
-    <section data-header-overlay className="px-3 sm:px-4 lg:px-6 pt-3">
+    <section data-header-overlay="inset" className="px-3 sm:px-4 lg:px-6 pt-3">
       <div
         className={cn(
           "relative isolate overflow-hidden rounded-[2rem] md:rounded-[2.5rem] bg-primary px-5 sm:px-8",
