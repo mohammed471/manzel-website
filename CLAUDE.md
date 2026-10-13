@@ -212,7 +212,7 @@ Data managed in `src/data/projects.json`, accessed via `src/lib/portfolio.ts` he
 - Filter state lives in the URL (`?type=cafe&area=200`; `area` = the range's upper bound, `more` for the open range) through `history.replaceState` + `useSyncExternalStore` on `window.location.search`, so "back" from a project keeps it and a filtered view can be shared. Don't switch to `useSearchParams`: on these static pages it takes the grid out of the server HTML.
 - Specs show on the card (`MasonryProjectCard`: area badge always visible, the rest in the overlay) and in the project page's info box; the labels come from `projectSpecs()`. Numbers are passed to the translator as strings so they stay Western digits.
 - Images uploaded to a floor-plan project are watermarked by the app with the Manzel logo (`watermark_image` in `core/image_shrink.py`, centred, 15% opacity) — at upload only; images already uploaded are not re-processed.
-- Home `QuickAccessBar`: the accent tile links to `/portfolio/floor-plan` (it used to be booking). The booking CTA stays in the header, mobile nav, tools grid, closing CTA and footer.
+- Home `QuickAccessBar`: the last tile links to `/portfolio/floor-plan` (it used to be booking) and looks like the other five — the owner asked for no red accent tile. The booking CTA stays in the header, mobile nav, tools grid, closing CTA and footer.
 
 ### Key Files
 
