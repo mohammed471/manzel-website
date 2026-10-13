@@ -102,6 +102,8 @@ export default async function LocaleLayout({
   return (
     <html lang={locale} dir={isRTL ? "rtl" : "ltr"} suppressHydrationWarning>
       <head>
+        {/* The site has one (light) theme — stops phone browsers auto-darkening it */}
+        <meta name="color-scheme" content="only light" />
         {/* Sets html[data-device] (ios | android | mobile | desktop) before first paint */}
         <script dangerouslySetInnerHTML={{ __html: DEVICE_BOOT_SCRIPT }} />
         {/* Once-per-session CSS splash: html.no-splash on repeat visits */}

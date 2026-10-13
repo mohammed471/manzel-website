@@ -35,6 +35,8 @@
 
 html {
   scroll-behavior: smooth;
+  /* Light is the only theme: opts out of browsers' forced dark mode */
+  color-scheme: only light;
 }
 
 * {
