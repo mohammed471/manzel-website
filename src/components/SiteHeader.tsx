@@ -8,10 +8,11 @@ import { Search, ChevronDown, CalendarCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Logo from "@/components/Logo";
 import LanguageToggle from "@/components/LanguageToggle";
+import BoardLink from "@/components/board/BoardLink";
 
 // Redesigned header: simple links + prominent booking CTA. On mobile the
 // section links live in MobileBottomNav, so the header only carries logo,
-// search and language.
+// «لوحتي», search and language.
 export default function SiteHeader() {
   const pathname = usePathname();
   const t = useTranslations("nav");
@@ -160,6 +161,7 @@ export default function SiteHeader() {
 
         {/* Actions */}
         <div className="flex items-center gap-2">
+          <BoardLink className={solid ? "text-primary hover:bg-primary/5" : "text-white hover:bg-white/10"} />
           <button
             type="button"
             onClick={() => window.dispatchEvent(new CustomEvent("open-global-search"))}

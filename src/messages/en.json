@@ -15,7 +15,8 @@
     "tools": "Tools",
     "more": "More",
     "more_title": "All Sections",
-    "close": "Close"
+    "close": "Close",
+    "board": "My Board"
   },
   "brand": {
     "name": "Manzel",
@@ -731,6 +732,33 @@
     "link_copied": "Link copied!",
     "whatsapp_cta": "Like this design? Contact us",
     "whatsapp_message": "Hello, I liked this color combination for my room:\nLeft Wall: {leftWall}\nRight Wall: {rightWall}\nBack Wall: {backWall}\nI'd like to discuss implementation."
+  },
+  "board": {
+    "title": "Inspiration Board",
+    "hero_desc": "Materials and projects picked from Manzel, on one board.",
+    "count": "{count, plural, one {{n} item} other {{n} items}}",
+    "save": "Save to my board",
+    "saved": "Saved to my board",
+    "hint": "Send us the board and we'll answer about everything on it at once — or share it with whoever decides with you.",
+    "send": "Send the board to Manzel",
+    "wa_intro": "Hello, this is my board from the Manzel website and I'd like to ask about it:",
+    "wa_more": "+ {count} more in the link",
+    "share_heading": "Share the board",
+    "share_title": "A board from Manzel",
+    "share_text": "Have a look at this board from Manzel:",
+    "shared_label": "A board shared with you",
+    "save_all": "Save all to my board",
+    "open_mine": "Open my board ({count})",
+    "clear": "Clear the board",
+    "clear_confirm": "Remove everything from your board?",
+    "empty_title": "Your board is empty",
+    "empty_desc": "Tap the heart on any product, project or floor plan to keep it here.",
+    "browse_products": "Browse products",
+    "browse_portfolio": "Browse our work",
+    "some_unavailable": "Some items are not available right now.",
+    "meta_title": "My Board | Manzel",
+    "meta_description": "Building materials, projects and floor plans picked from Manzel, on one board.",
+    "og_title": "A board from Manzel — {count, plural, one {{n} item} other {{n} items}}"
   },
   "site": {
     "phone_1": "0773 768 5000",

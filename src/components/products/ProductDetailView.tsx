@@ -6,6 +6,7 @@ import { Check, MessageCircle } from "lucide-react";
 import type { Product } from "@/lib/api";
 import { cn } from "@/lib/utils";
 import ProductImage from "@/components/products/ProductImage";
+import SaveButton from "@/components/board/SaveButton";
 
 
 // Product media + colour picker + inquiry. Selecting a colour swaps the photo
@@ -144,6 +145,12 @@ export default function ProductDetailView({ product }: { product: Product }) {
             <MessageCircle className="w-5 h-5" />
             {t("whatsapp_inquiry")}
           </a>
+          {/* «لوحتي» — in the colour selected when the heart is pressed */}
+          <SaveButton
+            variant="inline"
+            entry={selected ? `p${product.id}.${selected.id}` : `p${product.id}`}
+            className="mt-3 inline-flex w-full h-14 gap-2.5 rounded-full px-8 text-base"
+          />
           <p className="mt-3 text-center text-xs text-text-secondary">{t("inquiry_hint")}</p>
         </div>
       </div>

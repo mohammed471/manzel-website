@@ -18,6 +18,7 @@ import { projectSpecs } from "@/lib/portfolioFilters";
 import { localized } from "@/lib/siteContent";
 import BeforeAfterSlider from "@/components/BeforeAfterSlider";
 import ShareButtons from "@/components/ShareButtons";
+import SaveButton from "@/components/board/SaveButton";
 import { SITE_URL } from "@/lib/siteUrl";
 
 interface PageProps {
@@ -292,6 +293,13 @@ export default async function ProjectDetailPage({ params }: PageProps) {
                     </svg>
                     {t("whatsapp_inquiry")}
                   </a>
+
+                  {/* «لوحتي» */}
+                  <SaveButton
+                    variant="inline"
+                    entry={`j${project.id}`}
+                    className="mt-3 flex w-full gap-2 rounded-xl px-5 py-3 text-sm"
+                  />
 
                   <ShareButtons
                     url={`${SITE_URL}/${locale}/portfolio/${categoryId}/${projectId}`}

@@ -293,6 +293,18 @@ html:is([data-device="ios"], [data-device="android"], [data-device="mobile"]) .s
   .animate-\[fade-in_0\.3s_ease-out\] { animation: none; }
 }
 
+/* «لوحتي»: the heart pops when the visitor saves, and so does the header count.
+   Transform only — cheap on iOS. */
+@keyframes heart-pop {
+  40% { transform: scale(1.4); }
+}
+.heart-pop {
+  animation: heart-pop 0.35s ease-out;
+}
+@media (prefers-reduced-motion: reduce) {
+  .heart-pop { animation: none; }
+}
+
 /* Cost calculator: its fixed price bar sits above the bottom nav — lift the
    floating buttons above both. */
 @media (max-width: 1023px) {

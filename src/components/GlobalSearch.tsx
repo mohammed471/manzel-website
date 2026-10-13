@@ -26,6 +26,7 @@ const PAGES: PageResult[] = [
   { href: "/color-picker", labelKey: "color_picker" },
   { href: "/booking", labelKey: "booking" },
   { href: "/testimonials", labelKey: "testimonials" },
+  { href: "/board", labelKey: "board" },
 ];
 
 const STORAGE_KEY = "manzel-recent-searches";

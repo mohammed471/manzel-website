@@ -87,13 +87,15 @@ src/
 │       ├── booking/page.tsx                       (Booking consultation)
 │       ├── calculator/page.tsx                    (Cost calculator)
 │       ├── testimonials/page.tsx                  (Client testimonials)
-│       └── about/page.tsx                         (About Us — story, timeline, team, values)
+│       ├── about/page.tsx                         (About Us — story, timeline, team, values)
+│       └── board/page.tsx                         («لوحتي» — saved products/projects; dynamic, rendered from `?i=`)
 ├── app/
 │   ├── sitemap.ts                                 (Auto-generated sitemap — all routes, both locales)
-│   └── robots.ts                                  (Robots.txt — allow all crawlers)
+│   ├── robots.ts                                  (Robots.txt — allow all crawlers)
+│   └── api/board-card/route.ts                    (og:image of a «لوحتي» link — JPEG drawn with sharp)
 ├── components/
-│   ├── SiteHeader.tsx      (client — fixed header: links, Tools dropdown, search, language, booking CTA;
-│   │                        transparent only over a `data-header-overlay` hero, solid otherwise)
+│   ├── SiteHeader.tsx      (client — fixed header: links, Tools dropdown, «لوحتي» heart, search, language,
+│   │                        booking CTA; transparent only over a `data-header-overlay` hero, solid otherwise)
 │   ├── MobileBottomNav.tsx (client — app-style bottom tab bar on < lg + "More" sheet with tools/about/booking)
 │   ├── ui/                 (design-system primitives for the 2026 redesign)
 │   │   ├── PageHero.tsx     (server — rounded green top panel for every inner page; optional photo/breadcrumb)
@@ -108,6 +110,10 @@ src/
 │   │   └── CountUp.tsx      (client — animated "+500" style counters)
 │   ├── portfolio/
 │   │   └── ProjectsBrowser.tsx (client — category grid with its type / area filters behind one "Filter" button)
+│   ├── board/              («لوحتي» — see its section below)
+│   │   ├── SaveButton.tsx   (client — the heart: `overlay` on cards, `inline` on detail pages)
+│   │   ├── BoardLink.tsx    (client — header heart with the saved count)
+│   │   └── BoardActions.tsx (client — send on WhatsApp, share, clear / "save all"; keeps the link on my board)
 │   ├── GlobalSearch.tsx    (client — Ctrl+K search overlay, products/portfolio/pages search)
 │   ├── GlobalSearchLazy.tsx (client — lazy loader: imports GlobalSearch only on first open intent)
 │   ├── Footer.tsx          (server — translated links, contact info)
@@ -134,6 +140,9 @@ src/
 │   ├── api.ts              (Flask API calls for products, categories, contact, client-side search)
 │   ├── portfolio.ts        (Portfolio data helpers — internal app API, fallback projects.json)
 │   ├── portfolioFilters.ts (areaRangeIndex, filterProjects, projectSpecs — pure, no data imports)
+│   ├── board.ts            («لوحتي» entries: parseBoard, boardHref, toggleEntry, resolveBoard, boardMessage — pure)
+│   ├── boardStore.ts       (client — useBoard / toggleSaved / writeBoard over localStorage)
+│   ├── boardCard.ts        (server — cardSlots, renderBoardCard: the share-preview JPEG)
 │   ├── about.ts            (getAboutContent(locale) — internal app, fallback about.json)
 │   └── utils.ts            (formatPrice, cn)
 ├── messages/
@@ -159,6 +168,7 @@ src/
 - `Timeline` — Framer Motion scroll-triggered animations, RTL detection
 - `GlobalSearch` — Ctrl+K overlay, debounced search, keyboard navigation, recent searches
 - `ProjectsBrowser` — portfolio category filters (type / area), state read from the URL
+- `SaveButton`, `BoardLink`, `BoardActions` — «لوحتي»: the visitor's board lives in their browser (`useBoard`)
 
 ### Data Flow
 
@@ -286,6 +296,20 @@ Colour stock is reduced to `available: boolean` by the API (products with `track
 - Components in `src/components/products/`: `CategoryNav` (sidebar on lg, chips below), `CatalogSearch`, `ProductCard`, `ProductImage` (falls back to a category placeholder if the file 404s), `ColorDots`, `CatalogPagination`, `ProductDetailView` (colour picker swaps photo + WhatsApp text), `categoryIcon`.
 - Product images use optimized `next/image` (not `BlurImage`, which downloads originals).
 
+### «لوحتي» — the visitor's board (`/board`)
+
+The last feature before development stopped (Oct 2026): a heart saves products, projects and floor plans; the board is sent to Manzel in one WhatsApp message or shared as a link.
+
+- **The link is the board**, and the same text is what the browser stores (`localStorage` key `manzel-board`): `/board?i=p12.3~jcafeteria-karbala~p45` — `p<id>` product, `p<id>.<colour id>` product in a colour, `j<slug>` project. Newest first, at most `BOARD_MAX` (60). Only URL-safe characters, nothing encoded; `parseBoard` drops anything else. All of it is in `src/lib/board.ts` (pure).
+- **Nothing is stored on a server and the internal app is not involved** — deliberately: a board kept in the app would open slowly whenever the app sleeps. The page is rendered by the server from the link with the same cached `getProducts()` / `getProjects()` requests, so it is dynamic (like the products pages), `noindex`, and not in the sitemap.
+- **Mine or someone's?** There is no "shared" mark in the link, so a link copied from the address bar works. `BoardActions` compares the link with the browser's board: equal = mine (removing a heart replaces the URL; "Clear the board" shows); otherwise it is shown as it is, hearts add to mine, and "Save all" / "Open my board" show. `/board` with no items opens the visitor's own board. Never prune the stored board from what the server resolved — an unreachable API would wipe it; unresolved items just show the `some_unavailable` note.
+- Hearts: `SaveButton` on `ProductCard` and `MasonryProjectCard` (beside the card's link, never inside it), and as a labelled button in `ProductDetailView` (saves the colour selected at that moment) and the project page. A product counts as saved whatever colour it was saved in; to change the colour, remove and save again.
+- Page layout: one grid, product = `ProductCard`, project = `ImageTile` two cards wide. The 3:2 height comes from a spacer inside the `<li>`, not `aspect-ratio` on it — stretched to a row of product cards, that grew sideways into the next card.
+- Share preview: `og:image` = `/api/board-card?i=…` (`src/lib/boardCard.ts`, sharp): 1200×630 JPEG, up to five photos + the logo, no text (no Arabic font needed on the server); no photos → logo card. `sharp` is therefore a runtime dependency. Drawn per request, no cache.
+- WhatsApp text: `boardMessage()` cuts the names to a budget measured on the encoded text (Arabic is 6 characters a letter in a wa.me link); the link is always last.
+- Counts use the `{count, plural, … {n} …}` pattern (number for the plural, string for Western digits). GA4 events: `board_save`, `board_send`.
+- Tests: `board.test.ts`, `boardCard.test.ts`.
+
 ## Styling Rules
 
 ### Color Palette
@@ -366,7 +390,7 @@ Font selection is automatic via `[lang="ar"]` and `[lang="en"]` CSS selectors in
 - Server components: `const t = await getTranslations("namespace")`
 - Client components: `const t = useTranslations("namespace")`
 - Add new keys to BOTH `src/messages/ar.json` and `src/messages/en.json`
-- Translation namespaces: `nav`, `brand`, `home`, `stats`, `products`, `portfolio`, `contact`, `form`, `footer`, `common`, `errors`, `whatsapp`, `metadata`, `testimonials`, `calculator`, `booking`, `faq`, `share`, `about`, `search`
+- Translation namespaces: `nav`, `brand`, `home`, `stats`, `products`, `portfolio`, `contact`, `form`, `footer`, `common`, `errors`, `whatsapp`, `metadata`, `testimonials`, `calculator`, `booking`, `faq`, `share`, `about`, `search`, `board`
 
 ### Links
 - ALWAYS use `Link` from `@/i18n/navigation`, NOT from `next/link`
@@ -402,7 +426,7 @@ Hard-won rules from the July 2026 iPhone performance fix — do not regress thes
 - **HeroVideo:** poster is a real `<Image priority>`; the video fades in only on `playing`, is dropped if autoplay is refused (iOS Low Power Mode → poster stays), is skipped on `constrained` devices, and pauses when the hero leaves the viewport so it never decodes alongside the furniture video.
 - **Horizontal overflow:** `body { overflow-x: clip }` plus `overflow-x-clip` on components with sideways entrance animations (Timeline). Overflow makes iOS zoom the whole page out. Use `clip`, never `hidden` (breaks `position: sticky`).
 
-- **Media budgets:** videos in `public/` ≤ 1.5 MB (H.264, CRF 28, no audio, `+faststart`); images ≤ 300 KB. Originals are backed up in `_media-originals/` (gitignored). Compress with `ffmpeg-static` + `sharp` (devDependencies).
+- **Media budgets:** videos in `public/` ≤ 1.5 MB (H.264, CRF 28, no audio, `+faststart`); images ≤ 300 KB. Originals are backed up in `_media-originals/` (gitignored). Compress with `ffmpeg-static` (devDependency) + `sharp`.
 - **Videos:** always `preload="metadata"` (or `"none"` + IntersectionObserver) with a `poster` image — NEVER `preload="auto"`. Two videos decoding at once exceed iOS Safari's media memory budget and one silently fails to render (this was the original "video not showing" bug).
 - **Scroll scrubbing** (`ScrollVideoSection`): `scrubMode(useDevice())` in `src/lib/scrubFrames.ts` picks the experience — every device scrubs still frames (`useFrameScrub` draws `public/scrub-frames/<size>/NNN.webp` on the canvas; `scrubFrameSize()`: 1440 desktop, 1080 phones/tablets; no video, no seeking, no autoplay — so it works in iOS Low Power Mode), Save-Data/low-end phones → poster only. There is no scrub video any more: the 960px all-intra desktop video looked blurry, and a sharp 1440 one is 4 MB against 1.9 MB of WebP frames. Mode is `"pending"` until hydration, so the server HTML is identical for every device and carries no frames. The section height is CSS (`.scrub-section` in globals.css: 500vh desktop, 300vh per `html[data-device]` phones) — never set it from React, or the page jumps when hydration changes it (it used to: 3320px → 1195px). Frames load when the section is one screen away, every 8th first. HeroVideo attaches its video only after the window `load` event.
 - **Scrub poster:** `public/images/furniture-poster.jpg` is the video's **last** frame (finished room) and sits under the canvas in the server HTML. Never the first frame — it is blank white, and on the white section that read as an empty box (the Sept 2026 "video doesn't show on phones" bug). A test asserts it has dark pixels.
@@ -417,7 +441,7 @@ Hard-won rules from the July 2026 iPhone performance fix — do not regress thes
 - **Nothing visible may ship `opacity:0` in the server HTML.** framer-motion `initial={{opacity:0}}` keeps content hidden until JavaScript loads (~4–5s on a slow phone). `AnimatedSection` is a CSS scroll-driven reveal (`.reveal`, `animation-timeline: view()`, visible where unsupported), `PageTransition` is a CSS fade (`.page-fade`), `.hero-rise` is CSS. Use these instead of framer entrance animations for content.
 - **Fonts:** Playfair (English `.font-display` only) has `preload: false`; Tajawal loads `arabic` + `latin` (digits inside Arabic text) in weights 400/500/700.
 - **Lighthouse (mobile, Sept 2026):** perf 76–87, accessibility 95–100, best practices 96–100, SEO 100. Measure with `npx lighthouse@12 <url> --throttling-method=devtools` too — the default simulated mode over-weights JS.
-- **Static rendering:** all pages except `/products` and `/products/[id]` (live Flask data) are SSG — keep `setRequestLocale(locale)` in new pages.
+- **Static rendering:** all pages except `/products`, `/products/[id]` (live Flask data) and `/board` (rendered from its link) are SSG — keep `setRequestLocale(locale)` in new pages.
 
 ## Common Pitfalls — Do NOT
 

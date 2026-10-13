@@ -3,6 +3,7 @@
 import { Link } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import BlurImage from "@/components/BlurImage";
+import SaveButton from "@/components/board/SaveButton";
 import type { PortfolioProject } from "@/lib/portfolio";
 import { getProjectImageUrl } from "@/lib/portfolio";
 import { projectSpecs } from "@/lib/portfolioFilters";
@@ -25,55 +26,59 @@ export default function MasonryProjectCard({
   const details = [specs.dims, specs.floors, specs.bedrooms].filter(Boolean).join(" · ");
 
   return (
-    <Link
-      href={`/portfolio/${project.category}/${project.id}`}
-      className="group block"
-    >
-      <div className="relative rounded-3xl overflow-hidden bg-secondary">
-        <BlurImage
-          src={coverUrl}
-          alt={project.name}
-          width={800}
-          height={600}
-          className="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-[1.03]"
-          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-        />
+    <div className="relative">
+      <Link
+        href={`/portfolio/${project.category}/${project.id}`}
+        className="group block"
+      >
+        <div className="relative rounded-3xl overflow-hidden bg-secondary">
+          <BlurImage
+            src={coverUrl}
+            alt={project.name}
+            width={800}
+            height={600}
+            className="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+          />
 
-        {/* Fallback for missing images */}
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-primary-dark/30 flex items-center justify-center -z-10">
-          <svg
-            className="w-12 h-12 text-primary/30"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={1}
-              d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M3.75 21h16.5A2.25 2.25 0 0022.5 18.75V5.25A2.25 2.25 0 0020.25 3H3.75A2.25 2.25 0 001.5 5.25v13.5A2.25 2.25 0 003.75 21z"
-            />
-          </svg>
+          {/* Fallback for missing images */}
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-primary-dark/30 flex items-center justify-center -z-10">
+            <svg
+              className="w-12 h-12 text-primary/30"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1}
+                d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M3.75 21h16.5A2.25 2.25 0 0022.5 18.75V5.25A2.25 2.25 0 0020.25 3H3.75A2.25 2.25 0 001.5 5.25v13.5A2.25 2.25 0 003.75 21z"
+              />
+            </svg>
+          </div>
+
+          {/* Area — what visitors pick a plan by, so it shows without hovering */}
+          {specs.area && (
+            <span className="absolute top-3 start-3 z-10 rounded-full bg-primary px-3 py-1 text-xs font-bold text-white shadow-sm">
+              {specs.area}
+            </span>
+          )}
+
+          {/* Hover overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-primary-dark/80 via-primary-dark/20 to-transparent opacity-100 [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
+            <h3 className="font-display text-white text-lg font-bold leading-tight">
+              {project.name}
+            </h3>
+            {details && <span className="text-white text-sm mt-1">{details}</span>}
+            <span className="text-white/80 text-sm mt-1">
+              {t("view_details")}
+            </span>
+          </div>
         </div>
-
-        {/* Area — what visitors pick a plan by, so it shows without hovering */}
-        {specs.area && (
-          <span className="absolute top-3 start-3 z-10 rounded-full bg-primary px-3 py-1 text-xs font-bold text-white shadow-sm">
-            {specs.area}
-          </span>
-        )}
-
-        {/* Hover overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-primary-dark/80 via-primary-dark/20 to-transparent opacity-100 [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
-          <h3 className="font-display text-white text-lg font-bold leading-tight">
-            {project.name}
-          </h3>
-          {details && <span className="text-white text-sm mt-1">{details}</span>}
-          <span className="text-white/80 text-sm mt-1">
-            {t("view_details")}
-          </span>
-        </div>
-      </div>
-    </Link>
+      </Link>
+      {/* «لوحتي» heart — beside the link, opposite the area badge */}
+      <SaveButton entry={`j${project.id}`} className="absolute top-3 end-3" />
+    </div>
   );
 }

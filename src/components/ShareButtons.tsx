@@ -7,11 +7,14 @@ interface ShareButtonsProps {
   url: string;
   title: string;
   description?: string;
+  /** Heading and WhatsApp text when what is shared is not a project («لوحتي») */
+  heading?: string;
+  text?: string;
 }
 
 const noopSubscribe = () => () => {};
 
-export default function ShareButtons({ url, title, description }: ShareButtonsProps) {
+export default function ShareButtons({ url, title, description, heading, text }: ShareButtonsProps) {
   const t = useTranslations("share");
   const [copied, setCopied] = useState(false);
   // false on the server, the real capability after hydration (Web Share API: mostly phones)
@@ -21,7 +24,7 @@ export default function ShareButtons({ url, title, description }: ShareButtonsPr
     () => false,
   );
 
-  const shareText = t("whatsapp_text", { name: title });
+  const shareText = text ?? t("whatsapp_text", { name: title });
 
   const handleNativeShare = async () => {
     try {
@@ -58,7 +61,7 @@ export default function ShareButtons({ url, title, description }: ShareButtonsPr
   return (
     <div className="mt-4">
       <p className="text-xs text-text-secondary uppercase tracking-wider mb-3 font-semibold">
-        {t("title")}
+        {heading ?? t("title")}
       </p>
       <div className="flex items-center gap-2">
         {/* WhatsApp */}
