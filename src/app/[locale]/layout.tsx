@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import localFont from "next/font/local";
-import { Playfair_Display, Poppins, Tajawal } from "next/font/google";
+import { Playfair_Display, Poppins } from "next/font/google";
 import { routing } from "@/i18n/routing";
 import { notFound } from "next/navigation";
 import "../globals.css";
@@ -20,9 +20,27 @@ import { getSiteMessages } from "@/lib/siteContent";
 import { SITE_URL } from "@/lib/siteUrl";
 
 
-const khalidArt = localFont({
-  src: "../../fonts/khalid-art-bold.ttf",
+// Thmanyah Serif — Display for Arabic headings, Text for Arabic body (same pair as the Manzel app).
+// Its license allows web use only as part of a bundled product: localFont bundles the files
+// under hashed /_next/static/media names — never copy them into public/.
+const thmanyahDisplay = localFont({
+  src: [
+    { path: "../../fonts/thmanyah/thmanyahserifdisplay-Bold.woff2", weight: "700" },
+    { path: "../../fonts/thmanyah/thmanyahserifdisplay-Black.woff2", weight: "900" },
+  ],
   variable: "--font-arabic",
+  display: "swap",
+});
+
+// Thmanyah covers Latin letters and digits too (+500, phone numbers), so no second font is needed.
+const thmanyahText = localFont({
+  src: [
+    { path: "../../fonts/thmanyah/thmanyahseriftext-Regular.woff2", weight: "400" },
+    { path: "../../fonts/thmanyah/thmanyahseriftext-Medium.woff2", weight: "500" },
+    { path: "../../fonts/thmanyah/thmanyahseriftext-Bold.woff2", weight: "700" },
+    { path: "../../fonts/thmanyah/thmanyahseriftext-Black.woff2", weight: "900" },
+  ],
+  variable: "--font-arabic-body",
   display: "swap",
 });
 
@@ -30,15 +48,6 @@ const poppins = Poppins({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
   variable: "--font-english",
-  display: "swap",
-});
-
-// "latin" too: digits and Latin letters inside Arabic text (+500, phone numbers)
-// would otherwise be discovered late from the CSS instead of preloaded.
-const tajawal = Tajawal({
-  subsets: ["arabic", "latin"],
-  weight: ["400", "500", "700"],
-  variable: "--font-arabic-body",
   display: "swap",
 });
 
@@ -110,7 +119,7 @@ export default async function LocaleLayout({
         <script dangerouslySetInnerHTML={{ __html: SPLASH_BOOT_SCRIPT }} />
       </head>
       <body
-        className={`${khalidArt.variable} ${poppins.variable} ${tajawal.variable} ${playfairDisplay.variable} antialiased`}
+        className={`${thmanyahDisplay.variable} ${poppins.variable} ${thmanyahText.variable} ${playfairDisplay.variable} antialiased`}
       >
         <Analytics />
         <NextIntlClientProvider locale={locale} messages={messages}>

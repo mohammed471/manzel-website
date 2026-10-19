@@ -27,8 +27,8 @@
   --color-success: #27AE60;
 
   /* Fonts */
-  --font-arabic: 'Khalid Art Bold', sans-serif;
-  --font-arabic-body: 'Tajawal', sans-serif;
+  --font-arabic: 'Thmanyah Display', sans-serif;
+  --font-arabic-body: 'Thmanyah Text', sans-serif;
   --font-english: 'Poppins', sans-serif;
   --font-english-display: 'Playfair Display', serif;
 }
@@ -54,7 +54,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Arabic: Khalid Art Bold for headings, Tajawal for body */
+/* Arabic: Thmanyah Display for headings, Thmanyah Text for body */
 [lang="ar"] body { font-family: var(--font-arabic-body); }
 [lang="ar"] h1, [lang="ar"] h2, [lang="ar"] h3,
 [lang="ar"] h4, [lang="ar"] h5, [lang="ar"] h6 {
@@ -67,7 +67,7 @@ body {
 /* English display headings: Playfair Display */
 [lang="en"] .font-display { font-family: var(--font-english-display); }
 
-/* Arabic display headings use Khalid Art Bold (already set via h1-h6 rule) */
+/* Arabic display headings use Thmanyah Display (already set via h1-h6 rule) */
 [lang="ar"] .font-display { font-family: var(--font-arabic); }
 
 /* Selection color */
@@ -256,10 +256,13 @@ input[type="range"]::-moz-range-thumb {
 @keyframes reveal-slide-right { from { opacity: 0; transform: translateX(-50px); } }
 @keyframes reveal-slide-left { from { opacity: 0; transform: translateX(50px); } }
 
-/* English headings default to semibold (Arabic uses Khalid Art Bold, which is
-   bold by design). In the base layer so utility classes still override it. */
+/* Default heading weights. Arabic: bold, as Khalid Art (a single bold face) drew every
+   heading before Thmanyah Display; untouched they fell to Medium. In the base layer so
+   utility classes (font-extrabold, font-black…) still override them. */
 @layer base {
   [lang="en"] h1, [lang="en"] h2, [lang="en"] h3 { font-weight: 600; }
+  [lang="ar"] h1, [lang="ar"] h2, [lang="ar"] h3,
+  [lang="ar"] h4, [lang="ar"] h5, [lang="ar"] h6 { font-weight: 700; }
 }
 
 /* Per-device gating via html[data-device] (set by DEVICE_BOOT_SCRIPT before
