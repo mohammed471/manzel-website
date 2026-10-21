@@ -7,8 +7,12 @@ import SectionHeader from "@/components/ui/SectionHeader";
 import ImageTile from "@/components/home/ImageTile";
 import TrustSection from "@/components/home/TrustSection";
 import ClosingCTA from "@/components/home/ClosingCTA";
+import { buttonClasses } from "@/components/ui/Button";
 import { getCategories, getProjects, getProjectImageUrl } from "@/lib/portfolio";
 import { cn } from "@/lib/utils";
+
+// The app's sample house page (manzel_split core/sample_house SAMPLE_TOKEN) — a public page shaped like a client link.
+const SAMPLE_HOUSE_PATH = "/c/3an1E_I9cNAwko5Rhayf6cTI5FAQ8VJozoZKkvnx8Lk";
 
 export async function generateMetadata({
   params,
@@ -116,6 +120,22 @@ export default async function PortfolioPage({
             <PortfolioFilter categories={categoryData} projects={projectData} />
           </AnimatedSection>
         </div>
+      </section>
+
+      {/* Sample project, as a client sees it — opens the app's public page */}
+      <section className="pb-16 md:pb-24 px-4 sm:px-6 lg:px-8">
+        <AnimatedSection className="max-w-3xl mx-auto text-center">
+          <h2 className="text-2xl md:text-4xl leading-tight">{t("sample_title")}</h2>
+          <p className="mt-4 text-text-secondary text-base md:text-lg leading-relaxed">{t("sample_description")}</p>
+          <a
+            href={`${process.env.NEXT_PUBLIC_API_URL}${SAMPLE_HOUSE_PATH}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={cn(buttonClasses("primary", "lg"), "mt-8")}
+          >
+            {t("sample_button")}
+          </a>
+        </AnimatedSection>
       </section>
 
       <ClosingCTA title={t("cta_title")} />
