@@ -158,7 +158,7 @@ export default function GlobalSearch({ hasTestimonials }: { hasTestimonials: boo
     }, DEBOUNCE_MS);
 
     return () => clearTimeout(timeout);
-  }, [query, tNav]);
+  }, [query, tNav, hasTestimonials]);
 
   // Flatten all results for keyboard navigation
   const allResults = useMemo(() => {
