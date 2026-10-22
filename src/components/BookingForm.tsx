@@ -7,9 +7,11 @@ import { submitBooking, type BookingData } from "@/lib/api";
 import { trackGA4Event, trackFBEvent } from "@/lib/analytics";
 import { generateICS, downloadICS } from "@/lib/ics";
 import CalendarPicker from "@/components/CalendarPicker";
+import { normalizeIraqiPhone } from "@/lib/phone";
 
 export default function BookingForm() {
   const t = useTranslations("booking");
+  const tSite = useTranslations("site");
 
   const [formData, setFormData] = useState<BookingData>({
     name: "",
@@ -34,18 +36,11 @@ export default function BookingForm() {
     }
     if (!formData.phone.trim()) {
       newErrors.phone = t("phone_required");
+    } else if (!normalizeIraqiPhone(formData.phone)) {
+      newErrors.phone = t("phone_invalid");
     }
     if (!formData.projectType.trim()) {
       newErrors.projectType = t("project_type_required");
-    }
-    if (!formData.location.trim()) {
-      newErrors.location = t("location_required");
-    }
-    if (!formData.preferredDate.trim()) {
-      newErrors.preferredDate = t("preferred_date_required");
-    }
-    if (!formData.preferredTime.trim()) {
-      newErrors.preferredTime = t("preferred_time_required");
     }
 
     setErrors(newErrors);
@@ -62,7 +57,7 @@ export default function BookingForm() {
     setLoading(true);
 
     try {
-      const result = await submitBooking(formData);
+      const result = await submitBooking({ ...formData, phone: normalizeIraqiPhone(formData.phone) ?? formData.phone });
 
       if (result.success) {
         trackGA4Event("booking_submit");
@@ -141,7 +136,20 @@ export default function BookingForm() {
           {t("success")}
         </p>
 
-        {/* Download calendar button */}
+        {/* Continue on WhatsApp, with the project type already written */}
+        <a
+          href={`https://wa.me/${tSite("whatsapp")}?text=${encodeURIComponent(
+            t("whatsapp_followup", { type: projectTypes.find((p) => p.value === formData.projectType)?.label ?? "" }),
+          )}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-6 inline-flex items-center gap-2 bg-[#25D366] text-white font-bold py-3 px-6 rounded-xl hover:opacity-90 transition-opacity"
+        >
+          {t("whatsapp_continue")}
+        </a>
+
+        {/* Download calendar button — only when a date was chosen */}
+        {formData.preferredDate && (
         <button
           type="button"
           onClick={handleDownloadICS}
@@ -162,6 +170,7 @@ export default function BookingForm() {
           </svg>
           {t("download_calendar")}
         </button>
+        )}
       </motion.div>
     );
   }
@@ -221,7 +230,7 @@ export default function BookingForm() {
         {/* Email */}
         <div>
           <label htmlFor="booking-email" className="font-medium text-text-primary mb-2 block">
-            {t("email")} <span className="text-text-secondary text-sm">({t("email_optional")})</span>
+            {t("email")} <span className="text-text-secondary text-sm">({t("optional")})</span>
           </label>
           <input
             type="email"
@@ -263,7 +272,7 @@ export default function BookingForm() {
         {/* Location */}
         <div>
           <label htmlFor="booking-location" className="font-medium text-text-primary mb-2 block">
-            {t("location")} <span className="text-red-500">{t("required")}</span>
+            {t("location")} <span className="text-text-secondary text-sm">({t("optional")})</span>
           </label>
           <input
             type="text"
@@ -284,7 +293,7 @@ export default function BookingForm() {
         {/* Preferred Time */}
         <div>
           <label htmlFor="booking-time" className="font-medium text-text-primary mb-2 block">
-            {t("preferred_time")} <span className="text-red-500">{t("required")}</span>
+            {t("preferred_time")} <span className="text-text-secondary text-sm">({t("optional")})</span>
           </label>
           <select
             id="booking-time"
@@ -311,7 +320,7 @@ export default function BookingForm() {
       {/* Preferred Date — full width */}
       <div>
         <label className="font-medium text-text-primary mb-2 block">
-          {t("preferred_date")} <span className="text-red-500">{t("required")}</span>
+          {t("preferred_date")} <span className="text-text-secondary text-sm">({t("optional")})</span>
         </label>
         <CalendarPicker
           value={formData.preferredDate || null}

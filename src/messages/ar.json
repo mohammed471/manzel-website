@@ -423,7 +423,6 @@
     "phone_required": "رقم الهاتف مطلوب",
     "email": "البريد الإلكتروني",
     "email_placeholder": "example@email.com",
-    "email_optional": "اختياري",
     "project_type": "نوع المشروع",
     "project_type_placeholder": "اختر نوع المشروع",
     "project_type_required": "نوع المشروع مطلوب",
@@ -434,12 +433,9 @@
     "project_plans": "الخرائط والتصاميم الهندسية",
     "location": "الموقع / المدينة",
     "location_placeholder": "مثال: كركوك",
-    "location_required": "الموقع مطلوب",
     "preferred_date": "التاريخ المفضل",
-    "preferred_date_required": "التاريخ مطلوب",
     "preferred_time": "الوقت المفضل",
     "preferred_time_placeholder": "اختر الوقت",
-    "preferred_time_required": "الوقت مطلوب",
     "time_9": "9:00 صباحاً",
     "time_10": "10:00 صباحاً",
     "time_11": "11:00 صباحاً",
@@ -459,7 +455,11 @@
     "download_calendar": "إضافة إلى التقويم",
     "calendar_event_title": "استشارة منزل",
     "calendar_event_description": "استشارة مجانية مع فريق منزل",
-    "required": "*"
+    "required": "*",
+    "optional": "اختياري",
+    "phone_invalid": "أدخل رقم موبايل عراقياً صحيحاً، مثل 07701234567",
+    "whatsapp_continue": "تابع عبر واتساب",
+    "whatsapp_followup": "مرحباً، حجزت استشارة من الموقع لمشروع: {type}"
   },
   "faq": {
     "q1": "ما هي الخدمات التي تقدمونها؟",
