@@ -6,6 +6,8 @@ import {
   estimateDuration,
   maxPlotAreaForBudget,
   normalizePricing,
+  estimateToQuery,
+  queryToEstimate,
   type EstimateInputs,
 } from "@/lib/calculator";
 
@@ -141,4 +143,24 @@ it.skip("matches the portal case: 188.7M with the fee, 7 months", () => {
   expect(e.high).toBeGreaterThanOrEqual(188_700_000);
   expect(e.low).toBeLessThanOrEqual(188_700_000);
   expect(estimateDuration("turnkey", e.builtArea, DEFAULT_PRICING.duration)).toMatchObject({ low: 7 });
+});
+
+describe("estimate ↔ query string", () => {
+  const full: EstimateInputs = {
+    build: "finishing", designServices: ["plans", "interior_design"], plotArea: 250, facadeLength: 14, floors: 1.5,
+    level: "luxury", commercial: true, renovation: false, outsideKirkuk: true, kitchen: false,
+  };
+
+  it("round-trips every choice", () => {
+    expect(queryToEstimate(new URLSearchParams(estimateToQuery(full)))).toEqual(full);
+  });
+
+  it("drops unknown or out-of-range values", () => {
+    const q = new URLSearchParams("b=palace&d=plans,spa&l=gold&fl=9&a=-5&name=Ali&phone=0770");
+    expect(queryToEstimate(q)).toEqual({ designServices: ["plans"] });
+  });
+
+  it("carries no personal data", () => {
+    expect(estimateToQuery(full)).not.toMatch(/name|phone|email/);
+  });
 });

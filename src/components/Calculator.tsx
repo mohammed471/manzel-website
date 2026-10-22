@@ -1,8 +1,9 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Explain, OfferForm, OptionCard, Section, Segmented } from "@/components/calc/CalcUI";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
+import { SITE_URL } from "@/lib/siteUrl";
 import {
   Building2,
   HardHat,
@@ -38,6 +39,9 @@ import {
   type EstimateInputs,
   type DesignService,
   type Level,
+  FLOOR_OPTIONS,
+  estimateToQuery,
+  queryToEstimate,
 } from "@/lib/calculator";
 import { cn } from "@/lib/utils";
 
@@ -69,7 +73,6 @@ const PRESETS: { key: string; icon: LucideIcon; build: BuildService | null; desi
 const MIN_AREA = 50;
 const MAX_AREA = 2000;
 const COMMON_AREAS = [100, 150, 200, 250, 300];
-const FLOOR_OPTIONS = [1, 1.5, 2, 3, 4];
 const NEXT_STEPS = [1, 2, 3];
 const FIT_STYLE: Record<BudgetFit, string> = {
   within: "bg-success/10 text-success",
@@ -90,6 +93,7 @@ const textLines = (text: string) =>
 export default function Calculator({ pricing }: { pricing: CalculatorPricing }) {
   const t = useTranslations("calculator");
   const tSite = useTranslations("site");
+  const locale = useLocale();
 
   const [build, setBuild] = useState<BuildService | null>("turnkey");
   const [designServices, setDesignServices] = useState<DesignService[]>([]);
@@ -105,6 +109,22 @@ export default function Calculator({ pricing }: { pricing: CalculatorPricing }) 
   const [plotLength, setPlotLength] = useState(0);
   const [plotWidth, setPlotWidth] = useState(0);
   const [budgetM, setBudgetM] = useState(0); // millions of IQD, 0 = not set
+
+  // A shared link (?b=…&a=…) reopens the calculator with the same choices. Read after
+  // hydration from window.location, so the page stays static (no useSearchParams).
+  useEffect(() => {
+    const q = queryToEstimate(new URLSearchParams(window.location.search));
+    if (q.build !== undefined) setBuild(q.build);
+    if (q.designServices) setDesignServices(q.designServices);
+    if (q.plotArea !== undefined) setPlotArea(q.plotArea);
+    if (q.facadeLength !== undefined) setFacadeLength(q.facadeLength);
+    if (q.floors !== undefined) setFloors(q.floors);
+    if (q.level) setLevel(q.level);
+    if (q.commercial !== undefined) setCommercial(q.commercial);
+    if (q.renovation !== undefined) setRenovation(q.renovation);
+    if (q.outsideKirkuk !== undefined) setOutsideKirkuk(q.outsideKirkuk);
+    if (q.kitchen !== undefined) setKitchen(q.kitchen);
+  }, []);
 
   const inputs: EstimateInputs = { build, designServices, plotArea, facadeLength, floors, level, commercial, renovation, outsideKirkuk, kitchen };
   const estimate = useMemo(
@@ -139,7 +159,9 @@ export default function Calculator({ pricing }: { pricing: CalculatorPricing }) 
     t("sum_level", { level: t(`level_${level}`) }),
     [commercial ? t("commercial") : t("residential"), renovation ? t("renovation") : t("new_build"), outsideKirkuk ? t("outside_kirkuk") : t("in_kirkuk"), ...(build && build !== "structure" && !kitchen ? [t("without_kitchen")] : [])].join(" — "),
   ].join("\n");
-  const whatsappUrl = `https://wa.me/${tSite("whatsapp")}?text=${encodeURIComponent(t("whatsapp_message", { summary, range: rangeText }))}`;
+  const shareLink = `${SITE_URL}/${locale}/calculator?${estimateToQuery(inputs)}`;
+  const whatsappUrl = `https://wa.me/${tSite("whatsapp")}?text=${encodeURIComponent(`${t("whatsapp_message", { summary, range: rangeText })}
+${shareLink}`)}`;
 
   const toggleDesign = (s: DesignService) =>
     setDesignServices((prev) => (prev.includes(s) ? prev.filter((x) => x !== s) : [...prev, s]));

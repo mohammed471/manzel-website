@@ -280,3 +280,51 @@ export function normalizePricing(raw: any): CalculatorPricing {
   };
   return merge(DEFAULT_PRICING, raw);
 }
+
+export const FLOOR_OPTIONS = [1, 1.5, 2, 3, 4];
+const BUILDS: BuildService[] = ["turnkey", "structure", "finishing"];
+const flag = (v: boolean) => (v ? "1" : "0");
+
+/** The calculator's choices as a query string, for a link that reopens it — no personal data. */
+export function estimateToQuery(i: EstimateInputs): string {
+  const q = new URLSearchParams({
+    b: i.build ?? "",
+    d: i.designServices.join(","),
+    a: String(i.plotArea),
+    f: String(i.facadeLength),
+    fl: String(i.floors),
+    l: i.level,
+    c: flag(i.commercial),
+    r: flag(i.renovation),
+    o: flag(i.outsideKirkuk),
+    k: flag(i.kitchen !== false),
+  });
+  return q.toString();
+}
+
+/** Reads estimateToQuery's output back; anything unknown or out of range is dropped. */
+export function queryToEstimate(q: URLSearchParams): Partial<EstimateInputs> {
+  const out: Partial<EstimateInputs> = {};
+  const b = q.get("b");
+  if (b === "") out.build = null;
+  else if (BUILDS.includes(b as BuildService)) out.build = b as BuildService;
+  const d = q.get("d");
+  if (d !== null) out.designServices = d.split(",").filter((s): s is DesignService => DESIGN_SERVICES.includes(s as DesignService));
+  const num = (key: string, ok: (n: number) => boolean) => {
+    const n = Number(q.get(key));
+    return q.has(key) && Number.isFinite(n) && ok(n) ? n : undefined;
+  };
+  const a = num("a", (n) => n > 0 && n <= 100_000);
+  if (a !== undefined) out.plotArea = a;
+  const f = num("f", (n) => n >= 0 && n <= 1_000);
+  if (f !== undefined) out.facadeLength = f;
+  const fl = num("fl", (n) => FLOOR_OPTIONS.includes(n));
+  if (fl !== undefined) out.floors = fl;
+  const l = q.get("l");
+  if (LEVELS.includes(l as Level)) out.level = l as Level;
+  for (const [key, field] of [["c", "commercial"], ["r", "renovation"], ["o", "outsideKirkuk"], ["k", "kitchen"]] as const) {
+    const v = q.get(key);
+    if (v === "1" || v === "0") out[field] = v === "1";
+  }
+  return out;
+}
