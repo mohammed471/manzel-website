@@ -69,7 +69,7 @@ export async function getAboutContent(locale: string): Promise<AboutContent> {
       title: t(`timeline_${i + 1}_title`),
       description: t(`timeline_${i + 1}_description`),
     })),
-    team: data.team.map((member, i) => ({
+    team: (data.team as { id: string; image: string | null }[]).map((member, i) => ({
       id: member.id,
       name: t(`team_${i + 1}_name`),
       role: t(`team_${i + 1}_role`),
