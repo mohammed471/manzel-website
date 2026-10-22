@@ -42,6 +42,7 @@ import {
   FLOOR_OPTIONS,
   estimateToQuery,
   queryToEstimate,
+  kitchenOption,
 } from "@/lib/calculator";
 import { cn } from "@/lib/utils";
 
@@ -126,11 +127,14 @@ export default function Calculator({ pricing }: { pricing: CalculatorPricing }) 
     if (q.kitchen !== undefined) setKitchen(q.kitchen);
   }, []);
 
-  const inputs: EstimateInputs = { build, designServices, plotArea, facadeLength, floors, level, commercial, renovation, outsideKirkuk, kitchen };
+  // «بدون مطبخ» only counts where the app has a kitchen price for this level (otherwise it's included)
+  const kitchenOffered = kitchenOption(pricing, build, level);
+  const withKitchen = kitchen || !kitchenOffered;
+  const inputs: EstimateInputs = { build, designServices, plotArea, facadeLength, floors, level, commercial, renovation, outsideKirkuk, kitchen: withKitchen };
   const estimate = useMemo(
     () => computeEstimate(inputs, pricing),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [build, designServices, plotArea, facadeLength, floors, level, commercial, renovation, outsideKirkuk, kitchen, pricing],
+    [build, designServices, plotArea, facadeLength, floors, level, commercial, renovation, outsideKirkuk, withKitchen, pricing],
   );
   const hasResult = estimate.lines.length > 0;
   // Design-only estimates have no range (low === high): show one number, in
@@ -157,7 +161,7 @@ export default function Calculator({ pricing }: { pricing: CalculatorPricing }) 
     t("sum_size", { plot: formatNumber(plotArea), floors, built: formatNumber(estimate.builtArea) }),
     ...(hasFacade ? [t("sum_facade", { length: formatNumber(facadeLength) })] : []),
     t("sum_level", { level: t(`level_${level}`) }),
-    [commercial ? t("commercial") : t("residential"), renovation ? t("renovation") : t("new_build"), outsideKirkuk ? t("outside_kirkuk") : t("in_kirkuk"), ...(build && build !== "structure" && !kitchen ? [t("without_kitchen")] : [])].join(" — "),
+    [commercial ? t("commercial") : t("residential"), renovation ? t("renovation") : t("new_build"), outsideKirkuk ? t("outside_kirkuk") : t("in_kirkuk"), ...(!withKitchen ? [t("without_kitchen")] : [])].join(" — "),
   ].join("\n");
   const shareLink = `${SITE_URL}/${locale}/calculator?${estimateToQuery(inputs)}`;
   const whatsappUrl = `https://wa.me/${tSite("whatsapp")}?text=${encodeURIComponent(`${t("whatsapp_message", { summary, range: rangeText })}
@@ -448,8 +452,8 @@ ${shareLink}`)}`;
               options={[{ value: false, label: t("in_kirkuk") }, { value: true, label: t("outside_kirkuk") }]}
               ariaLabel={`${t("in_kirkuk")} / ${t("outside_kirkuk")}`}
             />
-            {/* The kitchen is finishing work — not part of a structure-only job */}
-            {(build === "turnkey" || build === "finishing") && (
+            {/* Finishing work only, and only once the app has a kitchen price for this level */}
+            {kitchenOffered && (
               <Segmented
                 value={kitchen}
                 onChange={setKitchen}
@@ -517,7 +521,7 @@ ${shareLink}`)}`;
                 <ul className="mt-2 space-y-2 text-sm text-text-primary">
                   {[
                     ...textLines(t(`includes_${build}`)),
-                    ...(build === "turnkey" ? [kitchen ? t("includes_kitchen") : t("includes_bathrooms")] : []),
+                    ...(build === "turnkey" ? [withKitchen ? t("includes_kitchen") : t("includes_bathrooms")] : []),
                   ].map((item) => (
                     <li key={item} className="flex items-start gap-2">
                       <Check className="mt-0.5 w-4 h-4 shrink-0 text-success" strokeWidth={3} />
@@ -529,7 +533,7 @@ ${shareLink}`)}`;
               <div>
                 <p className="text-sm font-bold text-accent">{t("excludes_title")}</p>
                 <ul className="mt-2 space-y-2 text-sm text-text-secondary">
-                  {[...(build !== "structure" && !kitchen ? [t("excludes_kitchen")] : []), ...textLines(t("excludes"))].map((item) => (
+                  {[...(!withKitchen ? [t("excludes_kitchen")] : []), ...textLines(t("excludes"))].map((item) => (
                     <li key={item} className="flex items-start gap-2">
                       <X className="mt-0.5 w-4 h-4 shrink-0 text-accent" strokeWidth={3} />
                       {item}

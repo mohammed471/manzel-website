@@ -1,12 +1,8 @@
-import { describe, it, expect, vi, afterEach } from "vitest";
+import { describe, it, expect, vi, afterEach, beforeEach } from "vitest";
 import {
   getCategories,
   getCategory,
-  getProjects,
-  getProject,
-  getFeaturedProjects,
   getProjectImageUrl,
-  getProjectsByCategory,
 } from "@/lib/portfolio";
 
 // ─── Categories ─────────────────────────────────────────
@@ -50,54 +46,69 @@ describe("getCategory", () => {
   });
 });
 
-// ─── Projects ───────────────────────────────────────────
+// ─── Projects (from the internal app) ───────────────────
+
+const fixture = [
+  { id: "cafe-kirkuk", category: "interior-design", name: "كافيه كركوك", featured: true, images: ["https://i.ibb.co/a.jpg"] },
+  { id: "villa-kirkuk", category: "exterior-design", name: "فيلا كركوك", featured: false, images: ["https://i.ibb.co/b.jpg"] },
+  { id: "flat-kirkuk", category: "interior-design", name: "شقة كركوك", featured: true, images: ["https://i.ibb.co/c.jpg"] },
+];
+const withApp = () => {
+  beforeEach(() => vi.stubGlobal("fetch", vi.fn(async () => new Response(JSON.stringify({ projects: fixture })))));
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.resetModules();
+  });
+  return () => import("@/lib/portfolio");
+};
 
 describe("getProjects", () => {
-  it("returns all 5 projects when no filter", async () => {
-    const projects = await getProjects();
-    expect(projects).toHaveLength(5);
+  const load = withApp();
+
+  it("returns every project when no filter", async () => {
+    expect(await (await load()).getProjects()).toHaveLength(3);
   });
 
   it("filters by category", async () => {
-    const interiorProjects = await getProjects("interior-design");
-    expect(interiorProjects.length).toBeGreaterThan(0);
-    for (const p of interiorProjects) {
-      expect(p.category).toBe("interior-design");
-    }
+    const ids = (await (await load()).getProjects("interior-design")).map((p) => p.id);
+    expect(ids).toEqual(["cafe-kirkuk", "flat-kirkuk"]);
   });
 
   it("returns empty array for category with no projects", async () => {
-    const projects = await getProjects("non-existent-category");
-    expect(projects).toEqual([]);
+    expect(await (await load()).getProjects("non-existent-category")).toEqual([]);
   });
 });
 
-describe("getProject", () => {
-  it("returns a project by ID", async () => {
-    const project = await getProject("cafeteria-karbala");
-    expect(project).toBeDefined();
-    expect(project!.name).toBe("كافتيريا كربلاء");
-    expect(project!.category).toBe("interior-design");
+describe("getProject / getFeaturedProjects / getProjectsByCategory", () => {
+  const load = withApp();
+
+  it("finds a project by ID, undefined otherwise", async () => {
+    const mod = await load();
+    expect((await mod.getProject("villa-kirkuk"))?.category).toBe("exterior-design");
+    expect(await mod.getProject("does-not-exist")).toBeUndefined();
   });
 
-  it("returns undefined for non-existent project", async () => {
-    expect(await getProject("does-not-exist")).toBeUndefined();
-  });
-});
-
-describe("getFeaturedProjects", () => {
   it("returns only featured projects", async () => {
-    const featured = await getFeaturedProjects();
-    expect(featured.length).toBeGreaterThan(0);
-    for (const p of featured) {
-      expect(p.featured).toBe(true);
-    }
+    expect((await (await load()).getFeaturedProjects()).map((p) => p.id)).toEqual(["cafe-kirkuk", "flat-kirkuk"]);
   });
 
-  it("returns 5 featured projects from sample data", async () => {
-    // cafeteria-karbala, villa-baghdad, house-najaf, map-residential, finishing-apartment
-    const featured = await getFeaturedProjects();
-    expect(featured).toHaveLength(5);
+  it("groups projects under their category, one group per category", async () => {
+    const grouped = await (await load()).getProjectsByCategory();
+    expect(grouped).toHaveLength(5);
+    for (const group of grouped) for (const p of group.projects) expect(p.category).toBe(group.category.id);
+  });
+});
+
+describe("bundled data", () => {
+  it("keeps the five categories but no sample projects", async () => {
+    const data = (await import("@/data/projects.json")).default;
+    expect(data.categories).toHaveLength(5);
+    expect(data.projects).toEqual([]);
+  });
+
+  it("category IDs are unique", async () => {
+    const ids = getCategories().map((c) => c.id);
+    expect(new Set(ids).size).toBe(ids.length);
   });
 });
 
@@ -112,58 +123,6 @@ describe("getProjectImageUrl", () => {
   it("works with numbered images", async () => {
     const url = getProjectImageUrl("execution", "house-najaf", "1.jpg");
     expect(url).toBe("/portfolio/execution/house-najaf/1.jpg");
-  });
-});
-
-// ─── Grouped by Category ────────────────────────────────
-
-describe("getProjectsByCategory", () => {
-  it("returns one group per category", async () => {
-    const grouped = await getProjectsByCategory();
-    expect(grouped).toHaveLength(5);
-  });
-
-  it("each group has a category object and projects array", async () => {
-    for (const group of await getProjectsByCategory()) {
-      expect(group.category).toBeDefined();
-      expect(group.category.id).toBeTruthy();
-      expect(Array.isArray(group.projects)).toBe(true);
-    }
-  });
-
-  it("projects match their group category", async () => {
-    for (const group of await getProjectsByCategory()) {
-      for (const p of group.projects) {
-        expect(p.category).toBe(group.category.id);
-      }
-    }
-  });
-});
-
-// ─── Data Integrity ─────────────────────────────────────
-
-describe("data integrity", () => {
-  it("every project references a valid category", async () => {
-    const categoryIds = new Set(getCategories().map((c) => c.id));
-    for (const project of await getProjects()) {
-      expect(categoryIds.has(project.category)).toBe(true);
-    }
-  });
-
-  it("every project has at least one image", async () => {
-    for (const project of await getProjects()) {
-      expect(project.images.length).toBeGreaterThan(0);
-    }
-  });
-
-  it("project IDs are unique", async () => {
-    const ids = (await getProjects()).map((p) => p.id);
-    expect(new Set(ids).size).toBe(ids.length);
-  });
-
-  it("category IDs are unique", async () => {
-    const ids = getCategories().map((c) => c.id);
-    expect(new Set(ids).size).toBe(ids.length);
   });
 });
 
@@ -220,10 +179,11 @@ describe("projects from the internal app", () => {
     expect(await mod.getProjects()).toEqual([]);
   });
 
-  it("falls back to projects.json when the API fails", async () => {
+  it("shows no projects when the API is unreachable — never the old sample projects", async () => {
     vi.stubGlobal("fetch", vi.fn(async () => { throw new Error("offline"); }));
     const mod = await import("@/lib/portfolio");
-    expect(await mod.getProjects()).toHaveLength(5);
+    expect(await mod.getProjects()).toEqual([]);
+    expect(await mod.getActiveCategories()).toEqual([]);
   });
 
   it("reads the filter fields of a project and leaves unset ones out", async () => {

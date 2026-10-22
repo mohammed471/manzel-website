@@ -31,6 +31,12 @@ describe("getAboutContent fallback (API unreachable)", () => {
     expect(about.team).toEqual([]);
   });
 
+  it("brings back no unconfirmed timeline either", async () => {
+    vi.stubGlobal("fetch", vi.fn(async () => { throw new Error("offline"); }));
+    const { getAboutContent } = await import("@/lib/about");
+    expect((await getAboutContent("ar")).timeline).toEqual([]);
+  });
+
   it("keeps the team the app sends", async () => {
     const sections = { team: [{ id: "1", name_ar: "علي حسن", role_ar: "مهندس" }], testimonials: [], timeline: [], values: [] };
     vi.stubGlobal("fetch", vi.fn(async () => new Response(JSON.stringify({ texts: {}, site: {}, sections }))));

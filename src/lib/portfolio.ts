@@ -129,7 +129,8 @@ async function loadPortfolio(): Promise<{ projects: PortfolioProject[]; filters:
       }
     }
   } catch {
-    // API unreachable — fall through to the bundled copy
+    // API unreachable — no projects (projects.json keeps only the categories): empty
+    // categories hide themselves; never show sample projects as real work
   }
   return { projects: data.projects as PortfolioProject[], filters: NO_FILTERS };
 }

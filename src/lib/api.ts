@@ -60,7 +60,8 @@ function mapProduct(raw: any): Product {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function mapPrice(raw: any): Pick<Product, "price" | "priceUnit" | "currency"> {
-  const price = Number(raw.price_retail ?? raw.price);
+  // Off = not even in the data, so prices don't reach the page source (the product is serialized to the client)
+  const price = process.env.NEXT_PUBLIC_SHOW_PRICES === "true" ? Number(raw.price_retail ?? raw.price) : 0;
   if (!(price > 0)) return { price: null, priceUnit: null, currency: null };
   return {
     price,

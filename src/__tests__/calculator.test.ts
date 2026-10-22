@@ -7,6 +7,7 @@ import {
   maxPlotAreaForBudget,
   normalizePricing,
   estimateToQuery,
+  kitchenOption,
   queryToEstimate,
   type EstimateInputs,
 } from "@/lib/calculator";
@@ -124,6 +125,22 @@ describe("computeEstimate — kitchen", () => {
   it("changes nothing while no kitchen price is set", () => {
     const off = computeEstimate({ ...base, kitchen: false }, DEFAULT_PRICING);
     expect(off.low).toBe(computeEstimate(base, DEFAULT_PRICING).low);
+  });
+});
+
+describe("kitchenOption", () => {
+  const priced = { ...DEFAULT_PRICING, kitchen: { economy: 0, mid: 5_000_000, luxury: 9_000_000 } };
+
+  it("is offered only when the level has a kitchen price — otherwise the total wouldn't move", () => {
+    expect(kitchenOption(DEFAULT_PRICING, "turnkey", "mid")).toBe(false);
+    expect(kitchenOption(priced, "turnkey", "economy")).toBe(false);
+    expect(kitchenOption(priced, "turnkey", "mid")).toBe(true);
+    expect(kitchenOption(priced, "finishing", "luxury")).toBe(true);
+  });
+
+  it("is never offered for structure-only work or with no construction", () => {
+    expect(kitchenOption(priced, "structure", "mid")).toBe(false);
+    expect(kitchenOption(priced, null, "mid")).toBe(false);
   });
 });
 

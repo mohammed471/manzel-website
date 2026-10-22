@@ -63,9 +63,19 @@ describe("hidden products (flag from the internal app)", () => {
 });
 
 describe("product price fields (T18)", () => {
-  afterEach(() => vi.unstubAllGlobals());
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.unstubAllEnvs();
+  });
 
-  it("reads price, unit and currency when the API sends them", async () => {
+  it("keeps prices out of the data (and so out of the page source) while display is off", async () => {
+    vi.stubGlobal("fetch", vi.fn(async () => new Response(JSON.stringify({ products: [{ id: 1, name: "بلاط", price_retail: 16, currency: "USD" }] }))));
+    const { getProducts } = await import("@/lib/api");
+    expect((await getProducts())[0]).toMatchObject({ price: null, priceUnit: null, currency: null });
+  });
+
+  it("reads price, unit and currency when NEXT_PUBLIC_SHOW_PRICES=true", async () => {
+    vi.stubEnv("NEXT_PUBLIC_SHOW_PRICES", "true");
     const products = [
       { id: 1, name: "بلاط", price_retail: 16, currency: "USD", price_unit: "m2" },
       { id: 2, name: "كرسي", price_retail: 0, currency: "IQD" },

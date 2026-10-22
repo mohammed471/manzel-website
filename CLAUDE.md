@@ -136,11 +136,11 @@ src/
 │   └── khalid-art-bold.ttf (local Arabic display font)
 ├── i18n/                   (next-intl config)
 ├── data/
-│   ├── projects.json       (Portfolio categories + projects — file-based, no API)
+│   ├── projects.json       (the 5 portfolio categories; `projects` is empty — projects come from the internal app)
 │   └── about.json          (About page data — timeline, team, values)
 ├── lib/
 │   ├── api.ts              (Flask API calls for products, categories, contact, client-side search)
-│   ├── portfolio.ts        (Portfolio data helpers — internal app API, fallback projects.json)
+│   ├── portfolio.ts        (Portfolio data helpers — internal app API; unreachable = no projects)
 │   ├── portfolioFilters.ts (areaRangeIndex, filterProjects, projectSpecs — pure, no data imports)
 │   ├── board.ts            («لوحتي» entries: parseBoard, boardHref, toggleEntry, resolveBoard, boardMessage — pure)
 │   ├── boardStore.ts       (client — useBoard / toggleSaved / writeBoard over localStorage)
@@ -187,7 +187,7 @@ Flask API (localhost:5000) → src/lib/api.ts → Server Component → props →
 **Portfolio (internal app, «الموقع» → مشاريع المعرض):**
 ```
 Flask /api/public/website/portfolio → src/lib/portfolio.ts (async, ISR 1h, tag site-content) → Server Component
-                                   ↳ fallback: src/data/projects.json (only when the API is unreachable)
+                                   ↳ API unreachable: no projects (never the old sample projects) — empty categories hide themselves
 ```
 
 - Product pages call typed fetch functions from `api.ts` (ISR, `revalidate: 3600`)
@@ -268,7 +268,7 @@ Colour stock is reduced to `available: boolean` by the API (products with `track
 - Portfolio functions in `src/lib/portfolio.ts` are **async** (`getProjects`, `getProject`, `getFeaturedProjects`, `getProjectsByCategory`); categories stay static. Images are full URLs (ImgBB / `/api/public/website/media/…`) or `/portfolio/…` site paths — `getProjectImageUrl` passes both through. An empty list from a healthy API is respected (no fallback resurrection).
 - «انشر الآن» → `POST {site}/api/revalidate` with header `x-revalidate-secret` (= env `REVALIDATE_SECRET` on the website host = «مفتاح النشر» in the app) → `revalidateTag(SITE_CONTENT_TAG)` + `revalidatePath("/", "layout")`. All API fetches carry the `site-content` tag (`src/lib/cacheTags.ts` — kept separate so client bundles don't pull portfolio data).
 - **Texts / contact / images overrides:** `src/lib/siteContent.ts` fetches `/api/public/website/content` (`{texts:{ar,en}:{"ns.key": text}, site:{…}}`, ISR 1h, tag site-content) and `getSiteMessages(locale)` merges it over the bundled translation files — used by BOTH `src/i18n/request.ts` and `[locale]/layout.tsx`. Only existing string keys are overridden. Contact details and main images live in the `site` namespace (`site.phone_1`, `site.whatsapp`, `site.email`, `site.facebook`, `site.instagram`, `site.map_url`, `site.map_embed`, `site.hero_image`, `site.products_image`) — **never hardcode them**; use `t("site.…")` / `telHref()`.
-- **Testimonials / About lists** arrive in the same content response as `sections: {testimonials, timeline, team, values}`. `getTestimonials(locale)` (`src/lib/testimonials.ts`) and `getAboutContent(locale)` (`src/lib/about.ts`) are **async** and localize with `localized(item, field, locale)` (blank English → Arabic). `sections` missing (API down / older API) → no testimonials at all (there is no bundled fallback — template quotes must never show) / `about.json` + `about.*_N_*` keys for timeline and values (the team fallback is empty). **Only testimonials with `verified` (true/1/"1"/"true") are shown**; `project` (slug) adds a «شاهد المشروع» link. No verified testimonials → `/testimonials` is noindex, out of the sitemap, and unlinked (footer, More sheet, search — `hasTestimonials` from the layout). An emptied list is respected: the testimonials band / About section is hidden. Value icons: `iconMap` in the About page must match `VALUE_ICONS` in the internal app.
+- **Testimonials / About lists** arrive in the same content response as `sections: {testimonials, timeline, team, values}`. `getTestimonials(locale)` (`src/lib/testimonials.ts`) and `getAboutContent(locale)` (`src/lib/about.ts`) are **async** and localize with `localized(item, field, locale)` (blank English → Arabic). `sections` missing (API down / older API) → no testimonials at all (there is no bundled fallback — template quotes must never show) / `about.json` + `about.value_N_*` keys for the values only (team and timeline fallbacks are empty — unconfirmed milestones must not show). **Only testimonials with `verified` (true/1/"1"/"true") are shown**; `project` (slug) adds a «شاهد المشروع» link. No verified testimonials → `/testimonials` is noindex, out of the sitemap, and unlinked (footer, More sheet, search — `hasTestimonials` from the layout). An emptied list is respected: the testimonials band / About section is hidden. Value icons: `iconMap` in the About page must match `VALUE_ICONS` in the internal app.
 - GlobalSearch reads projects from `/api/portfolio-index` (cached route) instead of bundling projects.json.
 - Tests: `npm test` (vitest) — `src/__tests__/portfolio.test.ts` covers API / empty-list / fallback / image URLs / filter fields; `portfolioFilters.test.ts` the area ranges, filtering and spec labels.
 - Project types, area ranges and the floor-plan watermark: see "Portfolio Filters" above.
@@ -298,7 +298,7 @@ Colour stock is reduced to `available: boolean` by the API (products with `track
 
 - The page fetches **all** products once (`getProducts()`, ISR-cached, ~200 KB) and filters / searches / paginates in `src/lib/catalog.ts` — no per-filter API calls, so filters never wait on Render's cold start.
 - URL state: `?category=<id>&subcategory=<id>&search=<q>&page=<n>` (24 per page). `catalogHref()` builds links; `{ anchor: true }` jumps to `#catalog`.
-- Order: photographed products first, then products with colours, then name. Empty categories/subcategories are hidden.
+- Order: photographed products first, then `?sort=` (newest by default, name, or category). Empty categories/subcategories are hidden.
 - Search is Arabic-normalised (diacritics, alef/ya/ta-marbuta variants) across name, details, category and colour names; every word must match.
 - Components in `src/components/products/`: `CategoryNav` (sidebar on lg, chips below), `CatalogSearch`, `ProductCard`, `ProductImage` (falls back to a category placeholder if the file 404s), `ColorDots`, `CatalogPagination`, `ProductDetailView` (colour picker swaps photo + WhatsApp text), `categoryIcon`.
 - Product images use optimized `next/image` (not `BlurImage`, which downloads originals).
@@ -405,7 +405,7 @@ Font selection is automatic via `[lang="ar"]` and `[lang="en"]` CSS selectors in
 
 ### Prices
 - There is no `formatPrice` helper: amounts use `n.toLocaleString("en-US")` inside a translation key (`home.openbooks_amount`, `products.price_IQD`) so digits stay Western.
-- Product prices: the API sends `price_retail` + `currency` for nearly every product; `mapProduct` reads them into `price / priceUnit / currency`, but they are shown **only** with `NEXT_PUBLIC_SHOW_PRICES=true` — the pricing policy is the owner's decision.
+- Product prices: the API sends `price_retail` + `currency` for nearly every product; `mapProduct` reads them into `price / priceUnit / currency`, but only with `NEXT_PUBLIC_SHOW_PRICES=true` — off, `mapPrice` drops them so they don't even reach the page source. The pricing policy is the owner's decision.
 - Never show cost or wholesale prices
 
 ### Next.js Patterns
@@ -468,7 +468,7 @@ The Flask app MUST be running for:
 - `npm run dev` (fetches product/category data on each request)
 - Product images (served from Flask)
 
-Portfolio pages read from Flask but fall back to `src/data/projects.json` (images of the original projects stay in `public/portfolio/`).
+Portfolio pages read from Flask; when it is unreachable they show no projects (the old sample projects were removed from `src/data/projects.json` before launch; their images are still in `public/portfolio/` pending the owner's decision).
 
 If Flask is down, product pages render with empty/fallback content (no crash). Portfolio pages work normally.
 
@@ -493,7 +493,7 @@ The owner's checklist is `docs/pre-launch-tasks.md`; the plan `docs/superpowers/
 - **Empty portfolio categories** (`getActiveCategories()`) are hidden from the bento, the category cards, the filter buttons, the QuickAccessBar and the sitemap; their page shows "coming soon" + booking and is noindex. Adding a project shows the category again automatically.
 - **Counters** (`getStats(page)`): products = live product count, sections = active categories, years / projects / clients = `stats.*_count` texts (empty in the bundled files — the owner fills them in from the app). The number is in the server HTML; `CountUp` only animates it (not under reduced motion). `stats.products_count` was removed so the computed count can't be overridden.
 - **Tatweel:** the app's H1 text has «شريـــكك»; `HomeHero` renders it `aria-hidden` with the plain word (`stripTatweel`) in `sr-only`.
-- **Calculator:** `kitchen` (with/without — takes `pricing.kitchen[level]` off turnkey/finishing; 0 until set in the app) and `based_on_projects` («مبنية على كلفة N مشروع», hidden at 0) live in the pricing JSON. The WhatsApp message ends with a link that reopens the calculator with the same choices (`estimateToQuery` / `queryToEstimate`, read from `window.location` after hydration). The calibration test for the portal house is `it.skip` until the owner's new prices.
+- **Calculator:** `kitchen` (with/without — takes `pricing.kitchen[level]` off turnkey/finishing; the toggle shows only where that price is > 0, `kitchenOption()`, so it never appears without changing the total) and `based_on_projects` («مبنية على كلفة N مشروع», hidden at 0) live in the pricing JSON. The WhatsApp message ends with a link that reopens the calculator with the same choices (`estimateToQuery` / `queryToEstimate`, read from `window.location` after hydration). The calibration test for the portal house is `it.skip` until the owner's new prices.
 - **Products:** `productTitle()` uses the first line of `details` as the title when the name is a supplier code and that line is a short Arabic name (not colours, numbers or prices) — the code shows underneath. Sort `?sort=newest|name|category` (photographed products still first). `hidden` products (once the API sends the flag) are left out. `node scripts/audit-products.ts` writes `reports/products-audit.csv` + summary — read-only.
 - **SEO:** every page's metadata goes through `pageMeta()` (canonical, hreflang ar/en/x-default=ar, og image, twitter `summary_large_image`); the layout sets defaults without a canonical. Share images `public/og-*.jpg` are drawn by `node scripts/make-og-images.ts` (sharp/Pango — request-time rendering doesn't join Arabic letters); rerun after changing the hero/CTA texts. JSON-LD: one `HomeAndConstructionBusiness` (no `geo` until the owner confirms coordinates) + `FAQPage` on home, `CreativeWork` on project pages. `NEXT_PUBLIC_ALLOW_INDEXING=false` (staging) closes robots.txt and noindexes every page; unset = indexed. The sitemap includes visible product pages.
 - **Removed:** the scroll-scrubbed furniture section (`ScrollVideoSection`, `scrubFrames`, `useFrameScrub`, `public/scrub-frames/`, `furniture-poster.jpg`) — replaced by `HowWeWork`.

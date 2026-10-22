@@ -65,7 +65,7 @@ export async function getAboutContent(locale: string): Promise<AboutContent> {
 
   const t = await getTranslations({ locale, namespace: "about" });
   return {
-    timeline: data.timeline.map((item, i) => ({
+    timeline: (data.timeline as { year: string }[]).map((item, i) => ({
       year: item.year,
       title: t(`timeline_${i + 1}_title`),
       description: t(`timeline_${i + 1}_description`),

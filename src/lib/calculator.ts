@@ -328,3 +328,8 @@ export function queryToEstimate(q: URLSearchParams): Partial<EstimateInputs> {
   }
   return out;
 }
+
+/** «مع / بدون مطبخ» is offered only where it changes the price: finishing work at a level with a kitchen price. */
+export function kitchenOption(p: CalculatorPricing, build: BuildService | null, level: Level): boolean {
+  return (build === "turnkey" || build === "finishing") && p.kitchen[level] > 0;
+}
