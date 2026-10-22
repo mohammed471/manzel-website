@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { pageMeta } from "@/lib/pageMeta";
 import { getTranslations } from "next-intl/server";
 import { ChevronLeft } from "lucide-react";
 import { Link } from "@/i18n/navigation";
@@ -31,15 +32,8 @@ export async function generateMetadata({
   const title = `${name} | ${tBrand("name")}`;
   const description = tMeta("product_description", { name, category: product.subcategory || product.category });
 
-  return {
-    title,
-    description,
-    openGraph: {
-      title,
-      description,
-      ...(coverImage(product) ? { images: [getProductImageUrl(coverImage(product)!)] } : {}),
-    },
-  };
+  const cover = coverImage(product);
+  return pageMeta({ locale, path: `/products/${id}`, title, description, image: cover ? getProductImageUrl(cover) : undefined });
 }
 
 export default async function ProductPage({ params }: ProductPageProps) {

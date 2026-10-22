@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Link } from "@/i18n/navigation";
+import { pageMeta } from "@/lib/pageMeta";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { telHref } from "@/lib/siteContent";
 import AnimatedSection from "@/components/AnimatedSection";
@@ -14,15 +15,7 @@ export async function generateMetadata({
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "metadata" });
 
-  return {
-    title: t("contact_title"),
-    description: t("contact_description"),
-    openGraph: {
-      title: t("contact_title"),
-      description: t("contact_description"),
-      type: "website",
-    },
-  };
+  return pageMeta({ locale, path: "/contact", title: t("contact_title"), description: t("contact_description") });
 }
 
 export default async function ContactPage({

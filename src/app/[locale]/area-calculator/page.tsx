@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/pageMeta";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import PageHero from "@/components/ui/PageHero";
 import AreaCalculator, { type MaterialLinks } from "@/components/AreaCalculator";
@@ -45,15 +46,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "metadata" });
-  return {
-    title: t("area_calculator_title"),
-    description: t("area_calculator_description"),
-    openGraph: {
-      title: t("area_calculator_title"),
-      description: t("area_calculator_description"),
-      type: "website",
-    },
-  };
+  return pageMeta({ locale, path: "/area-calculator", title: t("area_calculator_title"), description: t("area_calculator_description") });
 }
 
 export default async function AreaCalculatorPage({

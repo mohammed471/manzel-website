@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/pageMeta";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import AnimatedSection from "@/components/AnimatedSection";
 import PageHero from "@/components/ui/PageHero";
@@ -12,15 +13,7 @@ export async function generateMetadata({
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "metadata" });
 
-  return {
-    title: t("booking_title"),
-    description: t("booking_description"),
-    openGraph: {
-      title: t("booking_title"),
-      description: t("booking_description"),
-      type: "website",
-    },
-  };
+  return pageMeta({ locale, path: "/booking", title: t("booking_title"), description: t("booking_description"), image: "/og-booking.jpg" });
 }
 
 export default async function BookingPage({

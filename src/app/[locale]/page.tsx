@@ -12,6 +12,13 @@ import ToolsGrid from "@/components/home/ToolsGrid";
 import VisitSection from "@/components/home/VisitSection";
 import ClosingCTA from "@/components/home/ClosingCTA";
 import { SITE_URL } from "@/lib/siteUrl";
+import { pageMeta } from "@/lib/pageMeta";
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "metadata" });
+  return pageMeta({ locale, path: "", title: t("home_title"), description: t("home_description") });
+}
 
 export default async function Home({
   params,

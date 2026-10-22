@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/pageMeta";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import PageHero from "@/components/ui/PageHero";
 import { Suspense } from "react";
@@ -11,15 +12,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "metadata" });
-  return {
-    title: t("color_picker_title"),
-    description: t("color_picker_description"),
-    openGraph: {
-      title: t("color_picker_title"),
-      description: t("color_picker_description"),
-      type: "website",
-    },
-  };
+  return pageMeta({ locale, path: "/color-picker", title: t("color_picker_title"), description: t("color_picker_description") });
 }
 
 export default async function ColorPickerPage({

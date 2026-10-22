@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Link } from "@/i18n/navigation";
 import BlurImage from "@/components/BlurImage";
 import { notFound } from "next/navigation";
+import { pageMeta } from "@/lib/pageMeta";
 import { getTranslations } from "next-intl/server";
 import AnimatedSection from "@/components/AnimatedSection";
 import ClosingCTA from "@/components/home/ClosingCTA";
@@ -43,16 +44,14 @@ export async function generateMetadata({
     return { title: tMeta("project_not_found") };
   }
 
-  return {
+  return pageMeta({
+    locale,
+    path: `/portfolio/${project.category}/${project.id}`,
     title: `${project.name} | ${tMeta("portfolio_title").split(" | ").pop()}`,
-    description: project.description?.slice(0, 160),
-    openGraph: {
-      title: project.name,
-      description: project.description?.slice(0, 160),
-      type: "article",
-      images: project.images[0] ? [getProjectImageUrl(project.category, project.id, project.images[0])] : [],
-    },
-  };
+    description: project.description?.slice(0, 160) || tMeta("portfolio_description"),
+    image: project.images[0] ? getProjectImageUrl(project.category, project.id, project.images[0]) : undefined,
+    type: "article",
+  });
 }
 
 export default async function ProjectDetailPage({ params }: PageProps) {

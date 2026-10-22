@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/pageMeta";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Award, Clock, Eye, Handshake, Heart, Lightbulb, Ruler, Shield, Star, Users } from "lucide-react";
 import AnimatedSection from "@/components/AnimatedSection";
@@ -18,18 +19,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "metadata" });
-  const isAR = locale === "ar";
-
-  return {
-    title: t("about_title"),
-    description: t("about_description"),
-    openGraph: {
-      title: t("about_title"),
-      description: t("about_description"),
-      type: "website",
-      locale: isAR ? "ar_IQ" : "en_US",
-    },
-  };
+  return pageMeta({ locale, path: "/about", title: t("about_title"), description: t("about_description") });
 }
 
 // Keys match VALUE_ICONS in the internal app (core/db/website_sections.py).

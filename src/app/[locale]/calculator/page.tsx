@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/pageMeta";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import PageHero from "@/components/ui/PageHero";
 import Calculator from "@/components/Calculator";
@@ -12,15 +13,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "metadata" });
-  return {
-    title: t("calculator_title"),
-    description: t("calculator_description"),
-    openGraph: {
-      title: t("calculator_title"),
-      description: t("calculator_description"),
-      type: "website",
-    },
-  };
+  return pageMeta({ locale, path: "/calculator", title: t("calculator_title"), description: t("calculator_description"), image: "/og-calculator.jpg" });
 }
 
 export default async function CalculatorPage({

@@ -14,6 +14,7 @@ import PageTransition from "@/components/PageTransition";
 import ScrollToTop from "@/components/ScrollToTop";
 import GlobalSearchLazy from "@/components/GlobalSearchLazy";
 import { getTestimonials } from "@/lib/testimonials";
+import { pageMeta } from "@/lib/pageMeta";
 import SplashScreen from "@/components/SplashScreen";
 import Analytics from "@/components/Analytics";
 import { DEVICE_BOOT_SCRIPT, SPLASH_BOOT_SCRIPT } from "@/lib/deviceScript";
@@ -75,19 +76,10 @@ export async function generateMetadata({
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "metadata" });
 
-  const isAR = locale === "ar";
-  return {
-    metadataBase: new URL(SITE_URL),
-    title: t("home_title"),
-    description: t("home_description"),
-    openGraph: {
-      title: t("home_title"),
-      description: t("home_description"),
-      type: "website",
-      locale: isAR ? "ar_IQ" : "en_US",
-      siteName: t("site_name"),
-    },
-  };
+  // Defaults for pages without their own metadata — share image and twitter card,
+  // but no canonical (that would point every such page at the home page).
+  const defaults = await pageMeta({ locale, path: "", title: t("home_title"), description: t("home_description") });
+  return { metadataBase: new URL(SITE_URL), ...defaults, alternates: undefined };
 }
 
 export default async function LocaleLayout({

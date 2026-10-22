@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/pageMeta";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import Image from "@/components/SiteImage";
 import AnimatedSection from "@/components/AnimatedSection";
@@ -18,13 +19,7 @@ export async function generateMetadata({
   return {
     // Until there are verified testimonials the page stays out of search
     ...(empty && { robots: { index: false, follow: true } }),
-    title: t("testimonials_title"),
-    description: t("testimonials_description"),
-    openGraph: {
-      title: t("testimonials_title"),
-      description: t("testimonials_description"),
-      type: "website",
-    },
+    ...(await pageMeta({ locale, path: "/testimonials", title: t("testimonials_title"), description: t("testimonials_description") })),
   };
 }
 

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/pageMeta";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import AnimatedSection from "@/components/AnimatedSection";
 import PortfolioFilter from "@/components/PortfolioFilter";
@@ -21,15 +22,7 @@ export async function generateMetadata({
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "metadata" });
 
-  return {
-    title: t("portfolio_title"),
-    description: t("portfolio_description"),
-    openGraph: {
-      title: t("portfolio_title"),
-      description: t("portfolio_description"),
-      type: "website",
-    },
-  };
+  return pageMeta({ locale, path: "/portfolio", title: t("portfolio_title"), description: t("portfolio_description") });
 }
 
 export default async function PortfolioPage({

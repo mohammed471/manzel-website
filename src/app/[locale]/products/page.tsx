@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import { pageMeta } from "@/lib/pageMeta";
 import { getTranslations } from "next-intl/server";
 import { PackageSearch, X } from "lucide-react";
 import { Link } from "@/i18n/navigation";
@@ -16,15 +17,7 @@ import { catalogHref } from "@/components/products/catalogHref";
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "metadata" });
-  return {
-    title: t("products_title"),
-    description: t("products_description"),
-    openGraph: {
-      title: t("products_title"),
-      description: t("products_description"),
-      type: "website",
-    },
-  };
+  return pageMeta({ locale, path: "/products", title: t("products_title"), description: t("products_description") });
 }
 
 interface ProductsPageProps {

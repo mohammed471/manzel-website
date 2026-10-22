@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Link } from "@/i18n/navigation";
 import { notFound } from "next/navigation";
+import { pageMeta } from "@/lib/pageMeta";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import AnimatedSection from "@/components/AnimatedSection";
 import PageHero from "@/components/ui/PageHero";
@@ -42,13 +43,12 @@ export async function generateMetadata({
   return {
     // An empty category shows "coming soon" — kept out of search until it has work
     ...(empty && { robots: { index: false, follow: true } }),
-    title: `${translatedName} | ${tMeta("portfolio_title").split(" | ").pop()}`,
-    description: categoryDesc,
-    openGraph: {
-      title: `${translatedName} | ${tMeta("portfolio_title")}`,
+    ...(await pageMeta({
+      locale,
+      path: `/portfolio/${categoryId}`,
+      title: `${translatedName} | ${tMeta("portfolio_title").split(" | ").pop()}`,
       description: categoryDesc,
-      type: "website",
-    },
+    })),
   };
 }
 

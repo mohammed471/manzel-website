@@ -57,6 +57,7 @@ export async function generateMetadata({ params, searchParams }: BoardPageProps)
         ? { images: [{ url: `/api/board-card?i=${boardParam(entries)}`, width: 1200, height: 630 }] }
         : {}),
     },
+    twitter: { card: "summary_large_image" },
   };
 }
 
