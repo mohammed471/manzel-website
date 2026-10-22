@@ -1,7 +1,7 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { getHomeData } from "@/components/home/homeData";
 import { businessLd, faqLd } from "@/lib/jsonLd";
-import HowWeWork from "@/components/home/HowWeWork";
+import ScrollVideoSection from "@/components/ScrollVideoSection";
 import HomeHero from "@/components/home/HomeHero";
 import QuickAccessBar from "@/components/home/QuickAccessBar";
 import ServicesBento from "@/components/home/ServicesBento";
@@ -58,7 +58,7 @@ export default async function Home({
       <QuickAccessBar />
       <ServicesBento services={services} />
       <OpenBooksSection />
-      <HowWeWork />
+      <ScrollVideoSection />
       <ProjectsShowcase projects={featuredProjects.slice(0, 4)} />
       <TrustSection stats={stats} testimonials={testimonialData} />
       <ToolsGrid tone="cream" />
