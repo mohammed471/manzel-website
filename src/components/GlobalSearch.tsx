@@ -54,7 +54,7 @@ function loadProjectIndex(): Promise<PortfolioProject[]> {
   return projectIndex;
 }
 
-export default function GlobalSearch() {
+export default function GlobalSearch({ hasTestimonials }: { hasTestimonials: boolean }) {
   const t = useTranslations("search");
   const tNav = useTranslations("nav");
   const router = useRouter();
@@ -148,6 +148,7 @@ export default function GlobalSearch() {
 
       // Pages: filter by translated label
       const matchedPages = PAGES.filter((p) => {
+        if (p.href === "/testimonials" && !hasTestimonials) return false;
         const label = tNav(p.labelKey);
         return label.toLowerCase().includes(q);
       });

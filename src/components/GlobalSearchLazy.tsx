@@ -5,8 +5,8 @@ import { useEffect, useRef, useState, type ComponentType } from "react";
 // GlobalSearch bundles projects.json + framer-motion + icons, yet is only ever
 // opened via Ctrl+K or the navbar search button. Load it on first open intent
 // instead of shipping it to every visitor on every page.
-export default function GlobalSearchLazy() {
-  const [Search, setSearch] = useState<ComponentType | null>(null);
+export default function GlobalSearchLazy({ hasTestimonials }: { hasTestimonials: boolean }) {
+  const [Search, setSearch] = useState<ComponentType<{ hasTestimonials: boolean }> | null>(null);
   const pendingOpen = useRef(false);
 
   useEffect(() => {
@@ -42,5 +42,5 @@ export default function GlobalSearchLazy() {
     }
   }, [Search]);
 
-  return Search ? <Search /> : null;
+  return Search ? <Search hasTestimonials={hasTestimonials} /> : null;
 }

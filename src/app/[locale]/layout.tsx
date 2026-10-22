@@ -13,6 +13,7 @@ import WhatsAppButton from "@/components/WhatsAppButton";
 import PageTransition from "@/components/PageTransition";
 import ScrollToTop from "@/components/ScrollToTop";
 import GlobalSearchLazy from "@/components/GlobalSearchLazy";
+import { getTestimonials } from "@/lib/testimonials";
 import SplashScreen from "@/components/SplashScreen";
 import Analytics from "@/components/Analytics";
 import { DEVICE_BOOT_SCRIPT, SPLASH_BOOT_SCRIPT } from "@/lib/deviceScript";
@@ -106,6 +107,8 @@ export default async function LocaleLayout({
   setRequestLocale(locale);
 
   const messages = await getSiteMessages(locale);
+  // No verified testimonials → the page is noindex and its links are hidden
+  const hasTestimonials = (await getTestimonials(locale)).length > 0;
   const isRTL = locale === "ar";
 
   return (
@@ -126,11 +129,11 @@ export default async function LocaleLayout({
           <SplashScreen />
           <SiteHeader />
           <main className="min-h-screen"><PageTransition>{children}</PageTransition></main>
-          <Footer />
+          <Footer hasTestimonials={hasTestimonials} />
           <WhatsAppButton />
           <ScrollToTop />
-          <GlobalSearchLazy />
-          <MobileBottomNav />
+          <GlobalSearchLazy hasTestimonials={hasTestimonials} />
+          <MobileBottomNav hasTestimonials={hasTestimonials} />
         </NextIntlClientProvider>
       </body>
     </html>

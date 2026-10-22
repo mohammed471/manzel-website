@@ -1,9 +1,10 @@
-import data from "@/data/testimonials.json";
 import { getSiteSections, localized } from "@/lib/siteContent";
+import { getProject } from "@/lib/portfolio";
 
 // Testimonials are edited in the internal app («الموقع» → آراء العملاء) and
-// arrive with the site content. testimonials.json is only the fallback for
-// when the API is unreachable — an empty list from the app is respected.
+// arrive with the site content. Only those marked `verified` are shown — real
+// clients who agreed to be quoted. There is no bundled fallback: when the API is
+// unreachable the section is hidden rather than filled with template quotes.
 
 export interface Testimonial {
   id: string;
@@ -13,6 +14,8 @@ export interface Testimonial {
   text: string;
   rating: number;
   imageUrl: string | null;
+  /** The project page this client's work is shown on, if any. */
+  projectHref: string | null;
 }
 
 /** Site paths (/testimonials/…) and full URLs pass through; bare filenames live in /testimonials/. */
@@ -20,12 +23,17 @@ export function getTestimonialImageUrl(image: string): string {
   return /^(https?:)?\//.test(image) ? image : `/testimonials/${image}`;
 }
 
+const isVerified = (v: unknown) => v === true || v === 1 || v === "1" || v === "true";
+
 export async function getTestimonials(locale: string): Promise<Testimonial[]> {
   const sections = await getSiteSections();
-  if (sections) {
-    return sections.testimonials.map((item, i) => {
+  if (!sections) return [];
+  const verified = sections.testimonials.filter((item) => isVerified(item.verified));
+  return Promise.all(
+    verified.map(async (item, i) => {
       const image = typeof item.image === "string" ? item.image : "";
       const rating = Number(item.rating);
+      const project = typeof item.project === "string" && item.project ? await getProject(item.project) : undefined;
       return {
         id: String(item.id ?? i),
         name: localized(item, "name", locale),
@@ -34,16 +42,8 @@ export async function getTestimonials(locale: string): Promise<Testimonial[]> {
         text: localized(item, "text", locale),
         rating: rating >= 1 && rating <= 5 ? Math.round(rating) : 5,
         imageUrl: image ? getTestimonialImageUrl(image) : null,
+        projectHref: project ? `/portfolio/${project.category}/${project.id}` : null,
       };
-    });
-  }
-  return data.map((item) => ({
-    id: item.id,
-    name: item.name,
-    role: item.role,
-    location: item.location,
-    text: item.text,
-    rating: item.rating,
-    imageUrl: item.image ? getTestimonialImageUrl(item.image) : null,
-  }));
+    }),
+  );
 }

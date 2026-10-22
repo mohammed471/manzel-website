@@ -4,6 +4,7 @@ import Image from "@/components/SiteImage";
 import AnimatedSection from "@/components/AnimatedSection";
 import PageHero from "@/components/ui/PageHero";
 import { getTestimonials } from "@/lib/testimonials";
+import { Link } from "@/i18n/navigation";
 
 export async function generateMetadata({
   params,
@@ -12,8 +13,11 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "metadata" });
+  const empty = (await getTestimonials(locale)).length === 0;
 
   return {
+    // Until there are verified testimonials the page stays out of search
+    ...(empty && { robots: { index: false, follow: true } }),
     title: t("testimonials_title"),
     description: t("testimonials_description"),
     openGraph: {
@@ -102,6 +106,11 @@ export default async function TestimonialsPage({
                         </p>
                       </div>
                     </div>
+                    {testimonial.projectHref && (
+                      <Link href={testimonial.projectHref} className="mt-4 inline-block text-sm font-bold text-accent hover:underline">
+                        {t("see_project")}
+                      </Link>
+                    )}
                   </div>
                 </AnimatedSection>
               ))}

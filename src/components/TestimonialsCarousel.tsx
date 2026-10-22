@@ -2,7 +2,8 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import Image from "@/components/SiteImage";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 
 interface TestimonialItem {
   id: string;
@@ -12,6 +13,7 @@ interface TestimonialItem {
   rating: number;
   text: string;
   imageUrl: string | null;
+  projectHref: string | null;
 }
 
 interface TestimonialsCarouselProps {
@@ -23,6 +25,7 @@ export default function TestimonialsCarousel({ testimonials }: TestimonialsCarou
   const [visibleCount, setVisibleCount] = useState(1);
   const [isHovered, setIsHovered] = useState(false);
   const isRTL = useLocale() === "ar";
+  const t = useTranslations("testimonials");
   const touchStartX = useRef<number>(0);
 
   // Responsive visibleCount based on breakpoints
@@ -167,6 +170,11 @@ export default function TestimonialsCarousel({ testimonials }: TestimonialsCarou
                     </p>
                   </div>
                 </div>
+                {testimonial.projectHref && (
+                  <Link href={testimonial.projectHref} className="mt-4 inline-block text-sm font-bold text-accent hover:underline">
+                    {t("see_project")}
+                  </Link>
+                )}
               </div>
             </div>
           ))}

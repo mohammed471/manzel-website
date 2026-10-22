@@ -24,7 +24,7 @@ import { cn } from "@/lib/utils";
 // App-style bottom tab bar for phones/tablets (hidden on lg+, where the
 // header carries the full nav). Solid background — no backdrop-blur on a
 // fixed element over scrolling content (iOS perf rule in CLAUDE.md).
-export default function MobileBottomNav() {
+export default function MobileBottomNav({ hasTestimonials }: { hasTestimonials: boolean }) {
   const t = useTranslations("nav");
   const pathname = usePathname();
   // Sheet is open only for the path it was opened on, so navigating closes it
@@ -52,7 +52,7 @@ export default function MobileBottomNav() {
     { href: "/area-calculator" as const, label: t("area_calculator"), icon: Ruler },
     { href: "/color-picker" as const, label: t("color_picker"), icon: Palette },
     { href: "/about" as const, label: t("about"), icon: Info },
-    { href: "/testimonials" as const, label: t("testimonials"), icon: MessageSquareQuote },
+    ...(hasTestimonials ? [{ href: "/testimonials" as const, label: t("testimonials"), icon: MessageSquareQuote }] : []),
   ];
 
   const isActive = (href: string) =>

@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { getActiveCategories, getProjects } from "@/lib/portfolio";
 import { SITE_URL } from "@/lib/siteUrl";
+import { getTestimonials } from "@/lib/testimonials";
 
 const BASE_URL = SITE_URL;
 
@@ -16,7 +17,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { path: "/calculator", changeFrequency: "yearly" as const, priority: 0.5 },
     { path: "/area-calculator", changeFrequency: "yearly" as const, priority: 0.5 },
     { path: "/booking", changeFrequency: "yearly" as const, priority: 0.5 },
-    { path: "/testimonials", changeFrequency: "monthly" as const, priority: 0.5 },
+    // noindex while there are no verified testimonials
+    ...((await getTestimonials("ar")).length > 0
+      ? [{ path: "/testimonials", changeFrequency: "monthly" as const, priority: 0.5 }]
+      : []),
     { path: "/about", changeFrequency: "yearly" as const, priority: 0.6 },
     { path: "/color-picker", changeFrequency: "yearly" as const, priority: 0.5 },
   ];
