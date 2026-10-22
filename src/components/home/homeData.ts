@@ -1,6 +1,6 @@
 import { getLocale, getTranslations } from "next-intl/server";
 import {
-  getCategories as getPortfolioCategories,
+  getActiveCategories,
   getProjects,
   getProjectImageUrl,
 } from "@/lib/portfolio";
@@ -14,8 +14,8 @@ export async function getHomeData() {
   const tPortfolio = await getTranslations("portfolio");
   const tFaq = await getTranslations("faq");
 
-  // Service cards = portfolio categories, each with the cover of its first project
-  const services = getPortfolioCategories().map((category) => {
+  // Service cards = portfolio categories with work, each with the cover of its first project
+  const services = (await getActiveCategories()).map((category) => {
     const inCategory = allProjects.filter((p) => p.category === category.id);
     const first = inCategory[0];
     const key = category.id.replace(/-/g, "_");

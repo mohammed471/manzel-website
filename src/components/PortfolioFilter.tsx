@@ -39,7 +39,8 @@ export default function PortfolioFilter({
 
   return (
     <div>
-      {/* Filter Tabs */}
+      {/* Filter Tabs — only when there is a choice (one category = the grid alone) */}
+      {categories.length > 1 && (
       <div className="flex gap-2 mb-10 overflow-x-auto pb-2 scrollbar-hide">
         <button
           onClick={() => setActiveFilter("all")}
@@ -65,6 +66,8 @@ export default function PortfolioFilter({
           </button>
         ))}
       </div>
+
+      )}
 
       {/* Projects Grid */}
       <motion.div

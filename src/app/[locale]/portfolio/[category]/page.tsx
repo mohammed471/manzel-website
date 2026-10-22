@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import AnimatedSection from "@/components/AnimatedSection";
 import PageHero from "@/components/ui/PageHero";
+import { ButtonLink } from "@/components/ui/Button";
 import ClosingCTA from "@/components/home/ClosingCTA";
 import ProjectsBrowser from "@/components/portfolio/ProjectsBrowser";
 import {
@@ -37,7 +38,10 @@ export async function generateMetadata({
 
   const translatedName = t(`cat_${categoryId.replace(/-/g, "_")}`);
   const categoryDesc = t(`cat_${categoryId.replace(/-/g, "_")}_desc`);
+  const empty = (await getProjects(categoryId)).length === 0;
   return {
+    // An empty category shows "coming soon" — kept out of search until it has work
+    ...(empty && { robots: { index: false, follow: true } }),
     title: `${translatedName} | ${tMeta("portfolio_title").split(" | ").pop()}`,
     description: categoryDesc,
     openGraph: {
@@ -59,6 +63,7 @@ export default async function CategoryPage({ params }: PageProps) {
 
   const t = await getTranslations("portfolio");
   const tCommon = await getTranslations("common");
+  const tNav = await getTranslations("nav");
   const projects = await getProjects(categoryId);
   const filters = await getPortfolioFilters();
   const types = filters.types
@@ -73,7 +78,7 @@ export default async function CategoryPage({ params }: PageProps) {
     <>
       <PageHero
         imageUrl={coverUrl}
-        badge={t("projects_count", { count: projects.length })}
+        badge={projects.length > 0 ? t("projects_count", { count: projects.length }) : t("coming_soon")}
         title={translatedName}
         description={translatedDesc}
         breadcrumb={
@@ -112,9 +117,12 @@ export default async function CategoryPage({ params }: PageProps) {
                     d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M3.75 21h16.5A2.25 2.25 0 0022.5 18.75V5.25A2.25 2.25 0 0020.25 3H3.75A2.25 2.25 0 001.5 5.25v13.5A2.25 2.25 0 003.75 21z"
                   />
                 </svg>
-                <p className="text-text-secondary text-lg">
-                  {t("no_projects")}
+                <p className="text-text-secondary text-lg max-w-md mx-auto">
+                  {t("coming_soon_desc")}
                 </p>
+                <ButtonLink href="/booking" variant="accent" size="lg" className="mt-8">
+                  {tNav("booking")}
+                </ButtonLink>
               </div>
             </AnimatedSection>
           )}

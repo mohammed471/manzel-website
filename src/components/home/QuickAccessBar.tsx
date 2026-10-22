@@ -6,9 +6,16 @@ import {
   HardHat,
   Calculator,
   DraftingCompass,
+  Images,
   type LucideIcon,
 } from "lucide-react";
 import { Link } from "@/i18n/navigation";
+import { cn } from "@/lib/utils";
+import { getActiveCategories } from "@/lib/portfolio";
+
+const MD_COLS: Record<number, string> = {
+  3: "md:grid-cols-3", 4: "md:grid-cols-4", 5: "md:grid-cols-5", 6: "md:grid-cols-6", 7: "md:grid-cols-7",
+};
 
 // Model A: floating white bar that overlaps the bottom edge of the hero and
 // gives one-tap access to every main area of the site.
@@ -17,14 +24,17 @@ export default async function QuickAccessBar() {
   const tPortfolio = await getTranslations("portfolio");
   const t = await getTranslations("home");
 
+  const active = new Set((await getActiveCategories()).map((c) => `/portfolio/${c.id}`));
+  // Category tiles show only once the category has work; "our work" stays (T08).
   const items: { href: string; label: string; icon: LucideIcon }[] = [
     { href: "/products", label: tNav("products"), icon: Package },
+    { href: "/portfolio", label: tNav("portfolio"), icon: Images },
     { href: "/portfolio/interior-design", label: tPortfolio("cat_interior_design"), icon: Sofa },
     { href: "/portfolio/exterior-design", label: tPortfolio("cat_exterior_design"), icon: Building2 },
     { href: "/portfolio/execution", label: tPortfolio("cat_execution"), icon: HardHat },
     { href: "/calculator", label: tNav("calculator"), icon: Calculator },
     { href: "/portfolio/floor-plan", label: tPortfolio("cat_floor_plan"), icon: DraftingCompass },
-  ];
+  ].filter((item) => !item.href.startsWith("/portfolio/") || active.has(item.href));
 
   return (
     <div className="relative z-20 -mt-24 md:-mt-20 px-4 sm:px-6 lg:px-8">
@@ -32,7 +42,7 @@ export default async function QuickAccessBar() {
         aria-label={t("quick_access")}
         className="max-w-6xl mx-auto bg-white rounded-3xl shadow-[0_24px_60px_-20px_rgba(14,42,39,0.35)] border border-secondary-dark/40 p-2 md:p-3"
       >
-        <ul className="grid grid-cols-3 md:grid-cols-6 gap-1 md:gap-2">
+        <ul className={cn("grid gap-1 md:gap-2", items.length === 4 ? "grid-cols-2" : "grid-cols-3", MD_COLS[items.length])}>
           {items.map(({ href, label, icon: Icon }) => (
             <li key={href}>
               <Link

@@ -268,3 +268,30 @@ describe("projects from the internal app", () => {
     expect(url("x", "y", "cover.jpg")).toBe("/portfolio/x/y/cover.jpg");
   });
 });
+
+// ─── Categories with projects (empty ones are hidden) ───
+
+describe("getActiveCategories", () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.resetModules();
+  });
+
+  const project = (id: string, category: string) => ({
+    id, category, name: id, description: "", location: "", year: "", featured: false,
+    images: ["https://i.ibb.co/x/cover.jpg"], videos: [], beforeAfter: [],
+  });
+
+  it("keeps only categories that have projects, in category order", async () => {
+    vi.stubGlobal("fetch", vi.fn(async () => new Response(JSON.stringify({ projects: [project("a", "interior-design")] }))));
+    const mod = await import("@/lib/portfolio");
+    expect((await mod.getActiveCategories()).map((c) => c.id)).toEqual(["interior-design"]);
+  });
+
+  it("shows a category as soon as it gets a project", async () => {
+    const projects = [project("b", "execution"), project("a", "interior-design")];
+    vi.stubGlobal("fetch", vi.fn(async () => new Response(JSON.stringify({ projects }))));
+    const mod = await import("@/lib/portfolio");
+    expect((await mod.getActiveCategories()).map((c) => c.id)).toEqual(["interior-design", "execution"]);
+  });
+});

@@ -179,7 +179,9 @@
     "bedrooms_value": "{count, plural, one {{n} bedroom} other {{n} bedrooms}}",
     "filter_button": "Filter",
     "no_matches": "No projects match these filters",
-    "clear_filters": "Show all"
+    "clear_filters": "Show all",
+    "coming_soon": "Coming soon",
+    "coming_soon_desc": "We're preparing the projects of this section. Book a consultation and tell us about yours."
   },
   "testimonials": {
     "title": "What Our Clients Say",

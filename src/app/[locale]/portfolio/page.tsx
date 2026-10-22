@@ -8,7 +8,7 @@ import ImageTile from "@/components/home/ImageTile";
 import TrustSection from "@/components/home/TrustSection";
 import ClosingCTA from "@/components/home/ClosingCTA";
 import { buttonClasses } from "@/components/ui/Button";
-import { getCategories, getProjects, getProjectImageUrl } from "@/lib/portfolio";
+import { getActiveCategories, getProjects, getProjectImageUrl } from "@/lib/portfolio";
 import { cn } from "@/lib/utils";
 
 // The app's sample house page (manzel_split core/sample_house SAMPLE_TOKEN) — a public page shaped like a client link.
@@ -41,7 +41,7 @@ export default async function PortfolioPage({
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations("portfolio");
-  const categories = getCategories();
+  const categories = await getActiveCategories();
   const allProjects = await getProjects();
 
   const categoryCards = categories.map((c) => {
@@ -91,7 +91,7 @@ export default async function PortfolioPage({
               <AnimatedSection
                 key={c.id}
                 delay={i * 0.06}
-                className={cn(i < 2 ? "lg:col-span-3" : "lg:col-span-2", i === 0 && "col-span-2")}
+                className={cn(categoryCards.length === 1 ? "lg:col-span-6" : i < 2 ? "lg:col-span-3" : "lg:col-span-2", i === 0 && "col-span-2")}
               >
                 <ImageTile
                   href={`/portfolio/${c.id}`}

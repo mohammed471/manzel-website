@@ -151,6 +151,12 @@ export async function getProjects(categoryId?: string): Promise<PortfolioProject
   return categoryId ? projects.filter((p) => p.category === categoryId) : projects;
 }
 
+/** Categories with at least one project — empty ones are hidden everywhere until they get one. */
+export async function getActiveCategories(): Promise<PortfolioCategory[]> {
+  const used = new Set((await getAllProjects()).map((p) => p.category));
+  return getCategories().filter((c) => used.has(c.id));
+}
+
 export async function getProject(projectId: string): Promise<PortfolioProject | undefined> {
   return (await getAllProjects()).find((p) => p.id === projectId);
 }

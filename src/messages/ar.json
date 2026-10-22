@@ -179,7 +179,9 @@
     "bedrooms_value": "{count, plural, one {غرفة نوم واحدة} two {غرفتا نوم} few {{n} غرف نوم} other {{n} غرفة نوم}}",
     "filter_button": "الفلتر",
     "no_matches": "لا توجد أعمال بهذه المواصفات",
-    "clear_filters": "عرض الكل"
+    "clear_filters": "عرض الكل",
+    "coming_soon": "قريباً",
+    "coming_soon_desc": "نجهّز مشاريع هذا القسم لعرضها قريباً. احجز استشارة وحدّثنا عن مشروعك."
   },
   "testimonials": {
     "title": "ماذا يقول عملاؤنا",

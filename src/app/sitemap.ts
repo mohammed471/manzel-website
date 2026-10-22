@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { getCategories, getProjects } from "@/lib/portfolio";
+import { getActiveCategories, getProjects } from "@/lib/portfolio";
 import { SITE_URL } from "@/lib/siteUrl";
 
 const BASE_URL = SITE_URL;
@@ -34,7 +34,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }));
 
   // Portfolio category routes
-  const categories = getCategories();
+  // Empty categories are noindex ("coming soon") — left out until they have work
+  const categories = await getActiveCategories();
   for (const category of categories) {
     entries.push({
       url: `${BASE_URL}/ar/portfolio/${category.id}`,

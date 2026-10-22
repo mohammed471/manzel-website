@@ -6,14 +6,16 @@ import SectionHeader from "@/components/ui/SectionHeader";
 import ImageTile from "@/components/home/ImageTile";
 import type { HomeService } from "@/components/home/homeData";
 
-// Model A: one bento grid that surfaces products + all 5 service categories.
+// Tile widths per number of categories shown (empty ones are hidden): products (4 cells)
+// + services + the "all work" card (2 cells) must fill whole rows of 4.
+const SPANS: Record<number, number[]> = { 1: [2], 2: [1, 1], 3: [2, 2, 2], 4: [1, 1, 2, 2], 5: [1, 1, 1, 1, 2] };
+
+// Model A: one bento grid that surfaces products + the service categories that have work.
 export default async function ServicesBento({ services }: { services: HomeService[] }) {
   const t = await getTranslations("home");
   const tNav = await getTranslations("nav");
   const tPortfolio = await getTranslations("portfolio");
   const tSite = await getTranslations("site");
-
-  const [s1, s2, s3, s4, s5] = services;
 
   return (
     <section id="services" className="py-20 md:py-28 px-4 sm:px-6 lg:px-8 scroll-mt-36">
@@ -41,30 +43,21 @@ export default async function ServicesBento({ services }: { services: HomeServic
             />
           </AnimatedSection>
 
-          {[s1, s2, s3, s4].filter(Boolean).map((s, i) => (
-            <AnimatedSection key={s.id} delay={0.05 * (i + 1)}>
-              <ImageTile
-                href={`/portfolio/${s.id}`}
-                imageUrl={s.imageUrl}
-                title={s.title}
-                description={s.description}
-                className="h-full"
-              />
-            </AnimatedSection>
-          ))}
-
-          {s5 && (
-            <AnimatedSection className="col-span-2" delay={0.25}>
-              <ImageTile
-                href={`/portfolio/${s5.id}`}
-                imageUrl={s5.imageUrl}
-                title={s5.title}
-                description={s5.description}
-                sizes="(max-width: 1024px) 100vw, 50vw"
-                className="h-full"
-              />
-            </AnimatedSection>
-          )}
+          {services.map((s, i) => {
+            const wide = SPANS[services.length]?.[i] === 2;
+            return (
+              <AnimatedSection key={s.id} className={wide ? "col-span-2" : undefined} delay={0.05 * (i + 1)}>
+                <ImageTile
+                  href={`/portfolio/${s.id}`}
+                  imageUrl={s.imageUrl}
+                  title={s.title}
+                  description={s.description}
+                  sizes={wide ? "(max-width: 1024px) 100vw, 50vw" : undefined}
+                  className="h-full"
+                />
+              </AnimatedSection>
+            );
+          })}
 
           <AnimatedSection className="col-span-2" delay={0.3}>
             <Link
