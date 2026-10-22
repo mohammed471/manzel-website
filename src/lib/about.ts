@@ -42,6 +42,7 @@ export async function getAboutContent(locale: string): Promise<AboutContent> {
   const sections = await getSiteSections();
   if (sections) {
     return {
+      // TODO(owner): verify every milestone before launch (edited in «صفحة من نحن»)
       timeline: sections.timeline.map((item) => ({
         year: str(item.year),
         title: localized(item, "title", locale),
