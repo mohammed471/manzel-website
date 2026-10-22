@@ -528,18 +528,6 @@
     "cta_description": "Contact us today and let us turn your vision into reality",
     "cta_button": "Contact Us"
   },
-  "scrollVideo": {
-    "slide1_label": "Interior Design",
-    "slide1_heading": "Spaces That\nInspire Living",
-    "slide1_description": "We craft interiors that blend elegance with comfort — every detail designed to elevate your everyday experience.",
-    "slide2_label": "Precision Execution",
-    "slide2_heading": "Built to\nPerfection",
-    "slide2_description": "From blueprint to reality, our team delivers flawless execution with premium materials and uncompromising craftsmanship.",
-    "slide3_label": "Complete Vision",
-    "slide3_heading": "Your Dream,\nOur Expertise",
-    "slide3_description": "End-to-end design and construction — we transform your vision into spaces that define who you are.",
-    "scroll_hint": "Scroll to explore"
-  },
   "area_calculator": {
     "hero_label": "Area Calculator",
     "title": "Area & Quantities Calculator",
@@ -781,5 +769,15 @@
     "hero_image": "/images/hero-poster.jpg",
     "products_image": "/images/products-hero.webp",
     "hero_video": "/hero_video.mp4"
+  },
+  "howWeWork": {
+    "badge": "How we work",
+    "title": "From the idea to the keys in three steps",
+    "step1_title": "Design and floor plans",
+    "step2_title": "Choosing materials in our showroom",
+    "step3_title": "Building and handover",
+    "step1_desc": "We craft interiors that blend elegance with comfort — every detail designed to elevate your everyday experience.",
+    "step2_desc": "From blueprint to reality, our team delivers flawless execution with premium materials and uncompromising craftsmanship.",
+    "step3_desc": "End-to-end design and construction — we transform your vision into spaces that define who you are."
   }
 }

@@ -3,7 +3,7 @@
 import { useSyncExternalStore } from "react";
 
 // Device profile used to adapt media/effects per platform.
-//  - desktop: full experience (scroll-scrubbed video, hover effects)
+//  - desktop: full experience (hero video, hover effects)
 //  - ios:     strictest media budget — one video decoding at a time, poster
 //             fallback when autoplay is refused (Low Power Mode), no seeking
 //  - android: autoplay loops, but skip video on Save-Data / low-end devices

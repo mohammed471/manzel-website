@@ -14,7 +14,7 @@ import { useDevice } from "@/lib/device";
 //  - If autoplay is refused (Low Power Mode, Data Saver) the video element is
 //    dropped and the poster stays — never a broken/blank hero.
 //  - The video pauses whenever the hero leaves the viewport, so it never
-//    decodes at the same time as the furniture video further down the page
+//    decodes at the same time as another video further down the page
 //    (two concurrent decodes exceed iOS Safari's media budget).
 //  - Constrained devices (Save-Data, low memory, low-end Android) get the
 //    poster only.
