@@ -180,7 +180,7 @@ export default function SiteHeader() {
             onClick={() => window.dispatchEvent(new CustomEvent("open-global-search"))}
             aria-label={t("search")}
             className={cn(
-              "w-10 h-10 rounded-full flex items-center justify-center transition-colors cursor-pointer",
+              "w-11 h-11 rounded-full flex items-center justify-center transition-colors cursor-pointer",
               solid
                 ? "text-primary hover:bg-primary/5"
                 : "text-white hover:bg-white/10",

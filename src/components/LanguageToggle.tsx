@@ -16,7 +16,7 @@ export default function LanguageToggle() {
   return (
     <button
       onClick={switchLocale}
-      className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-colors border border-current/20 hover:bg-primary/10"
+      className="flex min-h-11 min-w-11 items-center justify-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-colors border border-current/20 hover:bg-primary/10"
       aria-label={locale === "ar" ? "Switch to English" : "التبديل إلى العربية"}
     >
       {locale === "ar" ? "EN" : "عربي"}

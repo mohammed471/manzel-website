@@ -24,6 +24,9 @@ export default function FAQ({ items }: FAQProps) {
       {items.map((item, index) => (
         <div key={index}>
           <button
+            id={`faq-q-${index}`}
+            aria-expanded={openIndex === index}
+            aria-controls={`faq-a-${index}`}
             onClick={() => toggle(index)}
             className="flex items-center justify-between w-full px-6 py-5 text-start transition-colors hover:bg-surface/50"
           >
@@ -52,6 +55,9 @@ export default function FAQ({ items }: FAQProps) {
           <AnimatePresence initial={false}>
             {openIndex === index && (
               <motion.div
+                id={`faq-a-${index}`}
+                role="region"
+                aria-labelledby={`faq-q-${index}`}
                 initial={{ height: 0, opacity: 0 }}
                 animate={{ height: "auto", opacity: 1 }}
                 exit={{ height: 0, opacity: 0 }}

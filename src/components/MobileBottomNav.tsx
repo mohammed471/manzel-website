@@ -97,7 +97,7 @@ export default function MobileBottomNav({ hasTestimonials }: { hasTestimonials: 
                   type="button"
                   onClick={() => setMoreOpen(false)}
                   aria-label={t("close")}
-                  className="w-10 h-10 rounded-full flex items-center justify-center text-text-secondary hover:bg-secondary-light"
+                  className="w-11 h-11 rounded-full flex items-center justify-center text-text-secondary hover:bg-secondary-light"
                 >
                   <X className="w-5 h-5" />
                 </button>
