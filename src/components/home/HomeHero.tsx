@@ -2,11 +2,14 @@ import { getTranslations } from "next-intl/server";
 import { ArrowLeft } from "lucide-react";
 import HeroVideo from "@/components/HeroVideo";
 import { ButtonLink } from "@/components/ui/Button";
+import { stripTatweel } from "@/lib/utils";
 
 // Full-screen video hero. Bottom padding leaves room for the QuickAccessBar,
 // which overlaps the hero's bottom edge.
 export default async function HomeHero() {
   const t = await getTranslations("home");
+  const title = t("hero_subtitle");
+  const plainTitle = stripTatweel(title);
 
   return (
     <section data-header-overlay className="relative min-h-[100svh] flex overflow-hidden bg-primary-dark">
@@ -22,7 +25,15 @@ export default async function HomeHero() {
             className="hero-rise mt-6 text-5xl sm:text-6xl md:text-7xl lg:text-8xl leading-[1.05] text-white text-balance"
             style={{ animationDelay: "80ms" }}
           >
-            {t("hero_subtitle")}
+            {title === plainTitle ? (
+              title
+            ) : (
+              // Stretched (tatweel) for looks only — search engines and screen readers get the plain word
+              <>
+                <span aria-hidden="true">{title}</span>
+                <span className="sr-only">{plainTitle}</span>
+              </>
+            )}
           </h1>
           <p
             className="hero-rise mt-6 mx-auto text-base md:text-xl leading-relaxed text-white/80 max-w-xl"
