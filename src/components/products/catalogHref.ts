@@ -4,6 +4,7 @@ export interface CatalogParams {
   category?: string;
   subcategory?: string;
   search?: string;
+  sort?: string;
   page?: number;
 }
 
@@ -13,6 +14,7 @@ export function catalogHref(params: CatalogParams, { anchor = false }: { anchor?
   if (params.category) query.category = params.category;
   if (params.subcategory) query.subcategory = params.subcategory;
   if (params.search) query.search = params.search;
+  if (params.sort && params.sort !== "newest") query.sort = params.sort;
   if (params.page && params.page > 1) query.page = String(params.page);
   return { pathname: "/products" as const, query, ...(anchor ? { hash: "catalog" } : {}) };
 }

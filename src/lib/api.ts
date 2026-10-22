@@ -35,6 +35,10 @@ export interface Category {
   subcategories: { id: number; name: string }[];
 }
 
+// Products the owner hides in the internal app (`hidden`, once the API sends it) never reach the site.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const isVisible = (raw: any) => !(raw?.hidden === true || raw?.hidden === 1);
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function mapProduct(raw: any): Product {
   return {
@@ -78,7 +82,7 @@ export async function getProducts(params?: {
     const data = await res.json();
     const products = data.products ?? data;
     if (!Array.isArray(products)) return [];
-    return products.map(mapProduct);
+    return products.filter(isVisible).map(mapProduct);
   } catch {
     return [];
   }
@@ -96,7 +100,7 @@ export async function searchProductsClient(query: string): Promise<Product[]> {
     const data = await res.json();
     const products = data.products ?? data;
     if (!Array.isArray(products)) return [];
-    return products.map(mapProduct);
+    return products.filter(isVisible).map(mapProduct);
   } catch {
     return [];
   }
@@ -111,7 +115,7 @@ export async function getProduct(id: number): Promise<Product | null> {
     if (!res.ok) return null;
     const data = await res.json();
     const raw = data.product ?? data;
-    return mapProduct(raw);
+    return isVisible(raw) ? mapProduct(raw) : null;
   } catch {
     return null;
   }

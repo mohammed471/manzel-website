@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { Check, MessageCircle } from "lucide-react";
 import type { Product } from "@/lib/api";
 import { cn } from "@/lib/utils";
+import { productTitle } from "@/lib/catalog";
 import ProductImage from "@/components/products/ProductImage";
 import SaveButton from "@/components/board/SaveButton";
 
@@ -14,6 +15,7 @@ import SaveButton from "@/components/board/SaveButton";
 // the WhatsApp message.
 export default function ProductDetailView({ product }: { product: Product }) {
   const t = useTranslations("products");
+  const { title, code } = productTitle(product);
   const tSite = useTranslations("site");
   const { colors } = product;
   const [selectedId, setSelectedId] = useState<number | null>(
@@ -33,7 +35,7 @@ export default function ProductDetailView({ product }: { product: Product }) {
       <div className="relative aspect-square overflow-hidden rounded-3xl bg-white border border-secondary-dark/40">
         <ProductImage
           image={image}
-          alt={selected ? `${product.name} — ${selected.name}` : product.name}
+          alt={selected ? `${title} — ${selected.name}` : title}
           category={product.category}
           categoryLabel={product.category}
           priority
@@ -63,8 +65,13 @@ export default function ProductDetailView({ product }: { product: Product }) {
           className="mt-4 text-2xl md:text-4xl font-bold leading-tight text-primary [overflow-wrap:anywhere]"
           style={{ fontFamily: "var(--font-arabic-body), var(--font-english), sans-serif" }}
         >
-          {product.name}
+          {title}
         </h1>
+        {code && (
+          <p dir="ltr" className="mt-2 text-sm font-medium text-text-secondary text-start">
+            {code}
+          </p>
+        )}
 
         {colors.length > 0 && (
           <fieldset className="mt-7">

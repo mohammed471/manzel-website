@@ -49,7 +49,27 @@ export interface CatalogQuery {
   category?: Category;
   subcategory?: { id: number; name: string };
   search?: string;
+  sort?: CatalogSort;
   page: number;
+}
+
+export const CATALOG_SORTS = ["newest", "name", "category"] as const;
+export type CatalogSort = (typeof CATALOG_SORTS)[number];
+
+const ARABIC = /[\u0600-\u06FF]/;
+const COLOUR_WORDS = new Set(["اسود", "أسود", "ابيض", "أبيض", "ذهبي", "رصاصي", "فضي", "كروم", "نيكل", "بني", "رمادي", "احمر", "أحمر", "ازرق", "أزرق", "اخضر", "أخضر", "بيج", "مط", "لماع", "و"]);
+
+/**
+ * Card / page title. Many products are named by their supplier code ("10828-MW");
+ * when the description's first line is a short Arabic name — not just a colour
+ * list — it becomes the title and the code a small line under it.
+ */
+export function productTitle(p: Product): { title: string; code: string | null } {
+  if (ARABIC.test(p.name)) return { title: p.name, code: null };
+  const line = p.details.split(/\r?\n/)[0].trim();
+  const words = line.split(/\s+/).filter(Boolean);
+  const isName = ARABIC.test(line) && line.length <= 40 && words.some((w) => !COLOUR_WORDS.has(w));
+  return isName ? { title: line, code: p.name } : { title: p.name, code: null };
 }
 
 export interface CatalogResult {
@@ -67,14 +87,16 @@ export function queryCatalog(products: Product[], q: CatalogQuery): CatalogResul
   if (q.subcategory) list = list.filter((p) => p.subcategory === q.subcategory!.name);
   if (q.search?.trim()) list = list.filter((p) => matchesSearch(p, q.search!));
 
-  // Photographed products first (74% of the catalogue has no photo yet), then
-  // products with colours, then by name — stable and predictable.
+  // Photographed products always come first (74% of the catalogue has no photo
+  // yet), then the chosen order: newest (highest id), name, or category then name.
+  const byName = (a: Product, b: Product) => productTitle(a).title.localeCompare(productTitle(b).title, "ar");
+  const sort = q.sort ?? "newest";
   list = [...list].sort((a, b) => {
     const img = Number(hasImage(b)) - Number(hasImage(a));
     if (img) return img;
-    const col = Number(b.colors.length > 0) - Number(a.colors.length > 0);
-    if (col) return col;
-    return a.name.localeCompare(b.name, "ar");
+    if (sort === "name") return byName(a, b);
+    if (sort === "category") return a.category.localeCompare(b.category, "ar") || byName(a, b);
+    return b.id - a.id;
   });
 
   const total = list.length;

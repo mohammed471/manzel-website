@@ -1,7 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import type { Product } from "@/lib/api";
-import { coverImage } from "@/lib/catalog";
+import { coverImage, productTitle } from "@/lib/catalog";
 import ColorDots from "@/components/products/ColorDots";
 import ProductImage from "@/components/products/ProductImage";
 import SaveButton from "@/components/board/SaveButton";
@@ -23,6 +23,7 @@ export default async function ProductCard({
   const t = await getTranslations("products");
   const image = coverImage(product);
   const eyebrow = product.subcategory || product.category || t("uncategorized");
+  const { title, code } = productTitle(product);
 
   return (
     <div className="relative h-full">
@@ -33,7 +34,7 @@ export default async function ProductCard({
         <div className="relative aspect-square overflow-hidden bg-white">
           <ProductImage
             image={image}
-            alt={product.name}
+            alt={title}
             category={product.category}
             categoryLabel={product.category || t("uncategorized")}
             priority={priority}
@@ -49,11 +50,12 @@ export default async function ProductCard({
             className="text-sm md:text-base font-bold leading-snug text-text-primary line-clamp-2"
             style={{ fontFamily: "var(--font-arabic-body), var(--font-english), sans-serif" }}
           >
-            {product.name}
+            {title}
           </h3>
-          {product.details && (
+          {/* The code under an Arabic title; otherwise one line of details */}
+          {(code || product.details) && (
             <p dir="auto" className="text-xs text-text-secondary leading-relaxed line-clamp-1">
-              {product.details}
+              {code ?? product.details}
             </p>
           )}
           <div className="mt-auto pt-2 flex items-center justify-between gap-2 min-h-6">

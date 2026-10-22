@@ -4,7 +4,7 @@ import { getTranslations } from "next-intl/server";
 import { ChevronLeft } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { getCategories, getProduct, getProductImageUrl, getProducts } from "@/lib/api";
-import { coverImage, relatedProducts } from "@/lib/catalog";
+import { coverImage, productTitle, relatedProducts } from "@/lib/catalog";
 import AnimatedSection from "@/components/AnimatedSection";
 import SectionHeader from "@/components/ui/SectionHeader";
 import ProductDetailView from "@/components/products/ProductDetailView";
@@ -27,8 +27,9 @@ export async function generateMetadata({
     return { title: tMeta("product_not_found") };
   }
 
-  const title = `${product.name} | ${tBrand("name")}`;
-  const description = product.details || tMeta("products_description");
+  const name = productTitle(product).title;
+  const title = `${name} | ${tBrand("name")}`;
+  const description = tMeta("product_description", { name, category: product.subcategory || product.category });
 
   return {
     title,
@@ -82,7 +83,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
           )}
           <ChevronLeft className="w-4 h-4 ltr:rotate-180 text-secondary-dark" />
           <span dir="auto" className="text-text-primary font-medium truncate max-w-[200px]">
-            {product.name}
+            {productTitle(product).title}
           </span>
         </nav>
       </div>

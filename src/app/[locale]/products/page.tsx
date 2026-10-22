@@ -3,7 +3,8 @@ import { getTranslations } from "next-intl/server";
 import { PackageSearch, X } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { getCategories, getProducts } from "@/lib/api";
-import { queryCatalog, visibleCategories } from "@/lib/catalog";
+import { CATALOG_SORTS, queryCatalog, visibleCategories } from "@/lib/catalog";
+import { cn } from "@/lib/utils";
 import PageHero from "@/components/ui/PageHero";
 import ClosingCTA from "@/components/home/ClosingCTA";
 import CatalogSearch from "@/components/products/CatalogSearch";
@@ -32,6 +33,7 @@ interface ProductsPageProps {
     category?: string;
     subcategory?: string;
     search?: string;
+    sort?: string;
     page?: string;
   }>;
 }
@@ -54,11 +56,13 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
   const activeCategory = categories.find((c) => String(c.id) === sp.category);
   const activeSubcategory = activeCategory?.subcategories.find((s) => String(s.id) === sp.subcategory);
   const search = sp.search?.trim() || undefined;
+  const sort = CATALOG_SORTS.find((s) => s === sp.sort) ?? "newest";
 
   const result = queryCatalog(products, {
     category: activeCategory,
     subcategory: activeSubcategory,
     search,
+    sort,
     page: Number(sp.page) || 1,
   });
 
@@ -70,6 +74,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
     category: activeCategory ? String(activeCategory.id) : undefined,
     subcategory: activeSubcategory ? String(activeSubcategory.id) : undefined,
     search,
+    sort,
   };
 
   return (
@@ -105,6 +110,21 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
                   </p>
                 )}
               </div>
+              <nav aria-label={t("sort_label")} className="flex items-center gap-1 rounded-full bg-white border border-secondary-dark/40 p-1">
+                {CATALOG_SORTS.map((s) => (
+                  <Link
+                    key={s}
+                    href={catalogHref({ ...filterParams, sort: s }, { anchor: true })}
+                    aria-current={s === sort ? "true" : undefined}
+                    className={cn(
+                      "inline-flex h-9 items-center rounded-full px-3 text-sm font-medium transition-colors",
+                      s === sort ? "bg-primary text-white" : "text-text-secondary hover:text-primary",
+                    )}
+                  >
+                    {t(`sort_${s}`)}
+                  </Link>
+                ))}
+              </nav>
               {hasFilters && (
                 <Link
                   href={catalogHref({}, { anchor: true })}

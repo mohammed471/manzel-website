@@ -123,7 +123,11 @@
     "category_label": "Category",
     "subcategory_label": "Type",
     "search_label": "Search products",
-    "clear_search": "Clear search"
+    "clear_search": "Clear search",
+    "sort_label": "Sort products",
+    "sort_newest": "Newest",
+    "sort_name": "Name",
+    "sort_category": "Category"
   },
   "portfolio": {
     "title": "Our Work",
@@ -283,7 +287,8 @@
     "about_description": "Meet MANZEL: an engineering office, a materials showroom and a construction team under one roof in Kirkuk.",
     "color_picker_title": "Room Color Visualizer | MANZEL",
     "color_picker_description": "Visualize your room colors before painting. Choose from curated color palettes and see them in a 3D room view",
-    "site_name": "MANZEL"
+    "site_name": "MANZEL",
+    "product_description": "{name} — {category} | Available at the MANZEL showroom, Kirkuk"
   },
   "calculator": {
     "hero_label": "Cost Calculator",

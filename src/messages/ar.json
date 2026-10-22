@@ -123,7 +123,11 @@
     "category_label": "القسم",
     "subcategory_label": "الفئة",
     "search_label": "البحث في المنتجات",
-    "clear_search": "مسح البحث"
+    "clear_search": "مسح البحث",
+    "sort_label": "ترتيب المنتجات",
+    "sort_newest": "الأحدث",
+    "sort_name": "الاسم",
+    "sort_category": "القسم"
   },
   "portfolio": {
     "title": "أعمالنا",
@@ -283,7 +287,8 @@
     "about_description": "تعرّف على منزل: مكتب هندسي ومعرض مواد وفريق تنفيذ في مكان واحد في كركوك.",
     "color_picker_title": "محاكي ألوان الغرفة | منزل",
     "color_picker_description": "تصوّر ألوان غرفتك قبل الطلاء. اختر من مجموعات ألوان مختارة وشاهدها في عرض ثلاثي الأبعاد",
-    "site_name": "منزل"
+    "site_name": "منزل",
+    "product_description": "{name} — {category} | متوفر في معرض منزل، كركوك"
   },
   "calculator": {
     "hero_label": "حاسبة التكلفة",
