@@ -8,6 +8,7 @@ import ClosingCTA from "@/components/home/ClosingCTA";
 import Timeline from "@/components/Timeline";
 import { getAboutContent } from "@/lib/about";
 import Image from "@/components/SiteImage";
+import { initials } from "@/lib/utils";
 
 export async function generateMetadata({
   params,
@@ -154,7 +155,7 @@ export default async function AboutPage({
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
               {team.map((member, i) => {
                 const { name, role } = member;
-                const initial = name.charAt(0);
+                const initial = initials(name);
 
                 return (
                   <AnimatedSection key={member.id} delay={i * 0.15} variant="scaleIn">

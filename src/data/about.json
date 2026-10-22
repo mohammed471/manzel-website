@@ -1,21 +1,37 @@
 {
   "timeline": [
-    { "year": "2018" },
-    { "year": "2019" },
-    { "year": "2020" },
-    { "year": "2022" },
-    { "year": "2024" },
-    { "year": "2026" }
+    {
+      "year": "2018"
+    },
+    {
+      "year": "2019"
+    },
+    {
+      "year": "2020"
+    },
+    {
+      "year": "2022"
+    },
+    {
+      "year": "2024"
+    },
+    {
+      "year": "2026"
+    }
   ],
-  "team": [
-    { "id": "founder", "image": null },
-    { "id": "designer", "image": null },
-    { "id": "engineer", "image": null }
-  ],
+  "team": [],
   "values": [
-    { "icon": "award" },
-    { "icon": "lightbulb" },
-    { "icon": "clock" },
-    { "icon": "eye" }
+    {
+      "icon": "award"
+    },
+    {
+      "icon": "lightbulb"
+    },
+    {
+      "icon": "clock"
+    },
+    {
+      "icon": "eye"
+    }
   ]
 }
