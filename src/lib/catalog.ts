@@ -57,7 +57,7 @@ export const CATALOG_SORTS = ["newest", "name", "category"] as const;
 export type CatalogSort = (typeof CATALOG_SORTS)[number];
 
 const ARABIC = /[\u0600-\u06FF]/;
-const COLOUR_WORDS = new Set(["اسود", "أسود", "ابيض", "أبيض", "ذهبي", "رصاصي", "فضي", "كروم", "نيكل", "بني", "رمادي", "احمر", "أحمر", "ازرق", "أزرق", "اخضر", "أخضر", "بيج", "مط", "لماع", "و"]);
+const COLOUR_WORDS = new Set(["اسود", "أسود", "ابيض", "أبيض", "ذهبي", "رصاصي", "فضي", "كروم", "نيكل", "بني", "رمادي", "احمر", "أحمر", "ازرق", "أزرق", "اخضر", "أخضر", "بيج", "سود", "برونز", "نحاسي", "مط", "لماع", "و"]);
 
 /**
  * Card / page title. Many products are named by their supplier code ("10828-MW");
@@ -67,8 +67,9 @@ const COLOUR_WORDS = new Set(["اسود", "أسود", "ابيض", "أبيض", "�
 export function productTitle(p: Product): { title: string; code: string | null } {
   if (ARABIC.test(p.name)) return { title: p.name, code: null };
   const line = p.details.split(/\r?\n/)[0].trim();
-  const words = line.split(/\s+/).filter(Boolean);
-  const isName = ARABIC.test(line) && line.length <= 40 && words.some((w) => !COLOUR_WORDS.has(w));
+  const words = line.replace(/ى/g, "ي").split(/\s+/).filter(Boolean);
+  // A name, not a colour list or a measurement ("60 سم ب 30 سم")
+  const isName = ARABIC.test(line) && line.length <= 40 && !/[\d٠-٩$]/.test(line) && words.some((w) => !COLOUR_WORDS.has(w));
   return isName ? { title: line, code: p.name } : { title: p.name, code: null };
 }
 

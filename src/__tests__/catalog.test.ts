@@ -20,6 +20,12 @@ describe("productTitle", () => {
     }
   });
 
+  it("keeps the code for colour lists and measurements seen in the live catalogue", () => {
+    for (const details of ["اسود  ذهبي فضي برونز", "اسود ذهبي فضى برونز", "2cm للارضيات واللوح  هي 60 سم ب 30 سم", "من ٢٢ سم الى ٣٠ سم ب ١٤$ بيع", "سود ابيض"]) {
+      expect(productTitle(p(1, "SWITCH.EU.NIVA", { details })).code).toBeNull();
+    }
+  });
+
   it("keeps an Arabic name as it is", () => {
     expect(productTitle(p(1, "كرسي حديقة", { details: "مقعد" }))).toEqual({ title: "كرسي حديقة", code: null });
   });
