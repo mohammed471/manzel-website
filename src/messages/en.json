@@ -200,7 +200,9 @@
     "no_matches": "No projects match these filters",
     "clear_filters": "Show all",
     "coming_soon": "Coming soon",
-    "coming_soon_desc": "We're preparing the projects of this section. Book a consultation and tell us about yours."
+    "coming_soon_desc": "We're preparing the projects of this section. Book a consultation and tell us about yours.",
+    "image_alt": "{name} — photo {n}",
+    "image_alt_type": "{name}, {type} — photo {n}"
   },
   "testimonials": {
     "title": "What Our Clients Say",

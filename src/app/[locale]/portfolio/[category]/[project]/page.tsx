@@ -83,10 +83,12 @@ export default async function ProjectDetailPage({ params }: PageProps) {
     [t("spec_bedrooms"), project.bedrooms ? String(project.bedrooms) : undefined],
   ].filter((row): row is [string, string] => Boolean(row[1]));
 
-  // The first image is the cover (same rule as the portfolio cards); the gallery shows them all
+  // The first image is the cover (same rule as the portfolio cards); the gallery shows them all.
+  // Alt: "{name} — صورة {n}", with the space type when the project has one.
+  const typeName = projectType ? localized(projectType, "name", locale) : "";
   const allImages = project.images.map((img, i) => ({
     src: getProjectImageUrl(project.category, project.id, img),
-    alt: i === 0 ? project.name : `${project.name} - ${i + 1}`,
+    alt: t(typeName ? "image_alt_type" : "image_alt", { name: project.name, type: typeName, n: String(i + 1) }),
   }));
   const coverUrl = allImages[0]?.src ?? null;
 
