@@ -7,6 +7,7 @@ import { getTranslations } from "next-intl/server";
 import AnimatedSection from "@/components/AnimatedSection";
 import ClosingCTA from "@/components/home/ClosingCTA";
 import ProjectGallery from "@/components/ProjectGallery";
+import { projectLd } from "@/lib/jsonLd";
 import VideoSection from "@/components/VideoSection";
 import {
   getCategory,
@@ -95,6 +96,20 @@ export default async function ProjectDetailPage({ params }: PageProps) {
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(
+            projectLd({
+              name: project.name,
+              url: `${SITE_URL}/${locale}/portfolio/${project.category}/${project.id}`,
+              images: allImages.map((img) => (img.src.startsWith("/") ? `${SITE_URL}${img.src}` : img.src)),
+              location: project.location,
+              year: project.year,
+            }),
+          ),
+        }}
+      />
       <section className="pt-28 pb-20">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Breadcrumb */}

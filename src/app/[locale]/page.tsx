@@ -1,6 +1,6 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { getHomeData } from "@/components/home/homeData";
-import { telHref } from "@/lib/siteContent";
+import { businessLd, faqLd } from "@/lib/jsonLd";
 import HowWeWork from "@/components/home/HowWeWork";
 import HomeHero from "@/components/home/HomeHero";
 import QuickAccessBar from "@/components/home/QuickAccessBar";
@@ -11,7 +11,6 @@ import TrustSection from "@/components/home/TrustSection";
 import ToolsGrid from "@/components/home/ToolsGrid";
 import VisitSection from "@/components/home/VisitSection";
 import ClosingCTA from "@/components/home/ClosingCTA";
-import { SITE_URL } from "@/lib/siteUrl";
 import { pageMeta } from "@/lib/pageMeta";
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
@@ -29,6 +28,8 @@ export default async function Home({
   setRequestLocale(locale);
   const { services, featuredProjects, testimonialData, stats, faqItems } = await getHomeData();
   const tSite = await getTranslations("site");
+  const tBrand = await getTranslations("brand");
+  const tContact = await getTranslations("contact");
 
   return (
     <div className="bg-surface">
@@ -36,56 +37,20 @@ export default async function Home({
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify([
-            {
-              "@context": "https://schema.org",
-              "@type": "Organization",
-              name: locale === "ar" ? "منزل" : "Manzel",
-              url: SITE_URL,
-              logo: `${SITE_URL}/images/logo-dark.png`,
-              contactPoint: {
-                "@type": "ContactPoint",
-                telephone: telHref(tSite("phone_1")).slice(4),
-                contactType: "customer service",
-              },
-              sameAs: [
-                tSite("facebook"),
-                tSite("instagram"),
-              ],
-            },
-            {
-              "@context": "https://schema.org",
-              "@type": "HomeAndConstructionBusiness",
-              name: locale === "ar" ? "منزل" : "Manzel",
-              image: `${SITE_URL}/images/logo-dark.png`,
-              address: {
-                "@type": "PostalAddress",
-                addressLocality: locale === "ar" ? "كركوك" : "Kirkuk",
-                addressCountry: "IQ",
-              },
-              geo: {
-                "@type": "GeoCoordinates",
-                latitude: 35.4502682,
-                longitude: 44.3956904,
-              },
-              hasMap: tSite("map_url"),
-              telephone: telHref(tSite("phone_1")).slice(4),
-              openingHoursSpecification: {
-                "@type": "OpeningHoursSpecification",
-                dayOfWeek: [
-                  "Saturday",
-                  "Sunday",
-                  "Monday",
-                  "Tuesday",
-                  "Wednesday",
-                  "Thursday",
-                ],
-                opens: "09:00",
-                closes: "18:00",
-              },
-              inLanguage: locale === "ar" ? "ar" : "en",
-            },
-          ]),
+          __html: JSON.stringify(
+            [
+              businessLd({
+                name: tBrand("name"),
+                legalName: tBrand("legal"),
+                phones: [tSite("phone_1"), tSite("phone_2")],
+                email: tSite("email"),
+                address: tContact("address_value"),
+                sameAs: [tSite("facebook"), tSite("instagram")],
+                mapUrl: tSite("map_url"),
+              }),
+              faqLd(faqItems),
+            ].filter(Boolean),
+          ),
         }}
       />
 
