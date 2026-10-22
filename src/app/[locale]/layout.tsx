@@ -80,7 +80,6 @@ export async function generateMetadata({
     metadataBase: new URL(SITE_URL),
     title: t("home_title"),
     description: t("home_description"),
-    keywords: t("home_keywords"),
     openGraph: {
       title: t("home_title"),
       description: t("home_description"),

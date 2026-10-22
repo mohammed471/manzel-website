@@ -19,8 +19,9 @@
     "board": "My Board"
   },
   "brand": {
-    "name": "Manzel",
-    "tagline": "Building Materials & Interior Design"
+    "name": "MANZEL",
+    "tagline": "Design, materials, build",
+    "legal": "MANZEL Design & Build"
   },
   "home": {
     "hero_badge": "Manzel — design, materials, build",
@@ -232,7 +233,7 @@
     "quick_links": "Quick Links",
     "contact_us": "Contact Us",
     "copyright": "© {year} Manzel. All Rights Reserved",
-    "company_description": "A company specialized in providing high-quality building materials and comprehensive interior design services in Iraq. We strive to achieve your vision in building and designing your homes."
+    "company_description": "MANZEL is a design and build company in Kirkuk. Our engineering office, materials showroom and construction team work under one roof — one partner from the floor plan to the keys."
   },
   "common": {
     "back_to_home": "Back to Home",
@@ -252,30 +253,29 @@
     "hover_text": "Chat on WhatsApp"
   },
   "metadata": {
-    "home_title": "Manzel | Building Materials & Interior Design Services",
-    "home_description": "Manzel is specialized in providing high-quality building materials and comprehensive interior design services in Iraq",
-    "products_title": "Products | Manzel",
-    "products_description": "Browse our wide collection of building materials and interior design products",
-    "portfolio_title": "Our Work | Manzel",
-    "portfolio_description": "View our outstanding projects in construction and interior design",
-    "contact_title": "Contact Us | Manzel",
-    "contact_description": "Contact us to inquire about our products and services",
-    "product_not_found": "Product Not Found | Manzel",
-    "project_not_found": "Project Not Found | Manzel",
-    "testimonials_title": "Client Testimonials | Manzel",
+    "home_title": "MANZEL | Design, Build, Finishing & Materials in Kirkuk",
+    "home_description": "MANZEL in Kirkuk: interior and exterior design, floor plans, turnkey construction, finishing and a building-materials showroom — on an open-book contract, with a free cost calculator.",
+    "products_title": "Products | MANZEL",
+    "products_description": "MANZEL's building and finishing materials showroom in Kirkuk — pick a product and colour, and ask us for price and availability.",
+    "portfolio_title": "Our Work | MANZEL",
+    "portfolio_description": "Projects MANZEL has delivered in Kirkuk: interior and exterior design, floor plans, construction and finishing.",
+    "contact_title": "Contact Us | MANZEL",
+    "contact_description": "Contact MANZEL in Kirkuk for design, construction, finishing and building materials.",
+    "product_not_found": "Product Not Found | MANZEL",
+    "project_not_found": "Project Not Found | MANZEL",
+    "testimonials_title": "Client Testimonials | MANZEL",
     "testimonials_description": "Read what our clients say about our construction and interior design services",
-    "calculator_title": "Cost Calculator | Manzel",
-    "calculator_description": "Get a preliminary cost estimate for your project with our cost calculator",
-    "booking_title": "Book a Free Consultation | Manzel",
+    "calculator_title": "Cost Calculator | MANZEL",
+    "calculator_description": "Get a free preliminary estimate for building, finishing or designing your home in Kirkuk.",
+    "booking_title": "Book a Free Consultation | MANZEL",
     "booking_description": "Schedule a free consultation with the Manzel expert team",
-    "area_calculator_title": "Area & Materials Calculator | Manzel",
+    "area_calculator_title": "Area & Materials Calculator | MANZEL",
     "area_calculator_description": "Calculate your room areas and estimate materials needed for tiles, paint, and flooring",
-    "about_title": "About Us | Manzel",
-    "about_description": "Learn about Manzel, our story, vision, and our distinguished team",
-    "color_picker_title": "Room Color Visualizer | Manzel",
+    "about_title": "About Us | MANZEL",
+    "about_description": "Meet MANZEL: an engineering office, a materials showroom and a construction team under one roof in Kirkuk.",
+    "color_picker_title": "Room Color Visualizer | MANZEL",
     "color_picker_description": "Visualize your room colors before painting. Choose from curated color palettes and see them in a 3D room view",
-    "home_keywords": "interior design, exterior design, building materials, Kirkuk, Iraq, decor, finishing, Manzel",
-    "site_name": "Manzel"
+    "site_name": "MANZEL"
   },
   "calculator": {
     "hero_label": "Cost Calculator",
@@ -482,7 +482,7 @@
   "about": {
     "hero_label": "About Us",
     "hero_title": "Building the Future\nwith Passion & Precision",
-    "hero_description": "Manzel Construction & Interior Design — your trusted partner in turning ideas into reality",
+    "hero_description": "MANZEL Design & Build — one partner from the floor plan to the keys",
     "story_subtitle": "Our Story",
     "story_title": "From Kirkuk to Iraq",
     "story_text": "Manzel was founded in Kirkuk with the goal of delivering construction and design services at the highest quality standards. We started as a small team and grew to become one of the leading companies in the region.",
