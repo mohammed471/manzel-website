@@ -2,16 +2,11 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useInView } from "framer-motion";
+import { formatStat, parseStat } from "@/lib/stats";
 
-// Lightweight count-up that parses "+500" / "10+" style strings and
-// animates the numeric part when scrolled into view. Reusable across
-// the differently-styled stat sections of each preview variant.
-function parse(text: string) {
-  const m = text.match(/^([^\d]*)(\d+)(.*)$/);
-  if (!m) return { prefix: "", target: 0, suffix: "" };
-  return { prefix: m[1], target: parseInt(m[2], 10), suffix: m[3] };
-}
-
+// Count-up for "+500" / "10+" style strings. The server HTML carries the final
+// number (crawlers and link previews read it); the count from 0 is decoration
+// that runs once in view, and not at all under prefers-reduced-motion.
 export default function CountUp({
   text,
   className,
@@ -21,13 +16,14 @@ export default function CountUp({
   className?: string;
   delay?: number;
 }) {
-  const { prefix, target, suffix } = parse(text);
+  const parsed = parseStat(text);
+  const target = parsed?.target ?? 0;
   const ref = useRef<HTMLSpanElement>(null);
   const inView = useInView(ref, { once: true, amount: 0.4 });
-  const [value, setValue] = useState(0);
+  const [value, setValue] = useState(target);
 
   useEffect(() => {
-    if (!inView) return;
+    if (!inView || !target || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     let raf: number;
     let start: number | null = null;
     const timer = setTimeout(() => {
@@ -48,9 +44,7 @@ export default function CountUp({
 
   return (
     <span ref={ref} className={className}>
-      {prefix}
-      {value}
-      {suffix}
+      {parsed ? formatStat(parsed, value) : text}
     </span>
   );
 }

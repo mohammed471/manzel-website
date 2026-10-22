@@ -2,6 +2,7 @@ import { getTranslations } from "next-intl/server";
 import AnimatedSection from "@/components/AnimatedSection";
 import SectionHeader from "@/components/ui/SectionHeader";
 import { ButtonLink } from "@/components/ui/Button";
+import { cn } from "@/lib/utils";
 import CountUp from "@/components/home/CountUp";
 import TestimonialsCarousel from "@/components/TestimonialsCarousel";
 
@@ -17,6 +18,8 @@ export default async function TrustSection({
 }) {
   const t = await getTranslations("home");
   const tTestimonials = await getTranslations("testimonials");
+  // Nothing real to show → no band at all
+  if (stats.length === 0 && testimonials.length === 0) return null;
 
   return (
     <section className="px-3 sm:px-4 lg:px-6">
@@ -25,7 +28,8 @@ export default async function TrustSection({
         <div className="pointer-events-none absolute -bottom-52 -end-32 w-[34rem] h-[34rem] rounded-full border border-white/[0.06]" />
 
         <div className="relative max-w-7xl mx-auto">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+          {stats.length > 0 && (
+          <div className={cn("grid grid-cols-2 gap-3 md:gap-4", stats.length >= 4 ? "lg:grid-cols-4" : stats.length === 3 ? "lg:grid-cols-3" : undefined)}>
             {stats.map((s, i) => (
               <AnimatedSection key={s.label} delay={i * 0.08}>
                 <div className="h-full rounded-3xl bg-white/[0.06] border border-white/10 p-5 md:p-7">
@@ -39,9 +43,10 @@ export default async function TrustSection({
               </AnimatedSection>
             ))}
           </div>
+          )}
 
           {testimonials.length > 0 && (
-            <div className="mt-16 md:mt-20">
+            <div className={stats.length > 0 ? "mt-16 md:mt-20" : undefined}>
               <AnimatedSection>
                 <SectionHeader
                   tone="dark"

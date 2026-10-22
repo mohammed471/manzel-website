@@ -26,13 +26,13 @@ describe("applyOverrides (texts & contact from the internal app)", () => {
     const out = applyOverrides(
       ar,
       {
-        texts: { ar: { "home.not_a_key": "x", "home.hero_badge": "  ", "nope": "y", "stats.products_count": 5 as unknown as string } },
+        texts: { ar: { "home.not_a_key": "x", "home.hero_badge": "  ", "nope": "y", "stats.projects_label": 5 as unknown as string } },
         site: { unknown: "z" },
       },
       "ar",
     );
     expect(out.home.hero_badge).toBe(ar.home.hero_badge);
-    expect(out.stats.products_count).toBe(ar.stats.products_count);
+    expect(out.stats.projects_label).toBe(ar.stats.projects_label);
     expect((out.home as Record<string, string>).not_a_key).toBeUndefined();
     expect((out.site as Record<string, string>).unknown).toBeUndefined();
   });

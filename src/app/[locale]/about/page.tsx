@@ -3,6 +3,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Award, Clock, Eye, Handshake, Heart, Lightbulb, Ruler, Shield, Star, Users } from "lucide-react";
 import AnimatedSection from "@/components/AnimatedSection";
 import PageHero from "@/components/ui/PageHero";
+import { getStats } from "@/components/home/homeData";
 import TrustSection from "@/components/home/TrustSection";
 import ClosingCTA from "@/components/home/ClosingCTA";
 import Timeline from "@/components/Timeline";
@@ -53,16 +54,10 @@ export default async function AboutPage({
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations("about");
-  const tStats = await getTranslations("stats");
 
   const { timeline: timelineItems, team, values } = await getAboutContent(locale);
 
-  const stats = [
-    { numberText: tStats("products_count"), label: tStats("products_label") },
-    { numberText: tStats("projects_count"), label: tStats("projects_label") },
-    { numberText: tStats("years_count"), label: tStats("years_label") },
-    { numberText: tStats("clients_count"), label: tStats("clients_label") },
-  ];
+  const stats = await getStats("about");
 
   return (
     <>

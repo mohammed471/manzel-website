@@ -5,6 +5,7 @@ import PortfolioFilter from "@/components/PortfolioFilter";
 import PageHero from "@/components/ui/PageHero";
 import SectionHeader from "@/components/ui/SectionHeader";
 import ImageTile from "@/components/home/ImageTile";
+import { getStats } from "@/components/home/homeData";
 import TrustSection from "@/components/home/TrustSection";
 import ClosingCTA from "@/components/home/ClosingCTA";
 import { buttonClasses } from "@/components/ui/Button";
@@ -69,12 +70,7 @@ export default async function PortfolioPage({
     coverUrl: getProjectImageUrl(p.category, p.id, p.images[0] || "cover.jpg"),
   }));
 
-  const stats = [
-    { numberText: "10+", label: t("stats_years") },
-    { numberText: String(categories.length), label: t("stats_categories") },
-    { numberText: "100+", label: t("stats_projects") },
-    { numberText: "150+", label: t("stats_clients") },
-  ];
+  const stats = await getStats("portfolio");
 
   return (
     <>

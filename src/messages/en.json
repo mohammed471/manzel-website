@@ -62,13 +62,12 @@
     "trust_badge": "Client Trust"
   },
   "stats": {
-    "products_count": "+500",
     "products_label": "Products Available",
-    "projects_count": "+100",
+    "projects_count": "",
     "projects_label": "Projects Completed",
-    "years_count": "+10",
+    "years_count": "",
     "years_label": "Years of Experience",
-    "clients_count": "+50",
+    "clients_count": "",
     "clients_label": "Satisfied Clients"
   },
   "products": {
