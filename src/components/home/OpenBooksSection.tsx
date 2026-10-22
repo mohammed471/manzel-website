@@ -20,7 +20,7 @@ export default async function OpenBooksSection() {
 
   return (
     <section className="py-20 md:py-28 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
+      <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-10 lg:gap-16 items-center [&>*]:min-w-0">
         <AnimatedSection>
           <span className="inline-flex items-center gap-2 rounded-full bg-accent/10 px-3 py-1 text-xs md:text-sm font-bold text-accent">
             <span className="w-1.5 h-1.5 rounded-full bg-accent" />
@@ -32,7 +32,7 @@ export default async function OpenBooksSection() {
             href={PORTAL_DEMO_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className={cn(buttonClasses("primary", "lg"), "mt-8 gap-2")}
+            className={cn(buttonClasses("primary", "lg"), "mt-8 gap-2 whitespace-normal! text-center")}
           >
             {t("openbooks_button")}
             <ArrowLeft className="w-4 h-4 ltr:rotate-180" />
