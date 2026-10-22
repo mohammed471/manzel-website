@@ -26,18 +26,30 @@ function subscribeLoad(onChange: () => void) {
 }
 const pageLoaded = () => document.readyState === "complete";
 const notLoadedOnServer = () => false;
+const REDUCE_MOTION = "(prefers-reduced-motion: reduce)";
+function subscribeMotion(onChange: () => void) {
+  const mq = window.matchMedia(REDUCE_MOTION);
+  mq.addEventListener("change", onChange);
+  return () => mq.removeEventListener("change", onChange);
+}
+const prefersReducedMotion = () => window.matchMedia(REDUCE_MOTION).matches;
 
 export default function HeroVideo() {
   const device = useDevice();
   // Editable from the internal app («الموقع» → الصور)
-  const poster = useTranslations("site")("hero_image");
+  const tSite = useTranslations("site");
+  const poster = tSite("hero_image");
+  // TODO(owner): replace with real house footage (site.hero_video / site.hero_image)
+  const videoSrc = tSite("hero_video");
   const containerRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const [playing, setPlaying] = useState(false);
   const [failed, setFailed] = useState(false);
 
   const loaded = useSyncExternalStore(subscribeLoad, pageLoaded, notLoadedOnServer);
-  const useVideo = loaded && device !== null && !device.constrained && !failed;
+  // Reduced motion → the poster only
+  const reduceMotion = useSyncExternalStore(subscribeMotion, prefersReducedMotion, () => true);
+  const useVideo = loaded && device !== null && !device.constrained && !failed && !reduceMotion;
 
   useEffect(() => {
     if (!useVideo) return;
@@ -79,7 +91,7 @@ export default function HeroVideo() {
           playsInline
           preload="metadata"
           poster={poster}
-          src="/hero_video.mp4"
+          src={videoSrc}
           onPlaying={() => setPlaying(true)}
           onError={() => setFailed(true)}
           className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ${

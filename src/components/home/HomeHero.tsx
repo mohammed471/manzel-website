@@ -42,12 +42,13 @@ export default async function HomeHero() {
             {t("hero_description")}
           </p>
           <div className="hero-rise mt-9 flex flex-wrap justify-center gap-3" style={{ animationDelay: "240ms" }}>
-            <ButtonLink href="/portfolio" variant="accent" size="lg">
-              {t("view_portfolio")}
+            {/* Portfolio and products stay one tap away in the QuickAccessBar below */}
+            <ButtonLink href="/calculator" variant="accent" size="lg">
+              {t("hero_cta_calculator")}
               <ArrowLeft className="w-4 h-4 ltr:rotate-180" />
             </ButtonLink>
-            <ButtonLink href="/products" variant="outline-light" size="lg">
-              {t("browse_products")}
+            <ButtonLink href="/booking" variant="outline-light" size="lg">
+              {t("hero_cta_booking")}
             </ButtonLink>
           </div>
         </div>
