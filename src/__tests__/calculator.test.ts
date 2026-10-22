@@ -5,6 +5,7 @@ import {
   computeEstimate,
   estimateDuration,
   maxPlotAreaForBudget,
+  normalizePricing,
   type EstimateInputs,
 } from "@/lib/calculator";
 
@@ -98,4 +99,46 @@ describe("budget", () => {
     expect(maxPlotAreaForBudget(base, DEFAULT_PRICING, 1_000_000, 50, 2000)).toBe(0);
     expect(maxPlotAreaForBudget(base, DEFAULT_PRICING, 10_000_000_000, 50, 2000)).toBe(2000);
   });
+});
+
+describe("computeEstimate — kitchen", () => {
+  const pricing = { ...DEFAULT_PRICING, kitchen: { economy: 3_000_000, mid: 5_000_000, luxury: 9_000_000 } };
+  const line = (kitchen: boolean | undefined, build: EstimateInputs["build"] = "turnkey") =>
+    computeEstimate({ ...base, build, kitchen }, pricing).lines.find((l) => l.key === build)!;
+
+  it("includes the kitchen unless told otherwise", () => {
+    expect(line(undefined)).toEqual(line(true));
+  });
+
+  it("takes the level's kitchen price off the turnkey and finishing lines", () => {
+    expect(line(true).low - line(false).low).toBe(5_000_000);
+    expect(line(true, "finishing").high - line(false, "finishing").high).toBe(5_000_000);
+  });
+
+  it("leaves the structure line alone", () => {
+    expect(line(false, "structure")).toEqual(line(true, "structure"));
+  });
+
+  it("changes nothing while no kitchen price is set", () => {
+    const off = computeEstimate({ ...base, kitchen: false }, DEFAULT_PRICING);
+    expect(off.low).toBe(computeEstimate(base, DEFAULT_PRICING).low);
+  });
+});
+
+describe("normalizePricing — calibration fields", () => {
+  it("reads the number of projects the prices are based on, 0 when missing", () => {
+    expect(normalizePricing({}).based_on_projects).toBe(0);
+    expect(normalizePricing({ based_on_projects: 4 }).based_on_projects).toBe(4);
+  });
+});
+
+// TODO(owner): recalibrate the prices from the executed projects' cost sheets, then un-skip.
+// Portal sample house: 250 m² plot, 2 floors (400 m² built), mid, turnkey, in Kirkuk, no kitchen.
+it.skip("matches the portal case: 188.7M with the fee, 7 months", () => {
+  const i: EstimateInputs = { ...base, plotArea: 250, floors: 2, kitchen: false };
+  const e = computeEstimate(i, DEFAULT_PRICING);
+  expect(e.builtArea).toBe(400);
+  expect(e.high).toBeGreaterThanOrEqual(188_700_000);
+  expect(e.low).toBeLessThanOrEqual(188_700_000);
+  expect(estimateDuration("turnkey", e.builtArea, DEFAULT_PRICING.duration)).toMatchObject({ low: 7 });
 });

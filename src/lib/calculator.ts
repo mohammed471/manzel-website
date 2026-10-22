@@ -26,6 +26,8 @@ export interface CalculatorPricing {
   duration: DurationFactors; // rough build time shown with the estimate
   area: AreaFactors; // area & quantities calculator
   usd_rate: number; // IQD per USD — the internal app's exchange-rate setting
+  kitchen: Record<Level, number>; // IQD the turnkey/finishing rate includes for the kitchen; taken off "without kitchen"
+  based_on_projects: number; // executed projects the prices were calibrated on — "based on N projects", hidden at 0
 }
 
 /** Build-time factors — edited in the internal app. Months = base + built m² ÷ pace. */
@@ -60,8 +62,13 @@ export const DESIGN_SERVICES: DesignService[] = ["plans", "interior_design", "ex
 
 const band = (low: number, high: number): Band => ({ low, high });
 
+// Mirror of the internal app's defaults (core/db/calculator_pricing.py). The live
+// values come from /api/public/calculator-pricing, edited at /admin/calculator-pricing —
+// change prices there, not here. TODO(owner): recalibrate from executed projects (T14).
 export const DEFAULT_PRICING: CalculatorPricing = {
+  // Building rules (owner): built area = plot × coverage% × floors
   coverage: 80,
+  // IQD per built m², all-inclusive (owner's rates, Sept 2026)
   turnkey: { economy: band(250_000, 300_000), mid: band(300_000, 350_000), luxury: band(350_000, 425_000) },
   structure_share: 45,
   finishing_share: 55,
@@ -92,6 +99,9 @@ export const DEFAULT_PRICING: CalculatorPricing = {
     kitchen_tile_height: 1.2,
   },
   usd_rate: 1500,
+  // Not set yet in the app: 0 = "without kitchen" changes no price, and no "based on" line
+  kitchen: { economy: 0, mid: 0, luxury: 0 },
+  based_on_projects: 0,
 };
 
 export interface EstimateInputs {
@@ -104,6 +114,7 @@ export interface EstimateInputs {
   commercial: boolean;
   renovation: boolean;
   outsideKirkuk: boolean;
+  kitchen?: boolean; // default true — the turnkey rate includes it
 }
 
 export type LineKey = BuildService | DesignService | "company_fee";
@@ -136,7 +147,13 @@ export function computeEstimate(i: EstimateInputs, p: CalculatorPricing): Estima
   if (i.build) {
     const share = i.build === "turnkey" ? 1 : (i.build === "structure" ? p.structure_share : p.finishing_share) / 100;
     const rate = p.turnkey[i.level];
-    lines.push({ key: i.build, low: builtArea * rate.low * share, high: builtArea * rate.high * share });
+    // The kitchen is finishing work: "without kitchen" takes its price off turnkey / finishing
+    const kitchenOff = i.kitchen === false && i.build !== "structure" ? p.kitchen[i.level] : 0;
+    lines.push({
+      key: i.build,
+      low: Math.max(0, builtArea * rate.low * share - kitchenOff),
+      high: Math.max(0, builtArea * rate.high * share - kitchenOff),
+    });
   }
   for (const s of i.designServices) {
     let cost = 0;

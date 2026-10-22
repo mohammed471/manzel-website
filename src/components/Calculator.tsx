@@ -100,16 +100,17 @@ export default function Calculator({ pricing }: { pricing: CalculatorPricing }) 
   const [commercial, setCommercial] = useState(false);
   const [renovation, setRenovation] = useState(false);
   const [outsideKirkuk, setOutsideKirkuk] = useState(false);
+  const [kitchen, setKitchen] = useState(true);
   const [dimsOpen, setDimsOpen] = useState(false);
   const [plotLength, setPlotLength] = useState(0);
   const [plotWidth, setPlotWidth] = useState(0);
   const [budgetM, setBudgetM] = useState(0); // millions of IQD, 0 = not set
 
-  const inputs: EstimateInputs = { build, designServices, plotArea, facadeLength, floors, level, commercial, renovation, outsideKirkuk };
+  const inputs: EstimateInputs = { build, designServices, plotArea, facadeLength, floors, level, commercial, renovation, outsideKirkuk, kitchen };
   const estimate = useMemo(
     () => computeEstimate(inputs, pricing),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [build, designServices, plotArea, facadeLength, floors, level, commercial, renovation, outsideKirkuk, pricing],
+    [build, designServices, plotArea, facadeLength, floors, level, commercial, renovation, outsideKirkuk, kitchen, pricing],
   );
   const hasResult = estimate.lines.length > 0;
   // Design-only estimates have no range (low === high): show one number, in
@@ -136,7 +137,7 @@ export default function Calculator({ pricing }: { pricing: CalculatorPricing }) 
     t("sum_size", { plot: formatNumber(plotArea), floors, built: formatNumber(estimate.builtArea) }),
     ...(hasFacade ? [t("sum_facade", { length: formatNumber(facadeLength) })] : []),
     t("sum_level", { level: t(`level_${level}`) }),
-    [commercial ? t("commercial") : t("residential"), renovation ? t("renovation") : t("new_build"), outsideKirkuk ? t("outside_kirkuk") : t("in_kirkuk")].join(" — "),
+    [commercial ? t("commercial") : t("residential"), renovation ? t("renovation") : t("new_build"), outsideKirkuk ? t("outside_kirkuk") : t("in_kirkuk"), ...(build && build !== "structure" && !kitchen ? [t("without_kitchen")] : [])].join(" — "),
   ].join("\n");
   const whatsappUrl = `https://wa.me/${tSite("whatsapp")}?text=${encodeURIComponent(t("whatsapp_message", { summary, range: rangeText }))}`;
 
@@ -425,6 +426,15 @@ export default function Calculator({ pricing }: { pricing: CalculatorPricing }) 
               options={[{ value: false, label: t("in_kirkuk") }, { value: true, label: t("outside_kirkuk") }]}
               ariaLabel={`${t("in_kirkuk")} / ${t("outside_kirkuk")}`}
             />
+            {/* The kitchen is finishing work — not part of a structure-only job */}
+            {(build === "turnkey" || build === "finishing") && (
+              <Segmented
+                value={kitchen}
+                onChange={setKitchen}
+                options={[{ value: true, label: t("with_kitchen") }, { value: false, label: t("without_kitchen") }]}
+                ariaLabel={`${t("with_kitchen")} / ${t("without_kitchen")}`}
+              />
+            )}
           </div>
         </Section>
 
@@ -483,7 +493,10 @@ export default function Calculator({ pricing }: { pricing: CalculatorPricing }) 
               <div>
                 <p className="text-sm font-bold text-primary">{t("includes_title")}</p>
                 <ul className="mt-2 space-y-2 text-sm text-text-primary">
-                  {textLines(t(`includes_${build}`)).map((item) => (
+                  {[
+                    ...textLines(t(`includes_${build}`)),
+                    ...(build === "turnkey" ? [kitchen ? t("includes_kitchen") : t("includes_bathrooms")] : []),
+                  ].map((item) => (
                     <li key={item} className="flex items-start gap-2">
                       <Check className="mt-0.5 w-4 h-4 shrink-0 text-success" strokeWidth={3} />
                       {item}
@@ -494,7 +507,7 @@ export default function Calculator({ pricing }: { pricing: CalculatorPricing }) 
               <div>
                 <p className="text-sm font-bold text-accent">{t("excludes_title")}</p>
                 <ul className="mt-2 space-y-2 text-sm text-text-secondary">
-                  {textLines(t("excludes")).map((item) => (
+                  {[...(build !== "structure" && !kitchen ? [t("excludes_kitchen")] : []), ...textLines(t("excludes"))].map((item) => (
                     <li key={item} className="flex items-start gap-2">
                       <X className="mt-0.5 w-4 h-4 shrink-0 text-accent" strokeWidth={3} />
                       {item}
@@ -533,6 +546,7 @@ export default function Calculator({ pricing }: { pricing: CalculatorPricing }) 
           lineLabel={lineLabel}
           whatsappUrl={whatsappUrl}
           leadMessage={t("lead_message", { summary, range: rangeText })}
+          basedOnProjects={pricing.based_on_projects}
         />
       </aside>
 
@@ -564,6 +578,7 @@ function ResultCard({
   lineLabel,
   whatsappUrl,
   leadMessage,
+  basedOnProjects,
 }: {
   hasResult: boolean;
   estimate: ReturnType<typeof computeEstimate>;
@@ -571,6 +586,7 @@ function ResultCard({
   lineLabel: (key: string) => string;
   whatsappUrl: string;
   leadMessage: string;
+  basedOnProjects: number;
 }) {
   const t = useTranslations("calculator");
   const [offerOpen, setOfferOpen] = useState(false);
@@ -625,6 +641,9 @@ function ResultCard({
       )}
 
       <div className="p-6 space-y-3">
+        {basedOnProjects > 0 && (
+          <p className="text-xs font-bold text-primary">{t("based_on", { n: String(basedOnProjects) })}</p>
+        )}
         <p className="text-xs leading-relaxed text-text-secondary">{t("disclaimer")}</p>
         <a
           href={whatsappUrl}

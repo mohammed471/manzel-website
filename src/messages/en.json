@@ -382,7 +382,7 @@
     "s_includes": "What does the price include?",
     "includes_title": "Included",
     "excludes_title": "Not included",
-    "includes_turnkey": "Foundations, concrete frame and walls\nElectrics and plumbing\nPlaster and paint\nTiles and porcelain\nDoors and windows\nKitchen and bathrooms",
+    "includes_turnkey": "Foundations, concrete frame and walls\nElectrics and plumbing\nPlaster and paint\nTiles and porcelain\nDoors and windows",
     "includes_structure": "Excavation and foundations\nConcrete columns and slabs\nBlock walls",
     "includes_finishing": "Plaster\nElectrics and plumbing\nTiles and porcelain\nPaint",
     "excludes": "Furniture\nAir conditioning units and appliances\nBoundary wall, garden and external works\nPermit and government fees",
@@ -409,7 +409,13 @@
     "next_2_title": "Site visit and plans",
     "next_2_desc": "An engineer visits the site and we agree the plans and materials with you.",
     "next_3_title": "Final price and contract",
-    "next_3_desc": "You receive a detailed final quote, and work starts once the contract is signed."
+    "next_3_desc": "You receive a detailed final quote, and work starts once the contract is signed.",
+    "includes_kitchen": "Kitchen and bathrooms",
+    "includes_bathrooms": "Bathrooms",
+    "excludes_kitchen": "Kitchen",
+    "with_kitchen": "With kitchen",
+    "without_kitchen": "Without kitchen",
+    "based_on": "Based on the cost of {n} projects built in Kirkuk"
   },
   "booking": {
     "hero_label": "Book Consultation",
