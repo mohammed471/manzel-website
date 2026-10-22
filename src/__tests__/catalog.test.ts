@@ -3,7 +3,7 @@ import { productTitle, queryCatalog } from "@/lib/catalog";
 import type { Product } from "@/lib/api";
 
 const p = (id: number, name: string, extra: Partial<Product> = {}): Product => ({
-  id, name, category: "قسم", subcategory: null, details: "", image: "x.jpg", colors: [], ...extra,
+  id, name, category: "قسم", subcategory: null, details: "", image: "x.jpg", colors: [], price: null, priceUnit: null, currency: null, ...extra,
 });
 
 describe("productTitle", () => {
@@ -53,5 +53,24 @@ describe("hidden products (flag from the internal app)", () => {
     vi.stubGlobal("fetch", vi.fn(async () => new Response(JSON.stringify(raw(2, true)))));
     const { getProduct } = await import("@/lib/api");
     expect(await getProduct(2)).toBeNull();
+  });
+});
+
+describe("product price fields (T18)", () => {
+  afterEach(() => vi.unstubAllGlobals());
+
+  it("reads price, unit and currency when the API sends them", async () => {
+    const products = [
+      { id: 1, name: "بلاط", price_retail: 16, currency: "USD", price_unit: "m2" },
+      { id: 2, name: "كرسي", price_retail: 0, currency: "IQD" },
+      { id: 3, name: "باب" },
+    ];
+    vi.stubGlobal("fetch", vi.fn(async () => new Response(JSON.stringify({ products }))));
+    const { getProducts } = await import("@/lib/api");
+    expect((await getProducts()).map(({ price, priceUnit, currency }) => ({ price, priceUnit, currency }))).toEqual([
+      { price: 16, priceUnit: "m2", currency: "USD" },
+      { price: null, priceUnit: null, currency: null },
+      { price: null, priceUnit: null, currency: null },
+    ]);
   });
 });

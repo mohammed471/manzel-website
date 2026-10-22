@@ -26,6 +26,10 @@ export interface Product {
   details: string;
   image: string | null;
   colors: ProductColor[];
+  /** Retail price, when the app has one (> 0). Shown only with NEXT_PUBLIC_SHOW_PRICES=true. */
+  price: number | null;
+  priceUnit: "m2" | "piece" | "linear_m" | null;
+  currency: "USD" | "IQD" | null;
 }
 
 export interface Category {
@@ -50,6 +54,18 @@ function mapProduct(raw: any): Product {
     image: raw.image_path ?? raw.image ?? null,
     // Older API deployments have no `colors` — treat as a product without colors
     colors: Array.isArray(raw.colors) ? raw.colors.map(mapColor) : [],
+    ...mapPrice(raw),
+  };
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function mapPrice(raw: any): Pick<Product, "price" | "priceUnit" | "currency"> {
+  const price = Number(raw.price_retail ?? raw.price);
+  if (!(price > 0)) return { price: null, priceUnit: null, currency: null };
+  return {
+    price,
+    priceUnit: ["m2", "piece", "linear_m"].includes(raw.price_unit) ? raw.price_unit : null,
+    currency: raw.currency === "USD" || raw.currency === "IQD" ? raw.currency : null,
   };
 }
 

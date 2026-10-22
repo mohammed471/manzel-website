@@ -23,6 +23,9 @@ const tile: Product = {
     { id: 3, name: "أبيض", hex: "#ffffff", image: "white.jpg", available: true },
     { id: 5, name: "أسود", hex: "#000000", image: null, available: true },
   ],
+  price: null,
+  priceUnit: null,
+  currency: null,
 };
 const paint: Product = {
   id: 45,
@@ -32,6 +35,9 @@ const paint: Product = {
   details: "",
   image: null,
   colors: [],
+  price: null,
+  priceUnit: null,
+  currency: null,
 };
 const cafe: PortfolioProject = {
   id: "cafeteria-karbala",

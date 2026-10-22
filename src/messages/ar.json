@@ -127,7 +127,12 @@
     "sort_label": "ترتيب المنتجات",
     "sort_newest": "الأحدث",
     "sort_name": "الاسم",
-    "sort_category": "القسم"
+    "sort_category": "القسم",
+    "price_USD": "{amount} دولار",
+    "price_IQD": "{amount} د.ع",
+    "unit_m2": "م²",
+    "unit_piece": "قطعة",
+    "unit_linear_m": "متر طولي"
   },
   "portfolio": {
     "title": "أعمالنا",

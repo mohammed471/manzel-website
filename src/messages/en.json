@@ -127,7 +127,12 @@
     "sort_label": "Sort products",
     "sort_newest": "Newest",
     "sort_name": "Name",
-    "sort_category": "Category"
+    "sort_category": "Category",
+    "price_USD": "${amount}",
+    "price_IQD": "IQD {amount}",
+    "unit_m2": "m²",
+    "unit_piece": "piece",
+    "unit_linear_m": "linear m"
   },
   "portfolio": {
     "title": "Our Work",

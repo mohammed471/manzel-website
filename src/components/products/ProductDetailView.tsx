@@ -72,6 +72,13 @@ export default function ProductDetailView({ product }: { product: Product }) {
             {code}
           </p>
         )}
+        {/* Price policy is the owner's call (T18): off until NEXT_PUBLIC_SHOW_PRICES=true */}
+        {process.env.NEXT_PUBLIC_SHOW_PRICES === "true" && product.price && product.currency && (
+          <p className="mt-3 text-xl font-bold text-accent tabular-nums">
+            {t(`price_${product.currency}`, { amount: product.price.toLocaleString("en-US") })}
+            {product.priceUnit && <span className="text-sm font-medium text-text-secondary"> / {t(`unit_${product.priceUnit}`)}</span>}
+          </p>
+        )}
 
         {colors.length > 0 && (
           <fieldset className="mt-7">
