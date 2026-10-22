@@ -19,7 +19,7 @@ import SplashScreen from "@/components/SplashScreen";
 import Analytics from "@/components/Analytics";
 import { DEVICE_BOOT_SCRIPT, SPLASH_BOOT_SCRIPT } from "@/lib/deviceScript";
 import { getSiteMessages } from "@/lib/siteContent";
-import { SITE_URL } from "@/lib/siteUrl";
+import { SITE_URL, allowIndexing } from "@/lib/siteUrl";
 
 
 // Thmanyah Serif — Display for Arabic headings, Text for Arabic body (same pair as the Manzel app).
@@ -79,7 +79,12 @@ export async function generateMetadata({
   // Defaults for pages without their own metadata — share image and twitter card,
   // but no canonical (that would point every such page at the home page).
   const defaults = await pageMeta({ locale, path: "", title: t("home_title"), description: t("home_description") });
-  return { metadataBase: new URL(SITE_URL), ...defaults, alternates: undefined };
+  return {
+    metadataBase: new URL(SITE_URL),
+    ...defaults,
+    alternates: undefined,
+    ...(!allowIndexing() && { robots: { index: false, follow: false } }),
+  };
 }
 
 export default async function LocaleLayout({

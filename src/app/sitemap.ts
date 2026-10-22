@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 import { getActiveCategories, getProjects } from "@/lib/portfolio";
 import { SITE_URL } from "@/lib/siteUrl";
 import { getTestimonials } from "@/lib/testimonials";
+import { getProducts } from "@/lib/api";
 
 const BASE_URL = SITE_URL;
 
@@ -72,6 +73,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             `${BASE_URL}/${locale}/portfolio/${project.category}/${project.id}`,
           ])
         ),
+      },
+    });
+  }
+
+  // Product pages — getProducts() already leaves hidden products out
+  for (const product of await getProducts()) {
+    entries.push({
+      url: `${BASE_URL}/ar/products/${product.id}`,
+      changeFrequency: "monthly",
+      priority: 0.6,
+      alternates: {
+        languages: Object.fromEntries(locales.map((locale) => [locale, `${BASE_URL}/${locale}/products/${product.id}`])),
       },
     });
   }
