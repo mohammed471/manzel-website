@@ -103,9 +103,11 @@ src/
 │   │   ├── Button.tsx       (ButtonLink / buttonClasses — rounded-full primary|accent|outline|light…)
 │   │   └── Surface.tsx      (surfaceClasses — rounded-3xl white/cream card with hover lift)
 │   ├── home/               (homepage sections — also reused on inner pages)
-│   │   ├── homeData.ts      (getHomeData: services, featured projects, testimonials, stats, FAQ)
+│   │   ├── homeData.ts      (getHomeData: services, featured projects, testimonials, FAQ; getStats(page) — the one source of the counters)
 │   │   ├── HomeHero.tsx, QuickAccessBar.tsx, ServicesBento.tsx, ImageTile.tsx, ProjectsShowcase.tsx
-│   │   ├── TrustSection.tsx (green stats + testimonials band — pass testimonials=[] for stats only)
+│   │   ├── TrustSection.tsx (green stats + testimonials band — renders nothing when both are empty)
+│   │   ├── OpenBooksSection.tsx («تعاقد مفتوح الدفاتر»: estimate vs actual of the sample house — home + portfolio; figures in src/data/showcase.ts)
+│   │   ├── HowWeWork.tsx    («كيف نعمل», three steps — replaced the scroll-scrubbed furniture section)
 │   │   ├── ToolsGrid.tsx, VisitSection.tsx (FAQ + map), ClosingCTA.tsx (accepts title/description)
 │   │   └── CountUp.tsx      (client — animated "+500" style counters)
 │   ├── portfolio/
@@ -144,7 +146,12 @@ src/
 │   ├── boardStore.ts       (client — useBoard / toggleSaved / writeBoard over localStorage)
 │   ├── boardCard.ts        (server — cardSlots, renderBoardCard: the share-preview JPEG)
 │   ├── about.ts            (getAboutContent(locale) — internal app, fallback about.json)
-│   └── utils.ts            (formatPrice, cn)
+│   ├── pageMeta.ts         (pageMeta(): canonical + hreflang + openGraph image + twitter card for every page)
+│   ├── jsonLd.ts           (businessLd / faqLd / projectLd — schema.org)
+│   ├── stats.ts            (parseStat / visibleStats — counters, pure)
+│   ├── phone.ts            (normalizeIraqiPhone)
+│   ├── productAudit.ts     (checks used by scripts/audit-products.ts)
+│   └── utils.ts            (cn, initials, stripTatweel)
 ├── messages/
 │   ├── ar.json             (Arabic translations)
 │   └── en.json             (English translations)
@@ -231,7 +238,7 @@ Data managed in `src/data/projects.json`, accessed via `src/lib/portfolio.ts` he
 | `src/lib/api.ts` | Flask API calls for products, categories, contact |
 | `src/lib/portfolio.ts` | Portfolio data helpers (reads from projects.json) |
 | `src/data/projects.json` | Portfolio categories and projects data |
-| `src/lib/utils.ts` | `formatPrice()` (Iraqi Dinar), `cn()` (classname merge) |
+| `src/lib/utils.ts` | `cn()` (classname merge), `initials()`, `stripTatweel()` |
 | `src/app/globals.css` | Tailwind v4 `@theme` color/font definitions, custom CSS utilities |
 | `src/app/[locale]/layout.tsx` | Root layout: locale, dir, fonts, NextIntlClientProvider |
 | `src/app/sitemap.ts` | Auto-generated sitemap with all routes and both locales |
@@ -261,7 +268,7 @@ Colour stock is reduced to `available: boolean` by the API (products with `track
 - Portfolio functions in `src/lib/portfolio.ts` are **async** (`getProjects`, `getProject`, `getFeaturedProjects`, `getProjectsByCategory`); categories stay static. Images are full URLs (ImgBB / `/api/public/website/media/…`) or `/portfolio/…` site paths — `getProjectImageUrl` passes both through. An empty list from a healthy API is respected (no fallback resurrection).
 - «انشر الآن» → `POST {site}/api/revalidate` with header `x-revalidate-secret` (= env `REVALIDATE_SECRET` on the website host = «مفتاح النشر» in the app) → `revalidateTag(SITE_CONTENT_TAG)` + `revalidatePath("/", "layout")`. All API fetches carry the `site-content` tag (`src/lib/cacheTags.ts` — kept separate so client bundles don't pull portfolio data).
 - **Texts / contact / images overrides:** `src/lib/siteContent.ts` fetches `/api/public/website/content` (`{texts:{ar,en}:{"ns.key": text}, site:{…}}`, ISR 1h, tag site-content) and `getSiteMessages(locale)` merges it over the bundled translation files — used by BOTH `src/i18n/request.ts` and `[locale]/layout.tsx`. Only existing string keys are overridden. Contact details and main images live in the `site` namespace (`site.phone_1`, `site.whatsapp`, `site.email`, `site.facebook`, `site.instagram`, `site.map_url`, `site.map_embed`, `site.hero_image`, `site.products_image`) — **never hardcode them**; use `t("site.…")` / `telHref()`.
-- **Testimonials / About lists** arrive in the same content response as `sections: {testimonials, timeline, team, values}`. `getTestimonials(locale)` (`src/lib/testimonials.ts`) and `getAboutContent(locale)` (`src/lib/about.ts`) are **async** and localize with `localized(item, field, locale)` (blank English → Arabic). `sections` missing (API down / older API) → `src/data/testimonials.json` / `about.json` + `about.*_N_*` translation keys. An emptied list is respected: the testimonials band / About section is hidden. Value icons: `iconMap` in the About page must match `VALUE_ICONS` in the internal app.
+- **Testimonials / About lists** arrive in the same content response as `sections: {testimonials, timeline, team, values}`. `getTestimonials(locale)` (`src/lib/testimonials.ts`) and `getAboutContent(locale)` (`src/lib/about.ts`) are **async** and localize with `localized(item, field, locale)` (blank English → Arabic). `sections` missing (API down / older API) → no testimonials at all (there is no bundled fallback — template quotes must never show) / `about.json` + `about.*_N_*` keys for timeline and values (the team fallback is empty). **Only testimonials with `verified` (true/1/"1"/"true") are shown**; `project` (slug) adds a «شاهد المشروع» link. No verified testimonials → `/testimonials` is noindex, out of the sitemap, and unlinked (footer, More sheet, search — `hasTestimonials` from the layout). An emptied list is respected: the testimonials band / About section is hidden. Value icons: `iconMap` in the About page must match `VALUE_ICONS` in the internal app.
 - GlobalSearch reads projects from `/api/portfolio-index` (cached route) instead of bundling projects.json.
 - Tests: `npm test` (vitest) — `src/__tests__/portfolio.test.ts` covers API / empty-list / fallback / image URLs / filter fields; `portfolioFilters.test.ts` the area ranges, filtering and spec labels.
 - Project types, area ranges and the floor-plan watermark: see "Portfolio Filters" above.
@@ -397,7 +404,8 @@ Font selection is automatic via `[lang="ar"]` and `[lang="en"]` CSS selectors in
 - This ensures locale prefix is automatically added to all links
 
 ### Prices
-- Format as Iraqi Dinar: `formatPrice(price)` → `"٢٥٠,٠٠٠ د.ع"`
+- There is no `formatPrice` helper: amounts use `n.toLocaleString("en-US")` inside a translation key (`home.openbooks_amount`, `products.price_IQD`) so digits stay Western.
+- Product prices: the API sends `price_retail` + `currency` for nearly every product; `mapProduct` reads them into `price / priceUnit / currency`, but they are shown **only** with `NEXT_PUBLIC_SHOW_PRICES=true` — the pricing policy is the owner's decision.
 - Never show cost or wholesale prices
 
 ### Next.js Patterns
@@ -423,17 +431,14 @@ Font selection is automatic via `[lang="ar"]` and `[lang="en"]` CSS selectors in
 Hard-won rules from the July 2026 iPhone performance fix — do not regress these:
 
 - **Device detection:** `src/lib/device.ts` (`useDevice()` → `desktop | ios | android | mobile` + `constrained` for Save-Data/low-memory) and `src/lib/deviceScript.ts` (inline head script setting `html[data-device]` before paint). Gate platform-specific CSS with `html[data-device=…]` — width queries miss iPad Pro. Touch devices get no `backdrop-filter` and no `.noise-overlay`.
-- **HeroVideo:** poster is a real `<Image priority>`; the video fades in only on `playing`, is dropped if autoplay is refused (iOS Low Power Mode → poster stays), is skipped on `constrained` devices, and pauses when the hero leaves the viewport so it never decodes alongside the furniture video.
+- **HeroVideo:** poster is a real `<Image priority>`; the video fades in only on `playing`, is dropped if autoplay is refused (iOS Low Power Mode → poster stays), is skipped on `constrained` devices, is skipped under `prefers-reduced-motion` (poster only), and pauses when the hero leaves the viewport. Video and poster paths are `site.hero_video` / `site.hero_image`.
 - **Horizontal overflow:** `body { overflow-x: clip }` plus `overflow-x-clip` on components with sideways entrance animations (Timeline). Overflow makes iOS zoom the whole page out. Use `clip`, never `hidden` (breaks `position: sticky`).
 
 - **Media budgets:** videos in `public/` ≤ 1.5 MB (H.264, CRF 28, no audio, `+faststart`); images ≤ 300 KB. Originals are backed up in `_media-originals/` (gitignored). Compress with `ffmpeg-static` (devDependency) + `sharp`.
 - **Videos:** always `preload="metadata"` (or `"none"` + IntersectionObserver) with a `poster` image — NEVER `preload="auto"`. Two videos decoding at once exceed iOS Safari's media memory budget and one silently fails to render (this was the original "video not showing" bug).
-- **Scroll scrubbing** (`ScrollVideoSection`): `scrubMode(useDevice())` in `src/lib/scrubFrames.ts` picks the experience — every device scrubs still frames (`useFrameScrub` draws `public/scrub-frames/<size>/NNN.webp` on the canvas; `scrubFrameSize()`: 1440 desktop, 1080 phones/tablets; no video, no seeking, no autoplay — so it works in iOS Low Power Mode), Save-Data/low-end phones → poster only. There is no scrub video any more: the 960px all-intra desktop video looked blurry, and a sharp 1440 one is 4 MB against 1.9 MB of WebP frames. Mode is `"pending"` until hydration, so the server HTML is identical for every device and carries no frames. The section height is CSS (`.scrub-section` in globals.css: 500vh desktop, 300vh per `html[data-device]` phones) — never set it from React, or the page jumps when hydration changes it (it used to: 3320px → 1195px). Frames load when the section is one screen away, every 8th first. HeroVideo attaches its video only after the window `load` event.
-- **Scrub poster:** `public/images/furniture-poster.jpg` is the video's **last** frame (finished room) and sits under the canvas in the server HTML. Never the first frame — it is blank white, and on the white section that read as an empty box (the Sept 2026 "video doesn't show on phones" bug). A test asserts it has dark pixels.
 - **R2 images bypass `/_next/image`:** images from `img.manzel360.com` load straight from Cloudflare via `loaderFor(src)` in `src/lib/imageLoader.ts` — the 640px `<stem>.thumb.webp` (made by the app for every upload) for widths ≤ 640, the full image above. `/_next/image` on Render isn't edge-cached (`cf-cache-status: DYNAMIC`), resizes on first request (0.4–0.7s each) and loses its cache on every deploy — that was the slow first load. Any component showing app-supplied images uses `SiteImage` (`@/components/SiteImage`, works from server components) or passes `loaderFor`; never `next/image` directly. Don't set a global `images.loaderFile` — it would take the optimizer away from local images. `ProductImage` retries a failed thumb full-size before the category placeholder.
-- **Scrub frames:** every 2nd frame from frame 4 (frames 0–3 are blank), square WebP q72, 59 frames per size: `1080/` ≈ 1.4 MB (phones), `1440/` ≈ 1.9 MB (desktop, the original's size) — `SCRUB_FRAME_COUNT` and `SCRUB_FRAME_SIZES` must match (tests check count, size and budgets: 1.5 MB / 2 MB). Not smaller: 640px frames looked blurry on 3× phones (the 3:4 phone box crops the square, so ~75% of the width is shown), and the 960px desktop video looked blurry too. Keep them square — tablets show a square box. Regenerate each size `S` from the original: `node_modules/ffmpeg-static/ffmpeg.exe -i _media-originals/furniture-scrub.mp4 -vf "select='gte(n\,4)*not(mod(n-4\,2))',scale=S:-1:flags=lanczos" -vsync vfr -c:v libwebp -quality 72 -compression_level 6 -start_number 0 public/scrub-frames/S/%03d.webp`; poster: `-vf "select='eq(n\,120)',scale=1080:-1:flags=lanczos" -vsync vfr -frames:v 1 -q:v 4 public/images/furniture-poster.jpg`.
 - **Expensive effects are desktop-only:** large-radius `blur-[100px+]` layers, `.noise-overlay` (feTurbulence), `backdrop-blur` on fixed elements, and infinite `background-position` shimmers are all gated behind `md:` / `@media (hover: hover)` / `html[data-device]`. Do not add new ones over video or fixed elements on mobile. SiteHeader and MobileBottomNav use solid backgrounds.
-- **Scroll/resize listeners:** rAF-throttle them (see `SiteHeader.tsx`, `ScrollVideoSection.tsx`). iOS fires `resize` continuously while the URL bar collapses during scroll. Prefer IntersectionObserver where possible.
+- **Scroll/resize listeners:** rAF-throttle them (see `SiteHeader.tsx`). iOS fires `resize` continuously while the URL bar collapses during scroll. Prefer IntersectionObserver where possible.
 - **API fetches:** every fetch in `api.ts` has `AbortSignal.timeout(...)` (5s reads / 30s writes). The Flask API on Render free tier cold-starts for 30-60s — never let a fetch block without a timeout.
 - **Static rendering:** `[locale]/layout.tsx` has `generateStaticParams` + `setRequestLocale(locale)` (also in the home page). Call `setRequestLocale` in new pages that should prerender; without it the page renders dynamically on every request.
 - **GlobalSearch** is mounted via `GlobalSearchLazy` — its bundle (projects.json + framer + icons) loads only on first open (Ctrl+K or navbar button event `open-global-search`). Don't import `GlobalSearch` directly in the layout.
@@ -479,3 +484,16 @@ After major changes, update this CLAUDE.md file to reflect:
 ## Important Note
 
 After major changes, please update this file (CLAUDE.md) — keep this file up-to-date with project status.
+
+## Pre-launch fixes (Oct 2026, branch `pre-launch-fixes`)
+
+The owner's checklist is `docs/pre-launch-tasks.md`; the plan `docs/superpowers/plans/2026-10-22-pre-launch-fixes.md`; what the internal app still needs `docs/internal-app-todo.md` and `docs/portal-todo.md`.
+
+- **No invented content, empty hides.** Team, testimonials, timeline and counters come from the internal app; a section with nothing real in it disappears (team / timeline / testimonials band / counter band). Bundled fallbacks no longer contain template people or quotes.
+- **Empty portfolio categories** (`getActiveCategories()`) are hidden from the bento, the category cards, the filter buttons, the QuickAccessBar and the sitemap; their page shows "coming soon" + booking and is noindex. Adding a project shows the category again automatically.
+- **Counters** (`getStats(page)`): products = live product count, sections = active categories, years / projects / clients = `stats.*_count` texts (empty in the bundled files — the owner fills them in from the app). The number is in the server HTML; `CountUp` only animates it (not under reduced motion). `stats.products_count` was removed so the computed count can't be overridden.
+- **Tatweel:** the app's H1 text has «شريـــكك»; `HomeHero` renders it `aria-hidden` with the plain word (`stripTatweel`) in `sr-only`.
+- **Calculator:** `kitchen` (with/without — takes `pricing.kitchen[level]` off turnkey/finishing; 0 until set in the app) and `based_on_projects` («مبنية على كلفة N مشروع», hidden at 0) live in the pricing JSON. The WhatsApp message ends with a link that reopens the calculator with the same choices (`estimateToQuery` / `queryToEstimate`, read from `window.location` after hydration). The calibration test for the portal house is `it.skip` until the owner's new prices.
+- **Products:** `productTitle()` uses the first line of `details` as the title when the name is a supplier code and that line is a short Arabic name (not colours, numbers or prices) — the code shows underneath. Sort `?sort=newest|name|category` (photographed products still first). `hidden` products (once the API sends the flag) are left out. `node scripts/audit-products.ts` writes `reports/products-audit.csv` + summary — read-only.
+- **SEO:** every page's metadata goes through `pageMeta()` (canonical, hreflang ar/en/x-default=ar, og image, twitter `summary_large_image`); the layout sets defaults without a canonical. Share images `public/og-*.jpg` are drawn by `node scripts/make-og-images.ts` (sharp/Pango — request-time rendering doesn't join Arabic letters); rerun after changing the hero/CTA texts. JSON-LD: one `HomeAndConstructionBusiness` (no `geo` until the owner confirms coordinates) + `FAQPage` on home, `CreativeWork` on project pages. `NEXT_PUBLIC_ALLOW_INDEXING=false` (staging) closes robots.txt and noindexes every page; unset = indexed. The sitemap includes visible product pages.
+- **Removed:** the scroll-scrubbed furniture section (`ScrollVideoSection`, `scrubFrames`, `useFrameScrub`, `public/scrub-frames/`, `furniture-poster.jpg`) — replaced by `HowWeWork`.
