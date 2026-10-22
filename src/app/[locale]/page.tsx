@@ -5,6 +5,7 @@ import ScrollVideoSection from "@/components/ScrollVideoSection";
 import HomeHero from "@/components/home/HomeHero";
 import QuickAccessBar from "@/components/home/QuickAccessBar";
 import ServicesBento from "@/components/home/ServicesBento";
+import OpenBooksSection from "@/components/home/OpenBooksSection";
 import ProjectsShowcase from "@/components/home/ProjectsShowcase";
 import TrustSection from "@/components/home/TrustSection";
 import ToolsGrid from "@/components/home/ToolsGrid";
@@ -84,6 +85,7 @@ export default async function Home({
       <HomeHero />
       <QuickAccessBar />
       <ServicesBento services={services} />
+      <OpenBooksSection />
       <ScrollVideoSection />
       <ProjectsShowcase projects={featuredProjects.slice(0, 4)} />
       <TrustSection stats={stats} testimonials={testimonialData} />
