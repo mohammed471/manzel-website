@@ -58,7 +58,8 @@ export default async function Home({
       <QuickAccessBar />
       <ServicesBento services={services} />
       <OpenBooksSection />
-      <ScrollVideoSection />
+      {/* On/off from the internal app («لوحة الموقع»); off by default */}
+      {tSite("scroll_section") === "1" && <ScrollVideoSection />}
       <ProjectsShowcase projects={featuredProjects.slice(0, 4)} />
       <TrustSection stats={stats} testimonials={testimonialData} />
       <ToolsGrid tone="cream" />

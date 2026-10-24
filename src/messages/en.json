@@ -63,6 +63,7 @@
     "trust_badge": "Client Trust",
     "hero_cta_calculator": "Estimate your home's cost",
     "hero_cta_booking": "Book a free consultation",
+    "hero_cta_booking_link": "or book a free consultation",
     "openbooks_badge": "Open-book contract",
     "openbooks_title": "Actual cost + 10% — nothing hidden",
     "openbooks_text": "Every construction project gets its own page showing what was spent month by month, the estimate against the actual cost line by line, the payments and the progress.",
@@ -774,7 +775,8 @@
     "map_embed": "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d800!2d44.3956904!3d35.4502682!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x1554d700122bb0a7%3A0x3b4027df0fd30a83!2sManzel%20Design%20House!5e1!3m2!1sar!2siq",
     "hero_image": "/images/hero-poster.jpg",
     "products_image": "/images/products-hero.webp",
-    "hero_video": "/hero_video.mp4"
+    "hero_video": "",
+    "scroll_section": "0"
   },
   "scrollVideo": {
     "slide1_label": "Interior Design",

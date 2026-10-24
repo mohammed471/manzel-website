@@ -2,6 +2,7 @@ import { getTranslations } from "next-intl/server";
 import { ArrowLeft } from "lucide-react";
 import HeroVideo from "@/components/HeroVideo";
 import { ButtonLink } from "@/components/ui/Button";
+import { Link } from "@/i18n/navigation";
 import { stripTatweel } from "@/lib/utils";
 
 // Full-screen video hero. Bottom padding leaves room for the QuickAccessBar,
@@ -41,15 +42,18 @@ export default async function HomeHero() {
           >
             {t("hero_description")}
           </p>
-          <div className="hero-rise mt-9 flex flex-wrap justify-center gap-3" style={{ animationDelay: "240ms" }}>
+          <div className="hero-rise mt-9 flex flex-col items-center gap-4" style={{ animationDelay: "240ms" }}>
             {/* Portfolio and products stay one tap away in the QuickAccessBar below */}
             <ButtonLink href="/calculator" variant="accent" size="lg">
               {t("hero_cta_calculator")}
               <ArrowLeft className="w-4 h-4 ltr:rotate-180" />
             </ButtonLink>
-            <ButtonLink href="/booking" variant="outline-light" size="lg">
-              {t("hero_cta_booking")}
-            </ButtonLink>
+            <Link
+              href="/booking"
+              className="text-sm md:text-base text-white/85 underline underline-offset-4 decoration-white/40 hover:text-white hover:decoration-white"
+            >
+              {t("hero_cta_booking_link")}
+            </Link>
           </div>
         </div>
       </div>

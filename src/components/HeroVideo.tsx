@@ -39,7 +39,7 @@ export default function HeroVideo() {
   // Editable from the internal app («الموقع» → الصور)
   const tSite = useTranslations("site");
   const poster = tSite("hero_image");
-  // TODO(owner): replace with real house footage (site.hero_video / site.hero_image)
+  // Empty = no video, the poster only (the old gym clip was removed)
   const videoSrc = tSite("hero_video");
   const containerRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -49,7 +49,7 @@ export default function HeroVideo() {
   const loaded = useSyncExternalStore(subscribeLoad, pageLoaded, notLoadedOnServer);
   // Reduced motion → the poster only
   const reduceMotion = useSyncExternalStore(subscribeMotion, prefersReducedMotion, () => true);
-  const useVideo = loaded && device !== null && !device.constrained && !failed && !reduceMotion;
+  const useVideo = !!videoSrc && loaded && device !== null && !device.constrained && !failed && !reduceMotion;
 
   useEffect(() => {
     if (!useVideo) return;
@@ -100,7 +100,9 @@ export default function HeroVideo() {
         />
       )}
 
-      <div className="absolute inset-0 bg-gradient-to-b from-primary-dark/55 via-primary-dark/35 to-primary-dark/80" />
+      {/* Bottom + start-side shade keeps the white text AA over any photo */}
+      <div className="absolute inset-0 bg-gradient-to-b from-primary-dark/60 via-primary-dark/40 to-primary-dark/85" />
+      <div className="absolute inset-0 rtl:bg-gradient-to-l ltr:bg-gradient-to-r from-primary-dark/50 to-transparent" />
     </div>
   );
 }
