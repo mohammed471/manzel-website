@@ -103,11 +103,13 @@ src/
 │   │   ├── Button.tsx       (ButtonLink / buttonClasses — rounded-full primary|accent|outline|light…)
 │   │   └── Surface.tsx      (surfaceClasses — rounded-3xl white/cream card with hover lift)
 │   ├── home/               (homepage sections — also reused on inner pages)
-│   │   ├── homeData.ts      (getHomeData: services, featured projects, testimonials, FAQ; getStats(page) — the one source of the counters)
-│   │   ├── HomeHero.tsx, QuickAccessBar.tsx, ServicesBento.tsx, ImageTile.tsx, ProjectsShowcase.tsx
+│   │   ├── homeData.ts      (getHomeData: hero slides, steps, story, materials, featured 3, design/build pairs, testimonials, FAQ; getStats(page) — the one source of the counters)
+│   │   ├── HomeHero.tsx (+ HeroSlides, HeroCaption), QuickAccessBar.tsx, ImageTile.tsx
+│   │   ├── RenderToReality.tsx («صمّمناه، ثم بنيناه»), FeaturedWork.tsx, ProcessSteps.tsx, StoryStrip.tsx,
+│   │   │   MaterialsSection.tsx, MiniCalculator.tsx, TeamSection.tsx — the Oct 2026 redesign (see "Home page" below)
 │   │   ├── TrustSection.tsx (green stats + testimonials band — renders nothing when both are empty)
 │   │   ├── OpenBooksSection.tsx («تعاقد مفتوح الدفاتر»: estimate vs actual of the sample house — home + portfolio; figures in src/data/showcase.ts)
-│   │   ├── ToolsGrid.tsx, VisitSection.tsx (FAQ + map), ClosingCTA.tsx (accepts title/description)
+│   │   ├── VisitSection.tsx (FAQ + map), ClosingCTA.tsx (accepts title/description)
 │   │   └── CountUp.tsx      (client — animated "+500" style counters)
 │   ├── portfolio/
 │   │   └── ProjectsBrowser.tsx (client — category grid with its type / area filters behind one "Filter" button)
@@ -168,12 +170,12 @@ src/
 - `ProjectGallery` — lightbox interaction
 - `WhatsAppButton` — client-side interaction, `useTranslations`
 - `LanguageToggle` — locale switching
-- `FAQ` — accordion expand/collapse state, Framer Motion
 - `ShareButtons` — Web Share API detection, clipboard, `useTranslations`
 - `ScrollToTop` — scroll detection, Framer Motion
 - `Timeline` — Framer Motion scroll-triggered animations, RTL detection
 - `GlobalSearch` — Ctrl+K overlay, debounced search, keyboard navigation, recent searches
 - `ProjectsBrowser` — portfolio category filters (type / area), state read from the URL
+- `HeroSlides`, `RenderToReality`, `BeforeAfterSlider`, `StoryStrip`, `MiniCalculator` — home page interaction
 - `SaveButton`, `BoardLink`, `BoardActions` — «لوحتي»: the visitor's board lives in their browser (`useBoard`)
 
 ### Data Flow
@@ -316,6 +318,17 @@ The last feature before development stopped (Oct 2026): a heart saves products, 
 - Counts use the `{count, plural, … {n} …}` pattern (number for the plural, string for Western digits). GA4 events: `board_save`, `board_send`.
 - Tests: `board.test.ts`, `boardCard.test.ts`.
 
+### Home page (Oct 2026 redesign, `manzel-redesign-tasks.md`)
+
+- Order: hero → QuickAccessBar → numbers (TrustSection, ≥ 2 numbers) → design vs build → selected projects → how we work → (furniture scroll section, off unless `site.scroll_section` = "1") → open-book contract + the house month by month (dark band) → materials → mini calculator → team (members with a photo) → FAQ + map → closing CTA.
+- **Every photo and list comes from the internal app** («الموقع» → أقسام الرئيسية: `hero_slides`, `process_steps`, `build_story`, `materials`; projects' «قبل/بعد» pairs; «مميّز»), never from files in this repo. A section with nothing entered is not rendered. Owner guide: `docs/how-to-add-photos.md`.
+- Renders are never shown as built work: hero slides and projects carry `kind` (`design` default / `built`) → «تصميم» / «منفّذ» badge.
+- `site.hero_video` empty = no video. The old gym clip and poster are gone (originals in `_media-originals/`); the default poster is `/images/hero-home.jpg` (a new name so no cache serves the old one).
+- Project case-study fields from the app (`nameEn`, `locationEn`, `kind`, `duration`, `cost`, `challenge*`, `solution*`, `materials`) — `projectName()` / `projectLocation()` fall back to Arabic with `lang="ar"`.
+- Pure selection logic in `src/lib/homeSections.ts` (`pickFeatured`, `pickPairs`, `cumulativePct`), tested.
+- `BeforeAfterSlider` is a real `role="slider"` (arrow keys follow the screen in RTL, Home/End); the "before" image (design) sits on the start side.
+- Only the hero and the open-book title are display-size; other home headings are `text-3xl md:text-4xl` without a badge (badges: open book, materials, closing CTA).
+
 ## Styling Rules
 
 ### Color Palette
@@ -375,9 +388,8 @@ Font selection is automatic via `[lang="ar"]` and `[lang="en"]` CSS selectors in
 ## Marketing Features
 
 ### FAQ Section (Home Page)
-- Accordion component (`FAQ.tsx`) after Testimonials, before CTA
-- 6 Q&A items from `faq` translation namespace
-- One item open at a time, Framer Motion animations
+- `FAQ.tsx` — server component, native `<details name="faq">`: answers are in the server HTML, one open at a time
+- 6 Q&A items from the `faq` namespace (editable in the app); a question without an answer is hidden and left out of `faqLd`
 
 ### Social Sharing (Project Detail Page)
 - `ShareButtons.tsx` in project info sidebar
