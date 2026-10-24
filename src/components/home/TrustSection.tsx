@@ -10,7 +10,7 @@ type Testimonial = React.ComponentProps<typeof TestimonialsCarousel>["testimonia
 
 // Green band: stats + client testimonials.
 export default async function TrustSection({
-  stats,
+  stats: allStats,
   testimonials,
 }: {
   stats: { numberText: string; label: string }[];
@@ -18,6 +18,8 @@ export default async function TrustSection({
 }) {
   const t = await getTranslations("home");
   const tTestimonials = await getTranslations("testimonials");
+  // One number alone reads as filler — the counters show from two up
+  const stats = allStats.length >= 2 ? allStats : [];
   // Nothing real to show → no band at all
   if (stats.length === 0 && testimonials.length === 0) return null;
 

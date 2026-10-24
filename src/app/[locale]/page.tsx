@@ -10,6 +10,7 @@ import ProjectsShowcase from "@/components/home/ProjectsShowcase";
 import TrustSection from "@/components/home/TrustSection";
 import ToolsGrid from "@/components/home/ToolsGrid";
 import VisitSection from "@/components/home/VisitSection";
+import TeamSection from "@/components/home/TeamSection";
 import ClosingCTA from "@/components/home/ClosingCTA";
 import { pageMeta } from "@/lib/pageMeta";
 
@@ -63,6 +64,7 @@ export default async function Home({
       <ProjectsShowcase projects={featuredProjects.slice(0, 4)} />
       <TrustSection stats={stats} testimonials={testimonialData} />
       <ToolsGrid tone="cream" />
+      <TeamSection />
       <VisitSection faqItems={faqItems} />
       <ClosingCTA />
     </div>
