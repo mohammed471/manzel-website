@@ -23,9 +23,9 @@ describe("areaRangeIndex", () => {
 
 describe("filterProjects", () => {
   const projects = [
-    { id: "a", type: "house", area: 200 },
-    { id: "b", type: "house", area: 120 },
-    { id: "c", type: "commercial", area: 200 },
+    { id: "a", type: "house", area: 200, kind: "built" },
+    { id: "b", type: "house", area: 120, kind: "design" },
+    { id: "c", type: "commercial", area: 200, kind: "built" },
     { id: "d" }, // no type, no area — an older project
   ];
   const ids = (filter: Parameters<typeof filterProjects>[1]) =>
@@ -42,6 +42,11 @@ describe("filterProjects", () => {
   it("filters by area range", () => {
     expect(ids({ range: 2 })).toEqual(["a", "c"]);
     expect(ids({ range: 0 })).toEqual([]);
+  });
+
+  it("filters by built / design, leaving out projects with no badge", () => {
+    expect(ids({ kind: "built" })).toEqual(["a", "c"]);
+    expect(ids({ kind: "design", type: "house" })).toEqual(["b"]);
   });
 
   it("combines type and area range", () => {

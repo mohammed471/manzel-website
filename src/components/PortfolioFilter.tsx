@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import Image from "@/components/SiteImage";
 import { Link } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
@@ -10,7 +9,11 @@ interface Project {
   id: string;
   category: string;
   name: string;
+  /** "ar" when the English name is missing and the Arabic shows */
+  nameLang?: "ar";
   location: string;
+  locationLang?: "ar";
+  kind?: "built" | "design";
   year: string;
   coverUrl: string;
 }
@@ -69,21 +72,10 @@ export default function PortfolioFilter({
 
       )}
 
-      {/* Projects Grid */}
-      <motion.div
-        layout
-        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
-      >
-        <AnimatePresence mode="popLayout">
+      {/* Projects Grid — plain markup: every cover is visible in the server HTML (no entrance that waits for JS) */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {filtered.map((project) => (
-            <motion.div
-              key={project.id}
-              layout
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.9 }}
-              transition={{ duration: 0.35 }}
-            >
+            <div key={project.id}>
               <Link
                 href={`/portfolio/${project.category}/${project.id}`}
                 className="group block"
@@ -97,6 +89,11 @@ export default function PortfolioFilter({
                     className="object-cover transition-transform duration-700 group-hover:scale-105"
                     sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
                   />
+                  {project.kind && (
+                    <span className="absolute top-3 start-3 rounded-full bg-white/90 px-3 py-1 text-xs font-bold text-primary shadow-sm">
+                      {t(project.kind === "built" ? "kind_built" : "kind_design")}
+                    </span>
+                  )}
                   {/* Fallback */}
                   <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-primary-dark/30 flex items-center justify-center -z-10">
                     <svg
@@ -116,17 +113,16 @@ export default function PortfolioFilter({
                 </div>
 
                 {/* Text */}
-                <h3 className="font-semibold text-text-primary group-hover:text-primary transition-colors text-[15px]">
+                <h3 lang={project.nameLang} className="font-semibold text-text-primary group-hover:text-primary transition-colors text-[15px]">
                   {project.name}
                 </h3>
-                <p className="text-text-secondary text-sm mt-0.5">
+                <p lang={project.locationLang} className="text-text-secondary text-sm mt-0.5">
                   {project.location}
                 </p>
               </Link>
-            </motion.div>
+            </div>
           ))}
-        </AnimatePresence>
-      </motion.div>
+      </div>
 
       {/* Empty state */}
       {filtered.length === 0 && (

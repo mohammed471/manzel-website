@@ -6,12 +6,15 @@ export const DEFAULT_AREA_BOUNDS = [100, 150, 200, 300];
 
 export interface ProjectFilter {
   type?: string;
+  /** "built" (real photos) or "design" (renders) */
+  kind?: string;
   /** Index from `areaRangeIndex` */
   range?: number;
 }
 
 interface FilterableProject {
   type?: string;
+  kind?: string;
   area?: number;
 }
 
@@ -21,7 +24,7 @@ export function areaRangeIndex(area: number, bounds: number[]): number {
   return index === -1 ? bounds.length : index;
 }
 
-/** A project with no type / no area matches only while that filter is off. */
+/** A project with no type / kind / area matches only while that filter is off. */
 export function filterProjects<T extends FilterableProject>(
   projects: T[],
   filter: ProjectFilter,
@@ -30,6 +33,7 @@ export function filterProjects<T extends FilterableProject>(
   return projects.filter(
     (p) =>
       (!filter.type || p.type === filter.type) &&
+      (!filter.kind || p.kind === filter.kind) &&
       (filter.range === undefined || (!!p.area && areaRangeIndex(p.area, bounds) === filter.range)),
   );
 }

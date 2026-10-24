@@ -42,7 +42,7 @@ function setParams(values: Record<string, string | undefined>) {
   window.dispatchEvent(new Event(FILTER_EVENT));
 }
 
-// Category grid with its filters (type, area) behind one "Filter" button. A chip
+// Category grid with its filters (type, built/design, area) behind one "Filter" button. A chip
 // exists only if a project carries it, and a row only if it offers a choice — so
 // a category with no types or areas entered in the internal app shows the plain grid.
 export default function ProjectsBrowser({ projects, types, areaBounds }: ProjectsBrowserProps) {
@@ -62,22 +62,25 @@ export default function ProjectsBrowser({ projects, types, areaBounds }: Project
   const rangeOptions = [
     ...new Set(projects.flatMap((p) => (p.area ? [areaRangeIndex(p.area, areaBounds)] : []))),
   ].sort((a, b) => a - b);
+  const kindOptions = (["built", "design"] as const).filter((k) => projects.some((p) => p.kind === k));
+  const showKinds = kindOptions.length > 1;
   const showTypes = typeOptions.length > 1;
   const showRanges = rangeOptions.length > 1;
 
   const params = new URLSearchParams(search);
   const filter: ProjectFilter = {
     type: showTypes ? typeOptions.find((type) => type.id === params.get("type"))?.id : undefined,
+    kind: showKinds ? kindOptions.find((k) => k === params.get("kind")) : undefined,
     range: showRanges ? rangeOptions.find((range) => rangeParam(range) === params.get("area")) : undefined,
   };
-  const activeCount = (filter.type ? 1 : 0) + (filter.range === undefined ? 0 : 1);
+  const activeCount = (filter.type ? 1 : 0) + (filter.kind ? 1 : 0) + (filter.range === undefined ? 0 : 1);
   const count = (f: ProjectFilter) => filterProjects(projects, f, areaBounds).length;
   const filtered = filterProjects(projects, filter, areaBounds);
-  const clear = () => setParams({ type: undefined, area: undefined });
+  const clear = () => setParams({ type: undefined, kind: undefined, area: undefined });
 
   return (
     <div>
-      {(showTypes || showRanges) && (
+      {(showTypes || showKinds || showRanges) && (
         // Native <details>: one button opens the filters, no state to keep
         <details className="group mb-10">
           <summary
@@ -111,6 +114,23 @@ export default function ProjectsBrowser({ projects, types, areaBounds }: Project
                     onClick={() => setParams({ type: type.id })}
                   >
                     {type.name}
+                  </Chip>
+                ))}
+              </ChipGroup>
+            )}
+            {showKinds && (
+              <ChipGroup label={t("filter_kind")}>
+                <Chip active={!filter.kind} onClick={() => setParams({ kind: undefined })}>
+                  {t("filter_all")}
+                </Chip>
+                {kindOptions.map((k) => (
+                  <Chip
+                    key={k}
+                    active={filter.kind === k}
+                    disabled={count({ ...filter, kind: k }) === 0}
+                    onClick={() => setParams({ kind: k })}
+                  >
+                    {t(k === "built" ? "kind_built" : "kind_design")}
                   </Chip>
                 ))}
               </ChipGroup>
