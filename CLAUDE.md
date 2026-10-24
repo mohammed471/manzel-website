@@ -486,7 +486,7 @@ The Flask app MUST be running for:
 - `npm run dev` (fetches product/category data on each request)
 - Product images (served from Flask)
 
-Portfolio pages read from Flask; when it is unreachable they show no projects (the old sample projects were removed from `src/data/projects.json` before launch; their images are still in `public/portfolio/` pending the owner's decision).
+Portfolio pages read from Flask; when it is unreachable they show no projects (the old sample projects were removed from `src/data/projects.json` before launch; their images — gym shots and placeholders — were deleted from `public/portfolio/` on the owner's word, Oct 2026; copies in `_media-originals/portfolio-samples/`).
 
 If Flask is down, product pages render with empty/fallback content (no crash). Portfolio pages work normally.
 
