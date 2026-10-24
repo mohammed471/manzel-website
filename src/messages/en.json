@@ -233,6 +233,8 @@
     "booking_cta": "Book an Appointment Now"
   },
   "form": {
+    "phone_required": "Phone number is required",
+    "phone_invalid": "Enter a valid Iraqi mobile number, e.g. 07701234567",
     "name": "Name",
     "phone": "Phone Number",
     "email": "Email",

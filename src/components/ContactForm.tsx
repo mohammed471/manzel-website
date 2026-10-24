@@ -3,6 +3,7 @@
 import { useState, type FormEvent } from "react";
 import { useTranslations } from "next-intl";
 import { submitContact } from "@/lib/api";
+import { normalizeIraqiPhone } from "@/lib/phone";
 import { trackGA4Event, trackFBEvent } from "@/lib/analytics";
 
 interface FormData {
@@ -14,6 +15,7 @@ interface FormData {
 
 interface FormErrors {
   name?: string;
+  phone?: string;
   message?: string;
 }
 
@@ -38,6 +40,13 @@ export default function ContactForm() {
       newErrors.name = t("name_required");
     }
 
+    // Required, same check as the booking form — a message without a way to call back is lost
+    if (!formData.phone.trim()) {
+      newErrors.phone = t("phone_required");
+    } else if (!normalizeIraqiPhone(formData.phone)) {
+      newErrors.phone = t("phone_invalid");
+    }
+
     if (!formData.message.trim()) {
       newErrors.message = t("message_required");
     }
@@ -56,7 +65,7 @@ export default function ContactForm() {
     setLoading(true);
 
     try {
-      const result = await submitContact(formData);
+      const result = await submitContact({ ...formData, phone: normalizeIraqiPhone(formData.phone) ?? formData.phone });
 
       if (result.success) {
         trackGA4Event("contact_submit");
@@ -112,17 +121,22 @@ export default function ContactForm() {
       {/* Phone */}
       <div>
         <label htmlFor="phone" className="font-medium text-text-primary mb-2 block">
-          {t("phone")}
+          {t("phone")} <span className="text-red-500">{t("required")}</span>
         </label>
         <input
           type="tel"
           id="phone"
           value={formData.phone}
-          onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+          onChange={(e) => {
+            setFormData({ ...formData, phone: e.target.value });
+            if (errors.phone) setErrors({ ...errors, phone: undefined });
+          }}
+          aria-invalid={!!errors.phone}
           className="w-full rounded-xl border border-secondary-dark/60 px-4 py-3 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition"
           placeholder={t("phone_placeholder")}
           dir="ltr"
         />
+        {errors.phone && <p className="mt-1.5 text-sm text-red-500">{errors.phone}</p>}
       </div>
 
       {/* Email */}
