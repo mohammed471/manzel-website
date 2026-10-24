@@ -11,7 +11,7 @@ import BoardActions from "@/components/board/BoardActions";
 import SaveButton from "@/components/board/SaveButton";
 import { getProducts } from "@/lib/api";
 import { boardHref, boardParam, itemLabel, parseBoard, resolveBoard } from "@/lib/board";
-import { getProjectImageUrl, getProjects } from "@/lib/portfolio";
+import { getProjectImageUrl, getProjects, projectName } from "@/lib/portfolio";
 import { SITE_URL } from "@/lib/siteUrl";
 import { cn } from "@/lib/utils";
 
@@ -110,7 +110,7 @@ export default async function BoardPage({ params, searchParams }: BoardPageProps
                             ? getProjectImageUrl(item.project.category, item.project.id, item.project.images[0])
                             : null
                         }
-                        title={item.project.name}
+                        title={projectName(item.project, locale).text}
                         eyebrow={tPortfolio(`cat_${item.project.category.replace(/-/g, "_")}`)}
                         sizes="(max-width: 768px) 100vw, 50vw"
                         className="h-full"

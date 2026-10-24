@@ -10,7 +10,7 @@ import { getStats } from "@/components/home/homeData";
 import OpenBooksSection from "@/components/home/OpenBooksSection";
 import TrustSection from "@/components/home/TrustSection";
 import ClosingCTA from "@/components/home/ClosingCTA";
-import { getActiveCategories, getProjects, getProjectImageUrl } from "@/lib/portfolio";
+import { getActiveCategories, getProjects, getProjectImageUrl, projectLocation, projectName } from "@/lib/portfolio";
 import { cn } from "@/lib/utils";
 
 
@@ -55,8 +55,11 @@ export default async function PortfolioPage({
   const projectData = allProjects.map((p) => ({
     id: p.id,
     category: p.category,
-    name: p.name,
-    location: p.location,
+    name: projectName(p, locale).text,
+    nameLang: projectName(p, locale).lang,
+    location: projectLocation(p, locale).text,
+    locationLang: projectLocation(p, locale).lang,
+    kind: p.kind,
     year: p.year,
     coverUrl: getProjectImageUrl(p.category, p.id, p.images[0] || "cover.jpg"),
   }));

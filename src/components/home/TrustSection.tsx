@@ -39,7 +39,8 @@ export default async function TrustSection({
                     text={s.numberText}
                     delay={i * 120}
                     className="block text-4xl md:text-5xl font-bold text-white tabular-nums"
-                  />
+                  />{" "}
+                  {/* The space keeps "2 Specialized Categories" apart in the page text (crawlers, copy) */}
                   <span className="mt-2 block text-sm md:text-base text-white/85">{s.label}</span>
                 </div>
               </AnimatedSection>
