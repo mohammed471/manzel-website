@@ -50,12 +50,21 @@ function mapProduct(raw: any): Product {
     name: raw.name ?? "",
     category: raw.cat_name ?? raw.category ?? "",
     subcategory: raw.subcat_name ?? raw.subcategory ?? null,
-    details: raw.details ?? "",
+    details: process.env.NEXT_PUBLIC_SHOW_PRICES === "true" ? (raw.details ?? "") : withoutPriceLines(raw.details ?? ""),
     image: raw.image_path ?? raw.image ?? null,
     // Older API deployments have no `colors` — treat as a product without colors
     colors: Array.isArray(raw.colors) ? raw.colors.map(mapColor) : [],
     ...mapPrice(raw),
   };
+}
+
+/** The description without the lines that quote a price ("…160$", "الاسعار للمتر…") — prices are off on the site (V19). */
+export function withoutPriceLines(details: string): string {
+  return details
+    .split(/\r?\n/)
+    .filter((line) => !/\$|دولار|دينار|د\.ع|[اأ]سعار|سعر/.test(line))
+    .join("\n")
+    .trim();
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

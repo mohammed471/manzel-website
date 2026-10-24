@@ -1,11 +1,11 @@
-# Products audit — 2026-10-22
+# Products audit — 2026-10-24
 
-Products checked: 603. Rows in products-audit.csv: 912 (a product can have several issues).
+Products checked: 617. Rows in products-audit.csv: 929 (a product can have several issues).
 
 | Issue | Products |
 |---|---|
-| no_image | 447 |
-| code_like_name | 406 |
+| no_image | 461 |
+| code_like_name | 409 |
 | duplicate_image | 27 |
 | duplicate_name | 16 |
 | price_in_details | 14 |
@@ -13,14 +13,16 @@ Products checked: 603. Rows in products-audit.csv: 912 (a product can have sever
 
 ## Prices (T18 — decision pending)
 
-The API already sends `price_retail` for 602 of 603 products (currency: USD, IQD).
+The API already sends `price_retail` for 616 of 617 products (currency: USD, IQD).
 The website does not show them. Prices written inside descriptions are the `price_in_details` rows above.
 
 ## Category › subcategory pairs (check the naming)
 
-- قسم البورسلين › 60*120 CM (1)
+- قسم البورسلين › 100*100 CM (5)
 - قسم البورسلين › 60*60 CM (62)
+- قسم البورسلين › 80*80 CM (7)
 - قسم البورسلين › المسابح (4)
+- قسم البورسلين › بايات الدرج (3)
 - قسم البورسلين › مواد لاصقة (3)
 - قسم البورسلين › — (125)
 - قسم الصحيات › تصريفة شاور (48)
