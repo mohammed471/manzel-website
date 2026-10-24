@@ -37,9 +37,10 @@ export function businessLd(o: {
   };
 }
 
-/** FAQPage only when every question has a real answer. */
-export function faqLd(items: { question: string; answer: string }[]) {
-  if (items.length === 0 || items.some((i) => !i.question.trim() || !i.answer.trim())) return null;
+/** FAQPage of the questions that have a real answer; none → null. */
+export function faqLd(all: { question: string; answer: string }[]) {
+  const items = all.filter((i) => i.question.trim() && i.answer.trim());
+  if (items.length === 0) return null;
   return {
     "@context": "https://schema.org",
     "@type": "FAQPage",

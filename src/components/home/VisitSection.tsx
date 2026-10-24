@@ -69,15 +69,17 @@ export default async function VisitSection({
   return (
     <section id="faq" className="py-20 md:py-28 px-4 sm:px-6 lg:px-8 scroll-mt-36">
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12">
-        <div className="lg:col-span-7">
-          <AnimatedSection>
-            <SectionHeader badge={t("faq_subtitle")} title={t("faq_title")} />
-          </AnimatedSection>
-          <AnimatedSection delay={0.1}>
-            <FAQ items={faqItems} />
-          </AnimatedSection>
-        </div>
-        <div id="visit" className="lg:col-span-5 scroll-mt-36">
+        {faqItems.length > 0 && (
+          <div className="lg:col-span-7">
+            <AnimatedSection>
+              <SectionHeader badge={t("faq_subtitle")} title={t("faq_title")} />
+            </AnimatedSection>
+            <AnimatedSection delay={0.1}>
+              <FAQ items={faqItems} />
+            </AnimatedSection>
+          </div>
+        )}
+        <div id="visit" className={`${faqItems.length > 0 ? "lg:col-span-5" : "lg:col-span-12"} scroll-mt-36`}>
           <AnimatedSection>
             <SectionHeader badge={t("visit_badge")} title={t("visit_title")} />
           </AnimatedSection>

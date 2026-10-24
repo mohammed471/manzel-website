@@ -33,7 +33,8 @@ describe("faqLd", () => {
     expect(ld.mainEntity).toEqual([{ "@type": "Question", name: "س؟", acceptedAnswer: { "@type": "Answer", text: "ج." } }]);
   });
 
-  it("is left out when an answer is missing", () => {
+  it("leaves out unanswered questions, and is null when none is answered", () => {
+    expect(faqLd([{ question: "س؟", answer: " " }, { question: "س2؟", answer: "ج2." }])!.mainEntity.map((q) => q.name)).toEqual(["س2؟"]);
     expect(faqLd([{ question: "س؟", answer: " " }])).toBeNull();
     expect(faqLd([])).toBeNull();
   });

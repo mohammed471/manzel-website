@@ -37,10 +37,11 @@ export async function getHomeData() {
 
   const stats = await getStats("home");
 
+  // A question shows only with its answer (both edited in the internal app)
   const faqItems = Array.from({ length: 6 }, (_, i) => ({
-    question: tFaq(`q${i + 1}`),
-    answer: tFaq(`a${i + 1}`),
-  }));
+    question: tFaq(`q${i + 1}`).trim(),
+    answer: tFaq(`a${i + 1}`).trim(),
+  })).filter((f) => f.question && f.answer);
 
   return { services, featuredProjects, testimonialData, stats, faqItems };
 }
