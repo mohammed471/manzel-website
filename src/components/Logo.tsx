@@ -19,6 +19,9 @@ export default function Logo({ variant, width = 120, height = 48, className, pri
       height={height}
       className={className}
       priority={priority}
+      // A 20–40 KB PNG served as the static file: /_next/image on Render resizes on first request and
+      // isn't edge-cached, which made this header logo the page's slowest LCP element
+      unoptimized
     />
   );
 }

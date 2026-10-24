@@ -222,10 +222,12 @@ input[type="range"]::-moz-range-thumb {
   }
 }
 
-/* Redesign hero entrance — CSS-only so it runs before hydration */
+/* Redesign hero entrance — CSS-only so it runs before hydration. Movement only, no opacity: text
+   that starts transparent counts as unpainted until the busy main thread runs the animation, which
+   made the hero title the LCP at ~5 s on a throttled phone. */
 @keyframes hero-rise {
-  from { opacity: 0; transform: translateY(18px); }
-  to { opacity: 1; transform: translateY(0); }
+  from { transform: translateY(18px); }
+  to { transform: translateY(0); }
 }
 .hero-rise {
   animation: hero-rise 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
