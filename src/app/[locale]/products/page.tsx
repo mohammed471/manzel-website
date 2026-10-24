@@ -26,6 +26,8 @@ interface ProductsPageProps {
     category?: string;
     subcategory?: string;
     search?: string;
+    /** Same as `search` — shared links that use `?q=` (V23) */
+    q?: string;
     sort?: string;
     page?: string;
   }>;
@@ -48,7 +50,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
 
   const activeCategory = categories.find((c) => String(c.id) === sp.category);
   const activeSubcategory = activeCategory?.subcategories.find((s) => String(s.id) === sp.subcategory);
-  const search = sp.search?.trim() || undefined;
+  const search = (sp.search ?? sp.q)?.trim() || undefined;
   const sort = CATALOG_SORTS.find((s) => s === sp.sort) ?? "newest";
 
   const result = queryCatalog(products, {
