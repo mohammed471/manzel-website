@@ -229,6 +229,8 @@ Data managed in `src/data/projects.json`, accessed via `src/lib/portfolio.ts` he
 - Types and bounds are edited in the app: «الموقع» → مشاريع المعرض → «الأنواع ونطاقات المساحة» (`website_admin.project_filters`; types are the `project_types` list in `core/db/website_sections.py` — default ids are fixed because projects point at them — and bounds the `website_area_bounds` setting).
 - `ProjectsBrowser` keeps the filters behind one "Filter" button (native `<details>` — the owner asked for a single button). A chip exists only if a project carries it, a row only if it offers a choice (≥ 2 options), and the button only if a row does: a category with nothing entered in the app shows the plain grid. A chip that would give no result with the other filter is disabled.
 - Filter state lives in the URL (`?type=cafe&area=200`; `area` = the range's upper bound, `more` for the open range) through `history.replaceState` + `useSyncExternalStore` on `window.location.search`, so "back" from a project keeps it and a filtered view can be shared. Don't switch to `useSearchParams`: on these static pages it takes the grid out of the server HTML.
+- Projects can also carry `kind` (built / design): a «منفّذ / تصميم» filter row (`?kind=`) and a badge on the card. Covers are `SiteImage` — never a fade-in that starts at opacity 0 (the old `BlurImage` hid every cover until JS).
+- Project page = case study (V14): full-width cover with the title (`data-header-overlay`), info bar, brief / solution, design-vs-build sliders, `ProjectGallery` (wide-two-wide + lightbox), showroom materials (`ProductCard`), the client's verified testimonial (`project` slug), similar projects.
 - Specs show on the card (`MasonryProjectCard`: area badge always visible, the rest in the overlay) and in the project page's info box; the labels come from `projectSpecs()`. Numbers are passed to the translator as strings so they stay Western digits.
 - Images uploaded to a floor-plan project are watermarked by the app with the Manzel logo (`watermark_image` in `core/image_shrink.py`, centred, 15% opacity) — at upload only; images already uploaded are not re-processed.
 - Home `QuickAccessBar`: the last tile links to `/portfolio/floor-plan` (it used to be booking) and looks like the other five — the owner asked for no red accent tile. The booking CTA stays in the header, mobile nav, tools grid, closing CTA and footer.
@@ -303,7 +305,8 @@ Colour stock is reduced to `available: boolean` by the API (products with `track
 - Order: photographed products first, then `?sort=` (newest by default, name, or category). Empty categories/subcategories are hidden.
 - Search is Arabic-normalised (diacritics, alef/ya/ta-marbuta variants) across name, details, category and colour names; every word must match.
 - Components in `src/components/products/`: `CategoryNav` (sidebar on lg, chips below), `CatalogSearch`, `ProductCard`, `ProductImage` (falls back to a category placeholder if the file 404s), `ColorDots`, `CatalogPagination`, `ProductDetailView` (colour picker swaps photo + WhatsApp text), `categoryIcon`.
-- Product images use optimized `next/image` (not `BlurImage`, which downloads originals).
+- Product images use optimized `next/image`. The product page has a 1:1 photo that opens a zoomable full-screen viewer (lightbox `Zoom` plugin) and thumbnails when the product and its colours have more than one photo (V22).
+- While prices are off, `mapProduct` also drops description lines that quote a price (`withoutPriceLines`: `$`, دولار, دينار, اسعار…) — V19. The catalogue reads `?q=` as well as `?search=` (V23).
 
 ### «لوحتي» — the visitor's board (`/board`)
 

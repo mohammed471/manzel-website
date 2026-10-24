@@ -2,8 +2,11 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { Check, MessageCircle } from "lucide-react";
-import type { Product } from "@/lib/api";
+import { Check, MessageCircle, ZoomIn } from "lucide-react";
+import Lightbox from "yet-another-react-lightbox";
+import Zoom from "yet-another-react-lightbox/plugins/zoom";
+import "yet-another-react-lightbox/styles.css";
+import { getProductImageUrl, type Product } from "@/lib/api";
 import { cn } from "@/lib/utils";
 import { productTitle } from "@/lib/catalog";
 import ProductImage from "@/components/products/ProductImage";
@@ -22,8 +25,18 @@ export default function ProductDetailView({ product }: { product: Product }) {
     (colors.find((c) => c.available) ?? colors[0])?.id ?? null,
   );
   const selected = colors.find((c) => c.id === selectedId) ?? null;
+  // A thumbnail picked by hand wins until another colour is chosen
+  const [picked, setPicked] = useState<string | null>(null);
+  const [zoomOpen, setZoomOpen] = useState(false);
 
-  const image = selected?.image || product.image || colors.find((c) => c.image)?.image || null;
+  // Every distinct photo: the product's own, then each colour's (V22)
+  const images = [...new Set([product.image, ...colors.map((c) => c.image)].filter((x): x is string => !!x))];
+  const image = picked || selected?.image || product.image || colors.find((c) => c.image)?.image || null;
+  const pickImage = (img: string) => {
+    const colour = colors.find((c) => c.image === img);
+    if (colour) setSelectedId(colour.id);
+    setPicked(img);
+  };
   const message = selected
     ? t("whatsapp_message_color", { name: product.name, color: selected.name })
     : t("whatsapp_message", { name: product.name });
@@ -31,8 +44,15 @@ export default function ProductDetailView({ product }: { product: Product }) {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-12">
-      {/* Media */}
-      <div className="relative aspect-square overflow-hidden rounded-3xl bg-white border border-secondary-dark/40">
+      {/* Media — large 1:1 photo (tap / click to zoom), thumbnails when there is more than one */}
+      <div className="min-w-0">
+      <button
+        type="button"
+        onClick={() => image && setZoomOpen(true)}
+        disabled={!image}
+        aria-label={t("zoom")}
+        className="group relative block w-full aspect-square overflow-hidden rounded-3xl bg-white border border-secondary-dark/40 cursor-zoom-in disabled:cursor-default focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-accent"
+      >
         <ProductImage
           image={image}
           alt={selected ? `${title} — ${selected.name}` : title}
@@ -41,8 +61,40 @@ export default function ProductDetailView({ product }: { product: Product }) {
           priority
           large
           sizes="(max-width: 1024px) 100vw, 50vw"
-          className="object-contain p-6 animate-[fade-in_0.3s_ease-out]"
+          className="object-contain p-6 animate-[fade-in_0.3s_ease-out] transition-transform duration-300 group-hover:scale-105 motion-reduce:transition-none"
         />
+        {image && (
+          <span aria-hidden="true" className="absolute bottom-3 end-3 flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-primary shadow-sm">
+            <ZoomIn className="h-4 w-4" />
+          </span>
+        )}
+      </button>
+      {images.length > 1 && (
+        <div className="mt-3 flex flex-wrap gap-2">
+          {images.map((img, i) => (
+            <button
+              key={img}
+              type="button"
+              onClick={() => pickImage(img)}
+              aria-label={t("photo_n", { n: String(i + 1) })}
+              aria-pressed={img === image}
+              className={cn(
+                "relative h-16 w-16 overflow-hidden rounded-xl border bg-white transition",
+                img === image ? "border-primary ring-2 ring-primary/30" : "border-secondary-dark/50 opacity-75 hover:opacity-100",
+              )}
+            >
+              <ProductImage image={img} alt="" category={product.category} categoryLabel={product.category} sizes="64px" className="object-contain p-1" />
+            </button>
+          ))}
+        </div>
+      )}
+      <Lightbox
+        open={zoomOpen}
+        close={() => setZoomOpen(false)}
+        index={Math.max(0, images.indexOf(image ?? ""))}
+        slides={images.map((img) => ({ src: getProductImageUrl(img), alt: title }))}
+        plugins={[Zoom]}
+      />
       </div>
 
       {/* Info */}
@@ -110,7 +162,10 @@ export default function ProductDetailView({ product }: { product: Product }) {
                     aria-checked={isSelected}
                     aria-label={c.available ? c.name : `${c.name} — ${t("unavailable")}`}
                     title={c.name}
-                    onClick={() => setSelectedId(c.id)}
+                    onClick={() => {
+                      setSelectedId(c.id);
+                      setPicked(null);
+                    }}
                     className={cn(
                       "group relative flex h-12 items-center gap-2 rounded-full border ps-1.5 pe-4 text-sm transition-colors cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent",
                       isSelected ? "border-primary bg-primary/[0.05] font-bold text-primary" : "border-secondary-dark/60 bg-white text-text-primary hover:border-primary/40",

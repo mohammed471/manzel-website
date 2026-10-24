@@ -120,6 +120,8 @@
     "clients_label": "Satisfied Clients"
   },
   "products": {
+    "zoom": "Zoom the photo",
+    "photo_n": "Photo {n}",
     "title": "Products",
     "subtitle": "Building Materials & Interior Design",
     "description": "Browse our wide collection of building materials and interior design products",
