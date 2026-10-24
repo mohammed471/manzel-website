@@ -25,12 +25,12 @@ export default function RenderToReality({ pairs }: { pairs: DesignBuildPair[] })
   return (
     <section className="py-[72px] md:py-32 px-4 sm:px-6 lg:px-8 bg-white">
       <div className="max-w-5xl mx-auto">
-        <h2 className="text-3xl md:text-4xl text-primary leading-tight">{t("r2r_title")}</h2>
+        <h2 className="reveal reveal-fadeIn text-3xl md:text-4xl text-primary leading-tight">{t("r2r_title")}</h2>
         <p className="mt-3 text-text-secondary md:text-lg">{t("r2r_desc")}</p>
 
         <BeforeAfterSlider
           key={pair.before}
-          className="mt-8 md:mt-10"
+          className="mt-8 md:mt-10 reveal reveal-clipUp"
           beforeSrc={pair.before}
           afterSrc={pair.after}
           beforeAlt={`${t("r2r_design")} — ${pair.caption}`}
@@ -42,9 +42,9 @@ export default function RenderToReality({ pairs }: { pairs: DesignBuildPair[] })
         />
 
         <div className="mt-4 flex flex-wrap items-center justify-between gap-4">
-          <Link href={pair.href} className="inline-flex items-center gap-2 font-bold text-primary hover:text-accent">
+          <Link href={pair.href} className="group inline-flex items-center gap-2 font-bold text-primary hover:text-accent">
             {pair.caption}
-            <ArrowLeft className="w-4 h-4 ltr:rotate-180" />
+            <ArrowLeft className="arrow-nudge w-4 h-4 ltr:rotate-180" />
           </Link>
           {pairs.length > 1 && (
             <div className="flex gap-2">

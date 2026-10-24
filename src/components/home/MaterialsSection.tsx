@@ -30,7 +30,7 @@ export default async function MaterialsSection({ materials, productCount }: { ma
             <span className="w-1.5 h-1.5 rounded-full bg-current" />
             {t("materials_badge")}
           </span>
-          <h2 className="mt-4 text-3xl md:text-4xl text-primary leading-tight">{t("materials_title")}</h2>
+          <h2 className="reveal reveal-fadeIn mt-4 text-3xl md:text-4xl text-primary leading-tight">{t("materials_title")}</h2>
           {productCount > 0 && (
             <p className="mt-3 text-text-secondary md:text-lg">{t("materials_count", { count: productCount.toLocaleString("en-US") })}</p>
           )}
@@ -44,7 +44,7 @@ export default async function MaterialsSection({ materials, productCount }: { ma
         </div>
       </div>
 
-      <ul className={cn("mt-10 grid gap-1", cols)}>
+      <ul className={cn("reveal reveal-clipUp mt-10 grid gap-1", cols)}>
         {materials.map((m) => {
           const tile = (
             <>

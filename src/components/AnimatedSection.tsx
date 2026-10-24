@@ -1,7 +1,7 @@
 import type { CSSProperties, ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
-type AnimationVariant = "fadeUp" | "fadeIn" | "scaleIn" | "slideRight";
+type AnimationVariant = "fadeUp" | "fadeIn" | "scaleIn" | "slideRight" | "clipUp";
 
 interface AnimatedSectionProps {
   children: ReactNode;

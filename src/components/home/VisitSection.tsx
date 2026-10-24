@@ -71,7 +71,7 @@ export default async function VisitSection({
         {faqItems.length > 0 && (
           <div className="lg:col-span-7">
             <AnimatedSection>
-              <h2 className="mb-8 md:mb-10 text-3xl md:text-4xl text-primary leading-tight">{t("faq_title")}</h2>
+              <h2 className="reveal reveal-fadeIn mb-8 md:mb-10 text-3xl md:text-4xl text-primary leading-tight">{t("faq_title")}</h2>
             </AnimatedSection>
             <AnimatedSection delay={0.1}>
               <FAQ items={faqItems} />
@@ -80,7 +80,7 @@ export default async function VisitSection({
         )}
         <div id="visit" className={`${faqItems.length > 0 ? "lg:col-span-5" : "lg:col-span-12"} scroll-mt-36`}>
           <AnimatedSection>
-            <h2 className="mb-8 md:mb-10 text-3xl md:text-4xl text-primary leading-tight">{t("visit_title")}</h2>
+            <h2 className="reveal reveal-fadeIn mb-8 md:mb-10 text-3xl md:text-4xl text-primary leading-tight">{t("visit_title")}</h2>
           </AnimatedSection>
           <AnimatedSection delay={0.15}>
             <MapCard />

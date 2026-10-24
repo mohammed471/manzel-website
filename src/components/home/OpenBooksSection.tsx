@@ -38,7 +38,7 @@ export default async function OpenBooksSection({ story }: { story?: StoryMonth[]
             className={cn(buttonClasses(dark ? "light" : "primary", "lg"), "mt-8 gap-2 whitespace-normal! text-center")}
           >
             {t("openbooks_button")}
-            <ArrowLeft className="w-4 h-4 ltr:rotate-180" />
+            <ArrowLeft className="arrow-nudge w-4 h-4 ltr:rotate-180" />
           </a>
         </AnimatedSection>
 

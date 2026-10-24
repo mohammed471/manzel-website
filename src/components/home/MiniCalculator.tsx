@@ -74,7 +74,7 @@ export default function MiniCalculator({ pricing, whatsapp }: { pricing: Calcula
     <section className="py-[72px] md:py-32 px-4 sm:px-6 lg:px-8 bg-secondary">
       <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-10 lg:gap-16 items-center [&>*]:min-w-0">
         <div>
-          <h2 className="text-3xl md:text-4xl text-primary leading-tight">{t("mini_title")}</h2>
+          <h2 className="reveal reveal-fadeIn text-3xl md:text-4xl text-primary leading-tight">{t("mini_title")}</h2>
 
           <fieldset className="mt-8">
             <legend className="text-sm font-bold text-text-secondary">{t("mini_plot")}</legend>
@@ -123,7 +123,7 @@ export default function MiniCalculator({ pricing, whatsapp }: { pricing: Calcula
           <div className="mt-8 flex flex-col sm:flex-row gap-3">
             <ButtonLink href={`/calculator?${query}`} variant="accent" size="lg">
               {t("mini_details")}
-              <ArrowLeft className="w-4 h-4 ltr:rotate-180" />
+              <ArrowLeft className="arrow-nudge w-4 h-4 ltr:rotate-180" />
             </ButtonLink>
             <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className={buttonClasses("outline", "lg")}>
               <MessageCircle className="w-5 h-5" />

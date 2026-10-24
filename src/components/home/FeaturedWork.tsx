@@ -18,11 +18,11 @@ export default async function FeaturedWork({ projects }: { projects: PortfolioPr
   return (
     <section className="py-[72px] md:py-32 bg-secondary">
       <div className="max-w-[84rem] mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 className="text-3xl md:text-4xl text-primary leading-tight">{t("featured_title")}</h2>
+        <h2 className="reveal reveal-fadeIn text-3xl md:text-4xl text-primary leading-tight">{t("featured_title")}</h2>
       </div>
       <ul
         className={cn(
-          "mt-8 md:mt-10 max-w-[84rem] mx-auto px-4 sm:px-6 lg:px-8 flex gap-4 overflow-x-auto snap-x snap-mandatory scroll-px-4 pb-2",
+          "reveal reveal-clipUp mt-8 md:mt-10 max-w-[84rem] mx-auto px-4 sm:px-6 lg:px-8 flex gap-4 overflow-x-auto snap-x snap-mandatory scroll-px-4 pb-2",
           "md:grid md:grid-cols-3 md:grid-rows-2 md:h-[38rem] md:overflow-visible md:pb-0",
           projects.length === 1 && "md:grid-rows-1",
         )}
@@ -71,7 +71,7 @@ export default async function FeaturedWork({ projects }: { projects: PortfolioPr
       <div className="max-w-[84rem] mx-auto px-4 sm:px-6 lg:px-8 mt-8">
         <ButtonLink href="/portfolio" variant="outline" size="lg">
           {t("all_work")}
-          <ArrowLeft className="w-4 h-4 ltr:rotate-180" />
+          <ArrowLeft className="arrow-nudge w-4 h-4 ltr:rotate-180" />
         </ButtonLink>
       </div>
     </section>

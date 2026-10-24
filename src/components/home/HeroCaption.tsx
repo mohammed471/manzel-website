@@ -20,9 +20,9 @@ export default function HeroCaption({ slide }: { slide: HeroSlide }) {
       </span>
       {slide.caption && <span className="text-white/90 drop-shadow">{slide.caption}</span>}
       {slide.href && (
-        <Link href={slide.href} className="inline-flex items-center gap-1 font-bold underline underline-offset-4 decoration-white/40 hover:decoration-white">
+        <Link href={slide.href} className="group inline-flex items-center gap-1 font-bold underline underline-offset-4 decoration-white/40 hover:decoration-white">
           {t("hero_see_project")}
-          <ArrowLeft className="w-3.5 h-3.5 ltr:rotate-180" />
+          <ArrowLeft className="arrow-nudge w-3.5 h-3.5 ltr:rotate-180" />
         </Link>
       )}
     </div>

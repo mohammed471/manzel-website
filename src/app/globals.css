@@ -254,9 +254,22 @@ input[type="range"]::-moz-range-thumb {
     .reveal-scaleIn { animation-name: reveal-scale-in; }
     .reveal-slideRight { animation-name: reveal-slide-right; }
     [dir="rtl"] .reveal-slideRight { animation-name: reveal-slide-left; }
+    /* Large photos: unmasked from the bottom up (V15) */
+    .reveal-clipUp { animation-name: reveal-clip-up; animation-range: entry 0% cover 35%; }
   }
 }
-@keyframes reveal-fade-up { from { opacity: 0; transform: translateY(30px); } }
+@keyframes reveal-clip-up { from { clip-path: inset(100% 0 0 0); } to { clip-path: inset(0 0 0 0); } }
+
+/* Button / card arrows step 4px forward on hover and keyboard focus (V15). `translate` is its own
+   property, so it adds to the icon's ltr:rotate-180. */
+@media (prefers-reduced-motion: no-preference) {
+  .arrow-nudge { transition: translate 0.2s ease-out; }
+}
+.group:hover .arrow-nudge,
+.group:focus-visible .arrow-nudge { translate: -4px 0; }
+[dir="ltr"] .group:hover .arrow-nudge,
+[dir="ltr"] .group:focus-visible .arrow-nudge { translate: 4px 0; }
+@keyframes reveal-fade-up { from { opacity: 0; transform: translateY(16px); } }
 @keyframes reveal-fade-in { from { opacity: 0; } }
 @keyframes reveal-scale-in { from { opacity: 0; transform: scale(0.94); } }
 @keyframes reveal-slide-right { from { opacity: 0; transform: translateX(-50px); } }

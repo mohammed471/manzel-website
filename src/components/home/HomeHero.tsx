@@ -60,7 +60,7 @@ export default async function HomeHero({ slides }: { slides: HeroSlide[] }) {
             {/* Portfolio and products stay one tap away in the QuickAccessBar below */}
             <ButtonLink href="/calculator" variant="accent" size="lg">
               {t("hero_cta_calculator")}
-              <ArrowLeft className="w-4 h-4 ltr:rotate-180" />
+              <ArrowLeft className="arrow-nudge w-4 h-4 ltr:rotate-180" />
             </ButtonLink>
             <Link
               href="/booking"

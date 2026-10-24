@@ -21,7 +21,7 @@ export default async function ProcessSteps({ steps }: { steps: ProcessStep[] }) 
   return (
     <section className="py-[72px] md:py-32 px-4 sm:px-6 lg:px-8 bg-white">
       <div className="max-w-7xl mx-auto">
-        <h2 className="text-3xl md:text-4xl text-primary leading-tight">{t("process_title")}</h2>
+        <h2 className="reveal reveal-fadeIn text-3xl md:text-4xl text-primary leading-tight">{t("process_title")}</h2>
         <ol className="relative mt-10 md:mt-14 grid gap-10 md:gap-6 md:grid-cols-[repeat(var(--n),minmax(0,1fr))]" style={{ "--n": steps.length } as React.CSSProperties}>
           {/* The thread through the steps — on desktop from the first icon's centre to the last one's */}
           <span aria-hidden="true" className="absolute top-0 bottom-0 start-9 w-px bg-secondary-dark md:top-9 md:bottom-auto md:start-9 md:end-[calc((100%-(var(--n)-1)*1.5rem)/var(--n)-36px)] md:w-auto md:h-px" />

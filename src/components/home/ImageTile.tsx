@@ -68,13 +68,13 @@ export default function ImageTile({
           {cta && (
             <span className="mt-4 inline-flex items-center gap-2 rounded-full bg-white text-primary px-5 h-10 text-sm font-bold">
               {cta}
-              <ArrowLeft className="w-4 h-4 ltr:rotate-180" />
+              <ArrowLeft className="arrow-nudge w-4 h-4 ltr:rotate-180" />
             </span>
           )}
         </div>
         {!cta && (
           <span className="shrink-0 flex items-center justify-center w-10 h-10 rounded-full bg-white/15 text-white transition-colors group-hover:bg-white group-hover:text-primary">
-            <ArrowLeft className="w-4 h-4 ltr:rotate-180" />
+            <ArrowLeft className="arrow-nudge w-4 h-4 ltr:rotate-180" />
           </span>
         )}
       </div>

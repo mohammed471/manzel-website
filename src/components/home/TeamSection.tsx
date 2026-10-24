@@ -16,7 +16,7 @@ export default async function TeamSection() {
     <section className="py-[72px] md:py-32 px-4 sm:px-6 lg:px-8 bg-white">
       <div className="max-w-7xl mx-auto">
         <AnimatedSection>
-          <h2 className="mb-8 md:mb-10 text-3xl md:text-4xl text-primary leading-tight">{t("team_title")}</h2>
+          <h2 className="reveal reveal-fadeIn mb-8 md:mb-10 text-3xl md:text-4xl text-primary leading-tight">{t("team_title")}</h2>
         </AnimatedSection>
         <ul className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
           {people.map((m) => (
