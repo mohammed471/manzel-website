@@ -199,6 +199,14 @@ export async function getFeaturedProjects(): Promise<PortfolioProject[]> {
  * URLs (ImgBB / API media) or site paths (`/portfolio/...`); bare filenames
  * are the legacy projects.json format.
  */
+/** Arabic, or the English entered in the app — blank English shows the Arabic, marked `lang="ar"`. */
+export function bilingual(ar: string, en: string | undefined, locale: string): { text: string; lang?: "ar" } {
+  return locale === "ar" || !en ? { text: ar, lang: locale === "ar" ? undefined : "ar" } : { text: en };
+}
+
+export const projectName = (p: PortfolioProject, locale: string) => bilingual(p.name, p.nameEn, locale);
+export const projectLocation = (p: PortfolioProject, locale: string) => bilingual(p.location, p.locationEn, locale);
+
 export function getProjectImageUrl(categoryId: string, projectId: string, filename: string): string {
   if (/^https?:\/\//.test(filename) || filename.startsWith("/")) return filename;
   return `/portfolio/${categoryId}/${projectId}/${filename}`;
