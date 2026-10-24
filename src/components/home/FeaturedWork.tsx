@@ -22,7 +22,7 @@ export default async function FeaturedWork({ projects }: { projects: PortfolioPr
       </div>
       <ul
         className={cn(
-          "reveal reveal-clipUp mt-8 md:mt-10 max-w-[84rem] mx-auto px-4 sm:px-6 lg:px-8 flex gap-4 overflow-x-auto snap-x snap-mandatory scroll-px-4 pb-2",
+          "reveal reveal-clipUp mt-8 md:mt-10 max-w-[84rem] mx-auto px-4 sm:px-6 lg:px-8 flex gap-4 overflow-x-auto snap-x snap-mandatory scroll-px-4 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
           "md:grid md:grid-cols-3 md:grid-rows-2 md:h-[38rem] md:overflow-visible md:pb-0",
           projects.length === 1 && "md:grid-rows-1",
         )}
