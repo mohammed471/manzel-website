@@ -59,7 +59,7 @@
     "mini_whatsapp_msg": "Hello, I estimated my home on your site: {plot} m² plot, {floors} floors, {level} finish. Estimate: {range}",
     "hero_badge": "Manzel — design, materials, build",
     "hero_title": "Manzel",
-    "hero_subtitle": "Your Partner in Building & Design",
+    "hero_subtitle": "Your Design & Build Partner",
     "hero_description": "We design your home, supply its materials from our showroom in Kirkuk, and build it on an open-book contract — you know where every dinar went.",
     "browse_products": "Browse Products",
     "view_portfolio": "View Portfolio",
@@ -170,6 +170,17 @@
     "unit_linear_m": "linear m"
   },
   "portfolio": {
+    "challenge": "The brief",
+    "solution": "Our solution",
+    "duration_label": "Duration",
+    "duration_value": "{count, plural, one {1 month} other {{n} months}}",
+    "cost_label": "Cost",
+    "cost_value": "{value} million IQD",
+    "kind_label": "Shown as",
+    "materials_used": "Materials from our showroom used here",
+    "client_says": "What the client says",
+    "similar_projects": "Similar projects",
+    "filter_kind": "Built / design",
     "kind_built": "Built",
     "kind_design": "Design",
     "title": "Our Work",
@@ -534,7 +545,7 @@
   },
   "splash": {
     "brand_name": "منزل",
-    "tagline": "Your Partner in Construction & Design",
+    "tagline": "Your Design & Build Partner",
     "skip_hint": "Tap to skip"
   },
   "share": {

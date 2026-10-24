@@ -170,6 +170,17 @@
     "unit_linear_m": "متر طولي"
   },
   "portfolio": {
+    "challenge": "المطلوب",
+    "solution": "الحل",
+    "duration_label": "المدة",
+    "duration_value": "{count, plural, one {شهر واحد} two {شهران} few {{n} أشهر} other {{n} شهراً}}",
+    "cost_label": "الكلفة",
+    "cost_value": "{value} مليون دينار",
+    "kind_label": "النوع",
+    "materials_used": "مواد من معرضنا استُخدمت هنا",
+    "client_says": "رأي العميل",
+    "similar_projects": "مشاريع مشابهة",
+    "filter_kind": "منفّذ / تصميم",
     "kind_built": "منفّذ",
     "kind_design": "تصميم",
     "title": "أعمالنا",

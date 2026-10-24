@@ -1,95 +1,54 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState } from "react";
 import Image from "@/components/SiteImage";
-import { motion, useInView, useReducedMotion } from "framer-motion";
 import Lightbox from "yet-another-react-lightbox";
 import "yet-another-react-lightbox/styles.css";
+import { cn } from "@/lib/utils";
 
 interface ProjectGalleryProps {
   images: { src: string; alt: string }[];
 }
 
+// Editorial rhythm: a wide photo, then two side by side, then wide again… Every photo is in the
+// server HTML (no hidden-until-JS entrance); a tap opens the full-screen viewer (swipe, arrows, Esc).
 export default function ProjectGallery({ images }: ProjectGalleryProps) {
-  const [lightboxOpen, setLightboxOpen] = useState(false);
-  const [lightboxIndex, setLightboxIndex] = useState(0);
-  const ref = useRef<HTMLDivElement>(null);
-  const isInView = useInView(ref, { once: true, amount: 0.1 });
-  const prefersReducedMotion = useReducedMotion();
-
-  const slides = images.map((img) => ({ src: img.src }));
-
+  const [index, setIndex] = useState(-1);
   if (images.length === 0) return null;
-
-  const renderButton = (img: { src: string; alt: string }, index: number) => (
-    <button
-      type="button"
-      onClick={() => {
-        setLightboxIndex(index);
-        setLightboxOpen(true);
-      }}
-      className="relative rounded-xl overflow-hidden cursor-pointer group bg-secondary w-full"
-    >
-      <Image
-        src={img.src}
-        alt={img.alt}
-        width={800}
-        height={600}
-        className="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-105"
-        sizes="(max-width: 768px) 50vw, 33vw"
-      />
-      {/* Hover overlay */}
-      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300 flex items-center justify-center">
-        <svg
-          className="w-8 h-8 text-white opacity-0 group-hover:opacity-80 transition-opacity duration-300 drop-shadow-lg"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={1.5}
-            d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607zM10.5 7.5v6m3-3h-6"
-          />
-        </svg>
-      </div>
-    </button>
-  );
 
   return (
     <>
-      <div ref={ref} className="columns-1 sm:columns-2 md:columns-3 gap-4">
-        {images.map((img, index) =>
-          prefersReducedMotion ? (
-            <div key={img.src} className="break-inside-avoid mb-4">
-              {renderButton(img, index)}
-            </div>
-          ) : (
-            <motion.div
+      <div className="grid grid-cols-2 gap-3 md:gap-4">
+        {images.map((img, i) => {
+          // Wide every third photo, and the last one when it would sit alone
+          const wide = i % 3 === 0 || (i === images.length - 1 && i % 3 === 1);
+          return (
+            <button
               key={img.src}
-              className="break-inside-avoid mb-4"
-              initial={{ opacity: 0, y: 20 }}
-              animate={
-                isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }
-              }
-              transition={{
-                duration: 0.5,
-                ease: "easeOut",
-                delay: index * 0.05,
-              }}
+              type="button"
+              onClick={() => setIndex(i)}
+              className={cn(
+                "group relative overflow-hidden rounded-2xl bg-secondary cursor-zoom-in focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-accent",
+                wide ? "col-span-2 aspect-[16/9]" : "aspect-[4/3]",
+              )}
             >
-              {renderButton(img, index)}
-            </motion.div>
-          )
-        )}
+              <Image
+                src={img.src}
+                alt={img.alt}
+                fill
+                sizes={wide ? "(max-width: 1152px) 100vw, 1152px" : "(max-width: 1152px) 50vw, 576px"}
+                className="object-cover transition-transform duration-500 group-hover:scale-[1.03] motion-reduce:transition-none"
+              />
+            </button>
+          );
+        })}
       </div>
 
       <Lightbox
-        open={lightboxOpen}
-        close={() => setLightboxOpen(false)}
-        index={lightboxIndex}
-        slides={slides}
+        open={index >= 0}
+        close={() => setIndex(-1)}
+        index={Math.max(index, 0)}
+        slides={images.map((img) => ({ src: img.src, alt: img.alt }))}
       />
     </>
   );
