@@ -48,7 +48,7 @@ interface SpecProject extends FilterableProject {
 type Translate = (key: string, values?: Record<string, string | number>) => string;
 
 /**
- * Labels for the specs a project carries ("200 م²", "10×20 م", "طابق ونصف", "4 غرف نوم");
+ * Labels for the specs a project carries ("200 م٢", "10×20 م", "طابق ونصف", "4 غرف نوم");
  * `t` is the `portfolio` translator. Numbers go in as text so they stay Western digits.
  */
 export function projectSpecs(
