@@ -39,16 +39,18 @@ export default function MobileBottomNav({ hasTestimonials }: { hasTestimonials: 
     };
   }, [moreOpen]);
 
-  const tabs: { href: "/" | "/products" | "/portfolio" | "/contact"; label: string; icon: LucideIcon }[] = [
+  // V17: the cost calculator is the middle tab (accent) instead of an extra sticky bar; contact
+  // moved to the "More" sheet, and the floating WhatsApp button stays.
+  const tabs: { href: "/" | "/products" | "/calculator" | "/portfolio"; label: string; icon: LucideIcon; accent?: boolean }[] = [
     { href: "/", label: t("home"), icon: Home },
     { href: "/products", label: t("products"), icon: Package },
+    { href: "/calculator", label: t("calc_short"), icon: Calculator, accent: true },
     { href: "/portfolio", label: t("portfolio"), icon: LayoutGrid },
-    { href: "/contact", label: t("contact"), icon: Phone },
   ];
 
   const moreLinks = [
     { href: "/booking" as const, label: t("booking"), icon: CalendarCheck, highlight: true },
-    { href: "/calculator" as const, label: t("calculator"), icon: Calculator },
+    { href: "/contact" as const, label: t("contact"), icon: Phone },
     { href: "/area-calculator" as const, label: t("area_calculator"), icon: Ruler },
     { href: "/color-picker" as const, label: t("color_picker"), icon: Palette },
     { href: "/about" as const, label: t("about"), icon: Info },
@@ -132,14 +134,14 @@ export default function MobileBottomNav({ hasTestimonials }: { hasTestimonials: 
         className="mobile-bottom-nav lg:hidden fixed bottom-0 inset-x-0 z-[57] bg-white border-t border-secondary-dark/50 shadow-[0_-4px_20px_rgba(21,60,56,0.06)] pb-[env(safe-area-inset-bottom)]"
       >
         <div className="flex items-stretch h-16 max-w-xl mx-auto">
-          {tabs.map(({ href, label, icon: Icon }) => {
+          {tabs.map(({ href, label, icon: Icon, accent }) => {
             const active = isActive(href) && !moreOpen;
             return (
-              <Link key={href} href={href} className={tabClass(active)}>
+              <Link key={href} href={href} className={cn(tabClass(active), accent && "text-accent font-bold")}>
                 <span
                   className={cn(
                     "flex items-center justify-center w-12 h-7 rounded-full transition-colors",
-                    active && "bg-primary/10",
+                    accent ? "bg-accent text-white" : active && "bg-primary/10",
                   )}
                 >
                   <Icon className="w-5 h-5" strokeWidth={active ? 2.25 : 1.75} />

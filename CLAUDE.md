@@ -96,7 +96,8 @@ src/
 ├── components/
 │   ├── SiteHeader.tsx      (client — fixed header: links, Tools dropdown, «لوحتي» heart, search, language,
 │   │                        booking CTA; transparent only over a `data-header-overlay` hero, solid otherwise)
-│   ├── MobileBottomNav.tsx (client — app-style bottom tab bar on < lg + "More" sheet with tools/about/booking)
+│   ├── MobileBottomNav.tsx (client — app-style bottom tab bar on < lg: home, products, «احسب الكلفة» (accent, middle — V17, instead of
+│   │                        an extra sticky bar), portfolio, More; the "More" sheet has booking, contact, tools, about)
 │   ├── ui/                 (design-system primitives for the 2026 redesign)
 │   │   ├── PageHero.tsx     (server — rounded green top panel for every inner page; optional photo/breadcrumb)
 │   │   ├── SectionHeader.tsx (server — badge + title + description + optional action)
