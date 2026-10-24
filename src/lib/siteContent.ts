@@ -10,10 +10,11 @@ import { SITE_CONTENT_TAG } from "@/lib/cacheTags";
 //
 // API: /api/public/website/content → { texts: { ar: {"ns.key": "…"}, en: {…} },
 //                                       site: {"phone_1": "…", …},
-//                                       sections: { testimonials, timeline, team, values } }
+//                                       sections: { testimonials, timeline, team, values,
+//                                                   hero_slides, process_steps, build_story, materials } }
 // If the API is unreachable, the bundled files are used as-is.
 //
-// `sections` are the lists edited in «الموقع» → آراء العملاء / صفحة من نحن. Each
+// `sections` are the lists edited in «الموقع» → آراء العملاء / صفحة من نحن / أقسام الرئيسية. Each
 // item is flat: `name_ar`, `name_en`, … (`localized()` falls back to Arabic).
 
 export type Messages = typeof ar;
@@ -26,6 +27,14 @@ export interface SiteSections {
   timeline: SectionItem[];
   team: SectionItem[];
   values: SectionItem[];
+  /** Hero photos: `image`, `caption_*`, `kind` ("built" | "design"), optional `project` slug */
+  hero_slides: SectionItem[];
+  /** «كيف نعمل»: `title_*`, `text_*`, optional `image` */
+  process_steps: SectionItem[];
+  /** The open-book house month by month: `month_*`, `stage_*`, `text_*`, `spent` (million IQD, string), `image` */
+  build_story: SectionItem[];
+  /** «من معرضنا»: `image`, `name_*`, `group_*`, optional `product_id` */
+  materials: SectionItem[];
 }
 
 interface Overrides {
@@ -39,7 +48,16 @@ export function parseSections(raw: unknown): SiteSections | null {
   const r = raw as Record<string, unknown>;
   const list = (v: unknown) =>
     Array.isArray(v) ? v.filter((i): i is SectionItem => !!i && typeof i === "object") : [];
-  return { testimonials: list(r.testimonials), timeline: list(r.timeline), team: list(r.team), values: list(r.values) };
+  return {
+    testimonials: list(r.testimonials),
+    timeline: list(r.timeline),
+    team: list(r.team),
+    values: list(r.values),
+    hero_slides: list(r.hero_slides),
+    process_steps: list(r.process_steps),
+    build_story: list(r.build_story),
+    materials: list(r.materials),
+  };
 }
 
 const loadOverrides = cache(async (): Promise<Overrides | null> => {

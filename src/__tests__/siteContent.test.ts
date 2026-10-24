@@ -56,6 +56,10 @@ describe("sections (testimonials & About lists from the internal app)", () => {
       timeline: [],
       team: [{ name_ar: "علي" }],
       values: [],
+      hero_slides: [],
+      process_steps: [],
+      build_story: [],
+      materials: [],
     });
   });
 

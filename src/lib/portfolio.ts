@@ -44,6 +44,21 @@ export interface PortfolioProject {
   /** 1.5 = a floor and a half */
   floors?: number;
   bedrooms?: number;
+  // Case study (internal app, «دراسة الحالة») — absent when not set there
+  nameEn?: string;
+  locationEn?: string;
+  /** Badge: real photos ("built") or renders ("design") */
+  kind?: "built" | "design";
+  /** Months */
+  duration?: number;
+  /** Million IQD */
+  cost?: number;
+  challengeAr?: string;
+  challengeEn?: string;
+  solutionAr?: string;
+  solutionEn?: string;
+  /** Product ids used in the project */
+  materials?: number[];
 }
 
 export interface PortfolioFilters {
@@ -72,6 +87,7 @@ const API = process.env.NEXT_PUBLIC_API_URL;
 export { SITE_CONTENT_TAG };
 
 const positive = (v: unknown) => (typeof v === "number" && v > 0 ? v : undefined);
+const text = (v: unknown) => (typeof v === "string" && v.trim() ? v.trim() : undefined);
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function toProject(raw: any): PortfolioProject | null {
@@ -93,6 +109,18 @@ function toProject(raw: any): PortfolioProject | null {
     depth: positive(raw.depth),
     floors: positive(raw.floors),
     bedrooms: positive(raw.bedrooms),
+    nameEn: text(raw.name_en),
+    locationEn: text(raw.location_en),
+    kind: raw.kind === "built" || raw.kind === "design" ? raw.kind : undefined,
+    duration: positive(raw.duration),
+    cost: positive(raw.cost),
+    challengeAr: text(raw.challenge_ar),
+    challengeEn: text(raw.challenge_en),
+    solutionAr: text(raw.solution_ar),
+    solutionEn: text(raw.solution_en),
+    materials: Array.isArray(raw.materials) && raw.materials.length
+      ? raw.materials.filter((n: unknown) => Number.isInteger(n))
+      : undefined,
   };
 }
 

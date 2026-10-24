@@ -198,6 +198,19 @@ describe("projects from the internal app", () => {
     expect([old!.type, old!.area, old!.floors, old!.bedrooms]).toEqual([undefined, undefined, undefined, undefined]);
   });
 
+  it("reads the case-study fields and leaves blank ones out", async () => {
+    const study = { ...apiProject, id: "house-250", name_en: "250 m² house", location_en: " ", kind: "built",
+      duration: 7, cost: 171.6, challenge_ar: "بيت لعائلة", solution_en: "", materials: [12, 45] };
+    const blank = { ...apiProject, name_en: "", kind: "render", duration: 0, cost: 0, materials: [] };
+    vi.stubGlobal("fetch", vi.fn(async () => new Response(JSON.stringify({ projects: [study, blank] }))));
+    const mod = await import("@/lib/portfolio");
+    expect(await mod.getProject("house-250")).toMatchObject({
+      nameEn: "250 m² house", locationEn: undefined, kind: "built", duration: 7, cost: 171.6,
+      challengeAr: "بيت لعائلة", solutionEn: undefined, materials: [12, 45] });
+    const old = await mod.getProject("villa-kirkuk");
+    expect([old!.nameEn, old!.kind, old!.duration, old!.materials]).toEqual([undefined, undefined, undefined, undefined]);
+  });
+
   it("reads the types and area ranges the app publishes", async () => {
     const filters = {
       types: [{ id: "cafe", category: "interior-design", name_ar: "كافيهات", name_en: "Cafés" }, { name_ar: "بلا معرّف" }],
