@@ -34,7 +34,7 @@ describe("loaderFor", () => {
   });
 
   it("leaves local, ImgBB and API-server images on the built-in optimizer", () => {
-    expect(loaderFor("/images/hero-poster.jpg")).toBeUndefined();
+    expect(loaderFor("/images/hero-home.jpg")).toBeUndefined();
     expect(loaderFor("https://i.ibb.co/abc/photo.jpg")).toBeUndefined();
     expect(loaderFor("https://manzel.onrender.com/api/public/products/images/a.jpg")).toBeUndefined();
     // A look-alike host must not match
