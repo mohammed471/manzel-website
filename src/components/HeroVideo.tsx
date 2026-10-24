@@ -34,11 +34,22 @@ function subscribeMotion(onChange: () => void) {
 }
 const prefersReducedMotion = () => window.matchMedia(REDUCE_MOTION).matches;
 
-export default function HeroVideo() {
+/** Bottom + start-side shade keeps the white text AA over any photo. */
+export function HeroShade() {
+  return (
+    <>
+      <div className="absolute inset-0 bg-gradient-to-b from-primary-dark/60 via-primary-dark/40 to-primary-dark/85" />
+      <div className="absolute inset-0 rtl:bg-gradient-to-l ltr:bg-gradient-to-r from-primary-dark/50 to-transparent" />
+    </>
+  );
+}
+
+export default function HeroVideo({ poster: posterOverride }: { poster?: string } = {}) {
   const device = useDevice();
   // Editable from the internal app («الموقع» → الصور)
   const tSite = useTranslations("site");
-  const poster = tSite("hero_image");
+  // The first hero photo from «أقسام الرئيسية» when there is one, else the main image
+  const poster = posterOverride || tSite("hero_image");
   // Empty = no video, the poster only (the old gym clip was removed)
   const videoSrc = tSite("hero_video");
   const containerRef = useRef<HTMLDivElement>(null);
@@ -100,9 +111,7 @@ export default function HeroVideo() {
         />
       )}
 
-      {/* Bottom + start-side shade keeps the white text AA over any photo */}
-      <div className="absolute inset-0 bg-gradient-to-b from-primary-dark/60 via-primary-dark/40 to-primary-dark/85" />
-      <div className="absolute inset-0 rtl:bg-gradient-to-l ltr:bg-gradient-to-r from-primary-dark/50 to-transparent" />
+      <HeroShade />
     </div>
   );
 }

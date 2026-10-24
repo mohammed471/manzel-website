@@ -230,6 +230,12 @@ input[type="range"]::-moz-range-thumb {
 .hero-rise {
   animation: hero-rise 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
+/* Hero photos: a slow zoom on the photo being shown (HeroSlides) */
+@keyframes hero-kenburns { from { transform: scale(1); } to { transform: scale(1.06); } }
+.hero-kenburns { animation: hero-kenburns 7.5s ease-out both; }
+@media (prefers-reduced-motion: reduce) {
+  .hero-kenburns { animation: none; }
+}
 @media (prefers-reduced-motion: reduce) {
   .hero-rise { animation: none; }
 }

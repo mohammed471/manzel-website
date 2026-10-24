@@ -1,20 +1,34 @@
 import { getTranslations } from "next-intl/server";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, ChevronDown } from "lucide-react";
 import HeroVideo from "@/components/HeroVideo";
+import HeroSlides from "@/components/home/HeroSlides";
+import HeroCaption, { type HeroSlide } from "@/components/home/HeroCaption";
 import { ButtonLink } from "@/components/ui/Button";
 import { Link } from "@/i18n/navigation";
 import { stripTatweel } from "@/lib/utils";
 
-// Full-screen video hero. Bottom padding leaves room for the QuickAccessBar,
-// which overlaps the hero's bottom edge.
-export default async function HomeHero() {
+// Full-screen hero. Background, from the internal app («أقسام الرئيسية»):
+//   a hero video → the video, its poster = the first photo (or the main image)
+//   photos only  → HeroSlides (one still, or a slow cross-fade)
+//   nothing      → the main image (site.hero_image)
+// Bottom padding leaves room for the QuickAccessBar, which overlaps the hero's bottom edge.
+export default async function HomeHero({ slides }: { slides: HeroSlide[] }) {
   const t = await getTranslations("home");
+  const tSite = await getTranslations("site");
+  const hasVideo = !!tSite("hero_video");
   const title = t("hero_subtitle");
   const plainTitle = stripTatweel(title);
 
   return (
-    <section data-header-overlay className="relative min-h-[100svh] flex overflow-hidden bg-primary-dark">
-      <HeroVideo />
+    <section data-header-overlay className="relative min-h-[100svh] md:min-h-[92vh] flex overflow-hidden bg-primary-dark">
+      {slides.length > 0 && !hasVideo ? (
+        <HeroSlides slides={slides} />
+      ) : (
+        <>
+          <HeroVideo poster={slides[0]?.image} />
+          {slides[0] && <HeroCaption slide={slides[0]} />}
+        </>
+      )}
 
       <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-center text-center pt-24 pb-40 md:pb-44">
         <div className="max-w-3xl mx-auto">
@@ -57,6 +71,13 @@ export default async function HomeHero() {
           </div>
         </div>
       </div>
+      <a
+        href="#home-content"
+        aria-label={t("hero_scroll")}
+        className="absolute z-20 bottom-36 md:bottom-40 start-1/2 -translate-x-1/2 rtl:translate-x-1/2 hidden sm:flex w-9 h-9 items-center justify-center rounded-full border border-white/30 text-white/80 hover:text-white motion-safe:animate-bounce"
+      >
+        <ChevronDown className="w-4 h-4" />
+      </a>
     </section>
   );
 }
