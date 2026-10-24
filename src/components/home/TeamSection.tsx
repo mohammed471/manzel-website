@@ -1,7 +1,6 @@
 import { getLocale, getTranslations } from "next-intl/server";
 import Image from "@/components/SiteImage";
 import AnimatedSection from "@/components/AnimatedSection";
-import SectionHeader from "@/components/ui/SectionHeader";
 import { getAboutContent } from "@/lib/about";
 
 // «الأشخاص خلف منزل» — only team members with a real photo (internal app → صفحة من نحن → الفريق).
@@ -17,7 +16,7 @@ export default async function TeamSection() {
     <section className="py-[72px] md:py-32 px-4 sm:px-6 lg:px-8 bg-white">
       <div className="max-w-7xl mx-auto">
         <AnimatedSection>
-          <SectionHeader title={t("team_title")} />
+          <h2 className="mb-8 md:mb-10 text-3xl md:text-4xl text-primary leading-tight">{t("team_title")}</h2>
         </AnimatedSection>
         <ul className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
           {people.map((m) => (

@@ -40,7 +40,7 @@ export default async function TrustSection({
                     delay={i * 120}
                     className="block text-4xl md:text-5xl font-bold text-white tabular-nums"
                   />
-                  <span className="mt-2 block text-sm md:text-base text-white/65">{s.label}</span>
+                  <span className="mt-2 block text-sm md:text-base text-white/85">{s.label}</span>
                 </div>
               </AnimatedSection>
             ))}

@@ -3,38 +3,77 @@ import {
   getActiveCategories,
   getProjects,
   getProjectImageUrl,
+  projectName,
 } from "@/lib/portfolio";
+import { getSiteSections, localized } from "@/lib/siteContent";
+import { cumulativePct, pickFeatured, pickPairs } from "@/lib/homeSections";
 import { getTestimonials } from "@/lib/testimonials";
 import { getProducts } from "@/lib/api";
 import { visibleStats, type Stat } from "@/lib/stats";
 
 // Data loader for the homepage sections.
-// Projects and testimonials come from the internal app (with bundled fallbacks).
+// Projects, testimonials and the home sections (hero photos, steps, the house month by month,
+// materials) come from the internal app; anything empty there hides its section.
 export async function getHomeData() {
+  const locale = await getLocale();
   const allProjects = await getProjects();
-  const tPortfolio = await getTranslations("portfolio");
   const tFaq = await getTranslations("faq");
+  const sections = await getSiteSections();
+  const str = (v: unknown) => (typeof v === "string" ? v.trim() : "");
+  const image = (v: unknown) => str(v) || null;
+  const projectHref = (slug: string) => {
+    const p = allProjects.find((x) => x.id === slug);
+    return p ? `/portfolio/${p.category}/${p.id}` : null;
+  };
 
-  // Service cards = portfolio categories with work, each with the cover of its first project
-  const services = (await getActiveCategories()).map((category) => {
-    const inCategory = allProjects.filter((p) => p.category === category.id);
-    const first = inCategory[0];
-    const key = category.id.replace(/-/g, "_");
-    return {
-      id: category.id,
-      title: tPortfolio(`cat_${key}`),
-      description: tPortfolio(`cat_${key}_desc`),
-      imageUrl: first
-        ? getProjectImageUrl(category.id, first.id, first.images[0] || "cover.jpg")
-        : null,
-      count: inCategory.length,
-    };
-  });
+  const heroSlides = (sections?.hero_slides ?? [])
+    .filter((s) => str(s.image))
+    .map((s) => ({
+      image: str(s.image),
+      caption: localized(s, "caption", locale),
+      kind: s.kind === "built" ? ("built" as const) : ("design" as const),
+      href: projectHref(str(s.project)),
+    }));
 
-  const featuredProjects = allProjects.filter((p) => p.featured);
+  const steps = (sections?.process_steps ?? []).map((s, i) => ({
+    id: String(s.id ?? i),
+    title: localized(s, "title", locale),
+    text: localized(s, "text", locale),
+    image: image(s.image),
+  }));
 
-  const testimonialData = await getTestimonials(await getLocale());
+  const storyRaw = sections?.build_story ?? [];
+  const progress = cumulativePct(storyRaw.map((m) => str(m.spent)));
+  const story = storyRaw.map((m, i) => ({
+    id: String(m.id ?? i),
+    month: localized(m, "month", locale),
+    stage: localized(m, "stage", locale),
+    text: localized(m, "text", locale),
+    spent: str(m.spent),
+    pct: progress[i],
+    image: image(m.image),
+  }));
 
+  const materials = (sections?.materials ?? [])
+    .filter((m) => str(m.image))
+    .slice(0, 6)
+    .map((m, i) => ({
+      id: String(m.id ?? i),
+      image: str(m.image),
+      name: localized(m, "name", locale),
+      group: localized(m, "group", locale),
+      productId: /^\d+$/.test(str(m.product_id)) ? str(m.product_id) : null,
+    }));
+
+  const featuredProjects = pickFeatured(allProjects);
+  const pairs = pickPairs(allProjects).map((p) => ({
+    before: getProjectImageUrl(p.project.category, p.project.id, p.before),
+    after: getProjectImageUrl(p.project.category, p.project.id, p.after),
+    caption: p.caption || projectName(p.project, locale).text,
+    href: `/portfolio/${p.project.category}/${p.project.id}`,
+  }));
+
+  const testimonialData = await getTestimonials(locale);
   const stats = await getStats("home");
 
   // A question shows only with its answer (both edited in the internal app)
@@ -43,7 +82,7 @@ export async function getHomeData() {
     answer: tFaq(`a${i + 1}`).trim(),
   })).filter((f) => f.question && f.answer);
 
-  return { services, featuredProjects, testimonialData, stats, faqItems };
+  return { heroSlides, steps, story, materials, featuredProjects, pairs, testimonialData, stats, faqItems };
 }
 
 /**
@@ -70,4 +109,4 @@ export async function getStats(page: "home" | "about" | "portfolio"): Promise<St
   ]);
 }
 
-export type HomeService = Awaited<ReturnType<typeof getHomeData>>["services"][number];
+export type HomeData = Awaited<ReturnType<typeof getHomeData>>;

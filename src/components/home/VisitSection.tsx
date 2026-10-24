@@ -1,7 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import { MapPin, Clock, Phone, Navigation } from "lucide-react";
 import AnimatedSection from "@/components/AnimatedSection";
-import SectionHeader from "@/components/ui/SectionHeader";
 import FAQ from "@/components/FAQ";
 import { buttonClasses } from "@/components/ui/Button";
 import { telHref } from "@/lib/siteContent";
@@ -67,12 +66,12 @@ export default async function VisitSection({
   const t = await getTranslations("home");
 
   return (
-    <section id="faq" className="py-20 md:py-28 px-4 sm:px-6 lg:px-8 scroll-mt-36">
+    <section id="faq" className="py-[72px] md:py-32 px-4 sm:px-6 lg:px-8 scroll-mt-36">
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12">
         {faqItems.length > 0 && (
           <div className="lg:col-span-7">
             <AnimatedSection>
-              <SectionHeader badge={t("faq_subtitle")} title={t("faq_title")} />
+              <h2 className="mb-8 md:mb-10 text-3xl md:text-4xl text-primary leading-tight">{t("faq_title")}</h2>
             </AnimatedSection>
             <AnimatedSection delay={0.1}>
               <FAQ items={faqItems} />
@@ -81,7 +80,7 @@ export default async function VisitSection({
         )}
         <div id="visit" className={`${faqItems.length > 0 ? "lg:col-span-5" : "lg:col-span-12"} scroll-mt-36`}>
           <AnimatedSection>
-            <SectionHeader badge={t("visit_badge")} title={t("visit_title")} />
+            <h2 className="mb-8 md:mb-10 text-3xl md:text-4xl text-primary leading-tight">{t("visit_title")}</h2>
           </AnimatedSection>
           <AnimatedSection delay={0.15}>
             <MapCard />
