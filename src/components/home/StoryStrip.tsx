@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "@/components/SiteImage";
 import { cn } from "@/lib/utils";
+import { useSnapCarousel } from "@/lib/useSnapCarousel";
 
 export interface StoryMonth {
   id: string;
@@ -22,41 +22,7 @@ export interface StoryMonth {
 // arrows on desktop), dots underneath. Without photos the cards are text + figures only.
 export default function StoryStrip({ months }: { months: StoryMonth[] }) {
   const t = useTranslations("home");
-  const listRef = useRef<HTMLOListElement>(null);
-  const [current, setCurrent] = useState(0);
-
-  useEffect(() => {
-    const list = listRef.current;
-    if (!list) return;
-    let raf = 0;
-    const onScroll = () => {
-      cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(() => {
-        const items = [...list.children] as HTMLElement[];
-        const start = list.getBoundingClientRect();
-        const rtl = getComputedStyle(list).direction === "rtl";
-        // The card whose start edge is closest to the list's start edge
-        let best = 0;
-        let bestDist = Infinity;
-        items.forEach((el, i) => {
-          const r = el.getBoundingClientRect();
-          const dist = Math.abs(rtl ? start.right - r.right : r.left - start.left);
-          if (dist < bestDist) [best, bestDist] = [i, dist];
-        });
-        setCurrent(best);
-      });
-    };
-    list.addEventListener("scroll", onScroll, { passive: true });
-    return () => {
-      list.removeEventListener("scroll", onScroll);
-      cancelAnimationFrame(raf);
-    };
-  }, []);
-
-  const go = (i: number) => {
-    const el = listRef.current?.children[Math.max(0, Math.min(months.length - 1, i))] as HTMLElement | undefined;
-    el?.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "start" });
-  };
+  const { listRef, current, go } = useSnapCarousel<HTMLOListElement>(months.length);
 
   return (
     <div className="mt-14 md:mt-20">

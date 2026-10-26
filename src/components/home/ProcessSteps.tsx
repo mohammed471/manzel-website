@@ -13,7 +13,7 @@ export interface ProcessStep {
 }
 
 // «كيف نعمل» — numbered steps joined by a thin line (across on desktop, down the side on phones).
-// Steps and their optional photos come from «أقسام الرئيسية»; no photo → a line icon.
+// Steps and their optional photos come from «واجهة الموقع»; no photo → a line icon.
 export default async function ProcessSteps({ steps }: { steps: ProcessStep[] }) {
   if (steps.length === 0) return null;
   const t = await getTranslations("home");

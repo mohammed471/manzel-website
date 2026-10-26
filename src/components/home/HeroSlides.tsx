@@ -7,7 +7,7 @@ import HeroCaption, { type HeroSlide } from "@/components/home/HeroCaption";
 
 const INTERVAL_MS = 6000;
 
-// Hero photos from «أقسام الرئيسية»: one → still; several → a slow cross-fade every 6 s with a
+// Hero photos from «واجهة الموقع»: one → still; several → a slow cross-fade every 6 s with a
 // light zoom (CSS `.hero-kenburns`). The first photo is in the server HTML (LCP); under
 // prefers-reduced-motion it stays on the first photo with no zoom.
 export default function HeroSlides({ slides }: { slides: HeroSlide[] }) {

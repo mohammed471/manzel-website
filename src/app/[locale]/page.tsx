@@ -68,7 +68,7 @@ export default async function Home({
       {pairs.length > 0 && <RenderToReality pairs={pairs} />}
       <FeaturedWork projects={featuredProjects} />
       <ProcessSteps steps={steps} />
-      {/* On/off from the internal app («أقسام الرئيسية» → العرض); off by default */}
+      {/* On/off from the internal app («واجهة الموقع» → العرض); off by default */}
       {tSite("scroll_section") === "1" && <ScrollVideoSection />}
       <OpenBooksSection story={story} />
       <MaterialsSection materials={materials} productCount={products.length} />

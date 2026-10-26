@@ -48,7 +48,7 @@ export default function HeroVideo({ poster: posterOverride }: { poster?: string 
   const device = useDevice();
   // Editable from the internal app («الموقع» → الصور)
   const tSite = useTranslations("site");
-  // The first hero photo from «أقسام الرئيسية» when there is one, else the main image
+  // The first hero photo from «واجهة الموقع» when there is one, else the main image
   const poster = posterOverride || tSite("hero_image");
   // Empty = no video, the poster only (the old gym clip was removed)
   const videoSrc = tSite("hero_video");

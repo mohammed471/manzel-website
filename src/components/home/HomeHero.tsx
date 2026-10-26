@@ -7,7 +7,7 @@ import { ButtonLink } from "@/components/ui/Button";
 import { Link } from "@/i18n/navigation";
 import { stripTatweel } from "@/lib/utils";
 
-// Full-screen hero. Background, from the internal app («أقسام الرئيسية»):
+// Full-screen hero. Background, from the internal app («واجهة الموقع»):
 //   a hero video → the video, its poster = the first photo (or the main image)
 //   photos only  → HeroSlides (one still, or a slow cross-fade)
 //   nothing      → the main image (site.hero_image)

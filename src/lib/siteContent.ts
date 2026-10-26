@@ -14,7 +14,7 @@ import { SITE_CONTENT_TAG } from "@/lib/cacheTags";
 //                                                   hero_slides, process_steps, build_story, materials } }
 // If the API is unreachable, the bundled files are used as-is.
 //
-// `sections` are the lists edited in «الموقع» → آراء العملاء / صفحة من نحن / أقسام الرئيسية. Each
+// `sections` are the lists edited in «الموقع» → آراء العملاء / صفحة من نحن / واجهة الموقع. Each
 // item is flat: `name_ar`, `name_en`, … (`localized()` falls back to Arabic).
 
 export type Messages = typeof ar;

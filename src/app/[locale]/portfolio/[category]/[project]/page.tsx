@@ -250,11 +250,12 @@ export default async function ProjectDetailPage({ params }: PageProps) {
             </div>
           )}
 
-          {/* 5. Gallery — wide, two, wide…; full-screen viewer on tap */}
-          {allImages.length > 1 && (
+          {/* 5. Gallery — wide, two, wide…; full-screen viewer on tap. The cover is in it too: the owner
+              re-uploaded it when it was only the header photo (2026-10-26). */}
+          {allImages.length > 0 && (
             <div className="mb-16">
               <h2 className="text-xl font-bold text-text-primary mb-6">{t("photo_gallery")}</h2>
-              <ProjectGallery images={allImages.slice(1)} />
+              <ProjectGallery images={allImages} />
             </div>
           )}
 

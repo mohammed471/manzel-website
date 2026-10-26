@@ -9,7 +9,7 @@ import StoryStrip, { type StoryMonth } from "@/components/home/StoryStrip";
 
 // "Open-books contract": cost + 10%, shown with the sample house's estimate vs
 // actual. On the home page it is a dark green band with the same house month by month
-// underneath (`story`, from «أقسام الرئيسية»); the portfolio page shows the light version alone.
+// underneath (`story`, from «واجهة الموقع»); the portfolio page shows the light version alone.
 export default async function OpenBooksSection({ story }: { story?: StoryMonth[] } = {}) {
   const dark = story !== undefined;
   const t = await getTranslations("home");

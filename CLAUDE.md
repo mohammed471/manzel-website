@@ -324,8 +324,10 @@ The last feature before development stopped (Oct 2026): a heart saves products, 
 
 ### Home page (Oct 2026 redesign, `manzel-redesign-tasks.md`)
 
+- Selected projects are a moving horizontal slider (`FeaturedSlider`, up to 8 «مميّز» projects, else the newest; one card every 5 s, stops on hover/focus/touch, off screen and under reduced motion). `useSnapCarousel` (`src/lib`) drives it and `StoryStrip` — it scrolls the row only, never the page.
+- The project gallery includes the cover (the owner re-uploaded covers when the gallery skipped them).
 - Order: hero → QuickAccessBar → numbers (TrustSection, ≥ 2 numbers) → design vs build → selected projects → how we work → (furniture scroll section, off unless `site.scroll_section` = "1") → open-book contract + the house month by month (dark band) → materials → mini calculator → team (members with a photo) → FAQ + map → closing CTA.
-- **Every photo and list comes from the internal app** («الموقع» → أقسام الرئيسية: `hero_slides`, `process_steps`, `build_story`, `materials`; projects' «قبل/بعد» pairs; «مميّز»), never from files in this repo. A section with nothing entered is not rendered. Owner guide: `docs/how-to-add-photos.md`.
+- **Every photo and list comes from the internal app** («الموقع» → واجهة الموقع: `hero_slides`, `process_steps`, `build_story`, `materials`; projects' «قبل/بعد» pairs; «مميّز»), never from files in this repo. A section with nothing entered is not rendered. Owner guide: `docs/how-to-add-photos.md`.
 - Renders are never shown as built work: hero slides and projects carry `kind` (`design` default / `built`) → «تصميم» / «منفّذ» badge.
 - `site.hero_video` empty = no video. The old gym clip and poster are gone (originals in `_media-originals/`); the default poster is `/images/hero-home.jpg` (a new name so no cache serves the old one).
 - Project case-study fields from the app (`nameEn`, `locationEn`, `kind`, `duration`, `cost`, `challenge*`, `solution*`, `materials`) — `projectName()` / `projectLocation()` fall back to Arabic with `lang="ar"`.
