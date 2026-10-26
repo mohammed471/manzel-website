@@ -6,7 +6,7 @@ import { ButtonLink } from "@/components/ui/Button";
 import FeaturedSlider from "@/components/home/FeaturedSlider";
 import { getProjectImageUrl, projectLocation, projectName, type PortfolioProject } from "@/lib/portfolio";
 
-// Featured projects as a moving horizontal slider (owner's request 2026-10-26; it was a 3-photo
+// Featured projects as a row that drifts sideways on its own, landscape 5:4 photos (owner's request 2026-10-26; it was a 3-photo
 // magazine grid). Projects marked «مميّز» in the app, else the newest with a cover.
 export default async function FeaturedWork({ projects }: { projects: PortfolioProject[] }) {
   if (projects.length === 0) return null;
@@ -25,17 +25,17 @@ export default async function FeaturedWork({ projects }: { projects: PortfolioPr
               const place = projectLocation(p, locale);
               const meta = [place.text, p.area ? tPortfolio("area_value", { area: String(p.area) }) : ""].filter(Boolean);
               return (
-                <li key={p.id} className="snap-start shrink-0 w-[85%] sm:w-[48%] lg:w-[32%] aspect-[4/5]">
+                <li key={p.id} className="snap-start shrink-0 w-[80vw] sm:w-[24rem] lg:w-[27rem]">
                   <Link
                     href={`/portfolio/${p.category}/${p.id}`}
-                    className="group relative flex h-full overflow-hidden rounded-3xl bg-primary-dark isolate"
+                    className="group relative flex aspect-[5/4] overflow-hidden rounded-3xl bg-primary-dark isolate"
                   >
                     <Image
                       src={getProjectImageUrl(p.category, p.id, p.images[0])}
                       alt={name.text}
                       fill
                       loading={i < 3 ? "eager" : "lazy"}
-                      sizes="(min-width: 1024px) 32vw, (min-width: 640px) 48vw, 85vw"
+                      sizes="(min-width: 1024px) 432px, (min-width: 640px) 384px, 80vw"
                       className="object-cover -z-10 transition-transform duration-700 ease-out group-hover:scale-[1.04] motion-reduce:transition-none"
                     />
                     <div className="absolute inset-0 -z-10 bg-gradient-to-t from-primary-dark/85 via-primary-dark/20 to-transparent" />

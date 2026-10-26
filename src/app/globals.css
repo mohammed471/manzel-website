@@ -235,8 +235,14 @@ input[type="range"]::-moz-range-thumb {
 /* Hero photos: a slow zoom on the photo being shown (HeroSlides) */
 @keyframes hero-kenburns { from { transform: scale(1); } to { transform: scale(1.06); } }
 .hero-kenburns { animation: hero-kenburns 7.5s ease-out both; }
+/* Featured projects (FeaturedSlider): the row holds two identical copies and slides by one copy —
+   toward the reading end, so new cards come in from the end side in both directions. */
+@keyframes featured-marquee { to { transform: translateX(-50%); } }
+@keyframes featured-marquee-rtl { to { transform: translateX(50%); } }
+.featured-marquee { animation: featured-marquee var(--marquee-duration, 40s) linear infinite; }
+[dir="rtl"] .featured-marquee { animation-name: featured-marquee-rtl; }
 @media (prefers-reduced-motion: reduce) {
-  .hero-kenburns { animation: none; }
+  .hero-kenburns, .featured-marquee { animation: none; }
 }
 @media (prefers-reduced-motion: reduce) {
   .hero-rise { animation: none; }
