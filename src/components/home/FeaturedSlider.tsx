@@ -1,6 +1,6 @@
 import { Children, Fragment, type CSSProperties, type ReactNode } from "react";
 
-const SECONDS_PER_CARD = 6;
+const SECONDS_PER_CARD = 8;
 
 // Featured projects drift sideways on their own, without stopping (owner's request 2026-10-26 — it
 // moved one card every 5 s). Pure CSS, so it runs before any JavaScript: the row is drawn twice and
