@@ -232,7 +232,7 @@ Data managed in `src/data/projects.json`, accessed via `src/lib/portfolio.ts` he
 - Projects can also carry `kind` (built / design): a «منفّذ / تصميم» filter row (`?kind=`) and a badge on the card. Covers are `SiteImage` — never a fade-in that starts at opacity 0 (the old `BlurImage` hid every cover until JS).
 - Project page = case study (V14): full-width cover with the title (`data-header-overlay`), info bar, brief / solution, design-vs-build sliders, `ProjectGallery` (wide-two-wide + lightbox), showroom materials (`ProductCard`), the client's verified testimonial (`project` slug), similar projects.
 - Specs show on the card (`MasonryProjectCard`: area badge always visible, the rest in the overlay) and in the project page's info box; the labels come from `projectSpecs()`. Numbers are passed to the translator as strings so they stay Western digits.
-- Images uploaded to a floor-plan project are watermarked by the app with the Manzel logo (`watermark_image` in `core/image_shrink.py`, centred, 15% opacity) — at upload only; images already uploaded are not re-processed.
+- Every portfolio image (covers, gallery, before/after) is watermarked by the app at upload (`watermark_image` in `core/image_shrink.py`, `watermark_style(category)` in `website_admin.py`; owner's request Oct 2026 — ownership of designs, plans and built work): floor plans = centred logo up to 50% of the image at 15% opacity; designs / built work = centred logo up to 30% at 25%, dark logo on a bright photo, light logo on a dark one. Home «واجهة الموقع» images are not marked. At upload only; images already uploaded are not re-processed.
 - Home `QuickAccessBar`: the last tile links to `/portfolio/floor-plan` (it used to be booking) and looks like the other five — the owner asked for no red accent tile. The booking CTA stays in the header, mobile nav, tools grid, closing CTA and footer.
 
 ### Key Files
@@ -275,7 +275,7 @@ Colour stock is reduced to `available: boolean` by the API (products with `track
 - **Testimonials / About lists** arrive in the same content response as `sections: {testimonials, timeline, team, values}`. `getTestimonials(locale)` (`src/lib/testimonials.ts`) and `getAboutContent(locale)` (`src/lib/about.ts`) are **async** and localize with `localized(item, field, locale)` (blank English → Arabic). `sections` missing (API down / older API) → no testimonials at all (there is no bundled fallback — template quotes must never show) / `about.json` + `about.value_N_*` keys for the values only (team and timeline fallbacks are empty — unconfirmed milestones must not show). **Only testimonials with `verified` (true/1/"1"/"true") are shown**; `project` (slug) adds a «شاهد المشروع» link. No verified testimonials → `/testimonials` is noindex, out of the sitemap, and unlinked (footer, More sheet, search — `hasTestimonials` from the layout). An emptied list is respected: the testimonials band / About section is hidden. Value icons: `iconMap` in the About page must match `VALUE_ICONS` in the internal app.
 - GlobalSearch reads projects from `/api/portfolio-index` (cached route) instead of bundling projects.json.
 - Tests: `npm test` (vitest) — `src/__tests__/portfolio.test.ts` covers API / empty-list / fallback / image URLs / filter fields; `portfolioFilters.test.ts` the area ranges, filtering and spec labels.
-- Project types, area ranges and the floor-plan watermark: see "Portfolio Filters" above.
+- Project types, area ranges and the portfolio watermark: see "Portfolio Filters" above.
 
 ### Cost Calculator (`/calculator`)
 
