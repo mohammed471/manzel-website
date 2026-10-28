@@ -2,11 +2,11 @@ import type { PortfolioProject } from "@/lib/portfolio";
 
 // Pure helpers behind the home page sections (no data imports — tested in homeSections.test.ts).
 
-/** The featured projects with a cover; none marked → the newest (by year) with a cover. At most `n`. */
+/** All the featured projects with a cover (no limit — owner's request); none marked → the newest `n` (by year) with a cover. */
 export function pickFeatured(projects: PortfolioProject[], n = 3): PortfolioProject[] {
   const withCover = projects.filter((p) => p.images.length > 0);
   const featured = withCover.filter((p) => p.featured);
-  if (featured.length > 0) return featured.slice(0, n);
+  if (featured.length > 0) return featured;
   return [...withCover].sort((a, b) => (Number(b.year) || 0) - (Number(a.year) || 0)).slice(0, n);
 }
 

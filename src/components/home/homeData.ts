@@ -65,7 +65,7 @@ export async function getHomeData() {
       productId: /^\d+$/.test(str(m.product_id)) ? str(m.product_id) : null,
     }));
 
-  const featuredProjects = pickFeatured(allProjects, 8); // the slider shows up to 8
+  const featuredProjects = pickFeatured(allProjects, 8); // every «مميّز» project; none marked → the newest 8
   const pairs = pickPairs(allProjects).map((p) => ({
     before: getProjectImageUrl(p.project.category, p.project.id, p.before),
     after: getProjectImageUrl(p.project.category, p.project.id, p.after),

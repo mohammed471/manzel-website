@@ -13,6 +13,11 @@ describe("pickFeatured", () => {
     expect(pickFeatured(list).map((p) => p.id)).toEqual(["a"]);
   });
 
+  it("has no limit on featured projects", () => {
+    const list = Array.from({ length: 12 }, (_, i) => project(`p${i}`, { featured: true }));
+    expect(pickFeatured(list, 8)).toHaveLength(12);
+  });
+
   it("falls back to the newest three with a cover when none is featured", () => {
     const list = [project("old", { year: "2022" }), project("new", { year: "2026" }), project("none", { images: [] }),
       project("mid", { year: "2024" }), project("blank")];
