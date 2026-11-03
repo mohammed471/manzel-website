@@ -156,7 +156,7 @@ export default async function ProjectDetailPage({ params }: PageProps) {
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-primary-dark/90 via-primary-dark/40 to-primary-dark/30" />
         <div className="relative w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-12 md:pb-16 text-white">
-          <nav className="flex items-center gap-2 text-sm text-white/75 mb-6 flex-wrap">
+          <nav aria-label={tCommon("breadcrumb")} className="flex items-center gap-2 text-sm text-white/75 mb-6 flex-wrap">
             <Link href="/" className="hover:text-white">{tCommon("home")}</Link>
             <span aria-hidden="true">/</span>
             <Link href="/portfolio" className="hover:text-white">{t("title")}</Link>

@@ -11,7 +11,11 @@ export const SHOWCASE = {
 
 // The app's public sample-house page (manzel_split core/sample_house SAMPLE_TOKEN).
 // It moves to its own portal address later (docs/portal-todo.md).
-export const PORTAL_DEMO_URL = `${process.env.NEXT_PUBLIC_API_URL}/c/3an1E_I9cNAwko5Rhayf6cTI5FAQ8VJozoZKkvnx8Lk`;
+// Empty when NEXT_PUBLIC_API_URL is not set (local build without the app), so the
+// button is hidden instead of linking to "undefined/c/…".
+export const PORTAL_DEMO_URL = process.env.NEXT_PUBLIC_API_URL
+  ? `${process.env.NEXT_PUBLIC_API_URL}/c/3an1E_I9cNAwko5Rhayf6cTI5FAQ8VJozoZKkvnx8Lk`
+  : "";
 
 /** Actual vs estimate in %, one decimal: 169,024,000 → 171,553,000 = 1.5. */
 export function diffPct(s: { estimateIqd: number; actualIqd: number }): number {
