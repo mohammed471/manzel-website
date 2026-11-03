@@ -115,6 +115,9 @@ export default function Calculator({ pricing }: { pricing: CalculatorPricing }) 
   // hydration from window.location, so the page stays static (no useSearchParams).
   useEffect(() => {
     const q = queryToEstimate(new URLSearchParams(window.location.search));
+    // One-off sync from the URL after hydration (reading it during render would make
+    // the static HTML differ from the first client render) — intentional here.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (q.build !== undefined) setBuild(q.build);
     if (q.designServices) setDesignServices(q.designServices);
     if (q.plotArea !== undefined) setPlotArea(q.plotArea);
