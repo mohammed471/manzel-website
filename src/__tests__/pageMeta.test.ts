@@ -16,7 +16,7 @@ describe("pageMeta", () => {
 
   it("always carries a 1200×630 share image and a large twitter card", async () => {
     const m = await pageMeta({ locale: "ar", path: "", title: "T", description: "D" });
-    expect(m.openGraph).toMatchObject({ title: "T", url: "/ar", siteName: "منزل", locale: "ar_IQ", images: [{ url: "/og-default.jpg", width: 1200, height: 630 }] });
+    expect(m.openGraph).toMatchObject({ title: "T", url: "/ar", siteName: "منزل", locale: "ar_IQ", alternateLocale: "en_US", images: [{ url: "/og-default.jpg", width: 1200, height: 630 }] });
     expect(m.twitter).toMatchObject({ card: "summary_large_image", images: ["/og-default.jpg"] });
   });
 

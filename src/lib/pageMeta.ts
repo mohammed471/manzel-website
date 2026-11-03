@@ -41,6 +41,7 @@ export async function pageMeta({
       url,
       siteName: t("site_name"),
       locale: locale === "ar" ? "ar_IQ" : "en_US",
+      alternateLocale: locale === "ar" ? "en_US" : "ar_IQ",
       images: [image ? { url: img } : { url: img, width: 1200, height: 630 }],
     },
     twitter: { card: "summary_large_image", title, description, images: [img] },
