@@ -80,6 +80,7 @@ export default function SiteHeader() {
       )}
     >
       <nav
+        aria-label={t("main_nav")}
         className={cn(
           "mx-auto flex items-center justify-between h-16 md:h-20 gap-4 transition-[padding,margin,max-width] duration-300",
           // inset = PageHero's section padding + panel padding (and its pt-3)

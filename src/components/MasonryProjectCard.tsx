@@ -76,9 +76,10 @@ export default function MasonryProjectCard({
 
           {/* Hover overlay */}
           <div className="absolute inset-0 bg-gradient-to-t from-primary-dark/80 via-primary-dark/20 to-transparent opacity-100 [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
-            <h3 lang={name.lang} className="font-display text-white text-lg font-bold leading-tight">
+            {/* h2: the cards sit directly under the category page's h1 */}
+            <h2 lang={name.lang} className="font-display text-white text-lg font-bold leading-tight">
               {name.text}
-            </h3>
+            </h2>
             {details && <span className="text-white text-sm mt-1">{details}</span>}
             <span className="text-white/80 text-sm mt-1">
               {t("view_details")}

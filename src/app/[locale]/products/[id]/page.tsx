@@ -59,7 +59,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
     <>
       {/* Breadcrumb — no dark hero here, so SiteHeader stays solid */}
       <div className="pt-24 md:pt-28 px-4 sm:px-6 lg:px-8">
-        <nav className="max-w-7xl mx-auto flex flex-wrap items-center gap-2 text-sm text-text-secondary">
+        <nav aria-label={tCommon("breadcrumb")} className="max-w-7xl mx-auto flex flex-wrap items-center gap-2 text-sm text-text-secondary">
           <Link href="/" className="hover:text-primary transition-colors">
             {tCommon("home")}
           </Link>

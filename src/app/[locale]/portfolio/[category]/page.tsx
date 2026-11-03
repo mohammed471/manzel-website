@@ -82,7 +82,7 @@ export default async function CategoryPage({ params }: PageProps) {
         title={translatedName}
         description={translatedDesc}
         breadcrumb={
-          <nav className="flex flex-wrap items-center gap-2">
+          <nav aria-label={tCommon("breadcrumb")} className="flex flex-wrap items-center gap-2">
             <Link href="/" className="hover:text-white transition-colors">
               {tCommon("home")}
             </Link>

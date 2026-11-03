@@ -106,6 +106,7 @@ export default async function LocaleLayout({
   // No verified testimonials → the page is noindex and its links are hidden
   const hasTestimonials = (await getTestimonials(locale)).length > 0;
   const isRTL = locale === "ar";
+  const tCommon = await getTranslations({ locale, namespace: "common" });
 
   return (
     <html lang={locale} dir={isRTL ? "rtl" : "ltr"} suppressHydrationWarning>
@@ -120,11 +121,18 @@ export default async function LocaleLayout({
       <body
         className={`${thmanyahDisplay.variable} ${poppins.variable} ${thmanyahText.variable} ${playfairDisplay.variable} antialiased`}
       >
+        {/* Keyboard / screen-reader users jump past the header straight to the page */}
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:start-3 focus:z-[100] focus:rounded-full focus:bg-primary focus:px-5 focus:py-3 focus:text-sm focus:font-bold focus:text-white focus:shadow-lg"
+        >
+          {tCommon("skip_to_content")}
+        </a>
         <Analytics />
         <NextIntlClientProvider locale={locale} messages={messages}>
           <SplashScreen />
           <SiteHeader />
-          <main className="min-h-screen"><PageTransition>{children}</PageTransition></main>
+          <main id="main-content" tabIndex={-1} className="min-h-screen outline-none"><PageTransition>{children}</PageTransition></main>
           <Footer hasTestimonials={hasTestimonials} />
           <WhatsAppButton />
           <ScrollToTop />
