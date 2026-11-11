@@ -84,7 +84,7 @@ export default async function Footer({ hasTestimonials }: { hasTestimonials: boo
             {/* Link columns */}
             {columns.map((col) => (
               <div key={col.title} className="lg:col-span-2">
-                <h3 className="text-base text-white">{col.title}</h3>
+                <h2 className="text-base text-white">{col.title}</h2>
                 <ul className="mt-5 space-y-3">
                   {col.links.map((link) => (
                     <li key={link.href}>
@@ -99,7 +99,7 @@ export default async function Footer({ hasTestimonials }: { hasTestimonials: boo
 
             {/* Contact */}
             <div className="col-span-2 lg:col-span-4">
-              <h3 className="text-base text-white">{t("contact_us")}</h3>
+              <h2 className="text-base text-white">{t("contact_us")}</h2>
               <ul className="mt-5 space-y-3.5">
                 {contact.map(({ icon: Icon, href, label, ltr }) => {
                   const content = (

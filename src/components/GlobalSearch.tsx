@@ -67,17 +67,47 @@ export default function GlobalSearch({ hasTestimonials }: { hasTestimonials: boo
   const [pageResults, setPageResults] = useState<PageResult[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(-1);
-  const [recentSearches, setRecentSearches] = useState<string[]>([]);
-
-  // Load recent searches on mount
-  useEffect(() => {
+  // Recent searches from localStorage — this component only ever renders in the
+  // browser (GlobalSearchLazy imports it on the first open intent), so it can be
+  // read in the initial state instead of an effect.
+  const [recentSearches, setRecentSearches] = useState<string[]>(() => {
     try {
       const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) setRecentSearches(JSON.parse(stored));
+      return stored ? JSON.parse(stored) : [];
     } catch {
-      /* graceful degradation */
+      return []; // graceful degradation
     }
-  }, []);
+  });
+
+  // Reset the search when the overlay closes — adjusted while rendering
+  // (https://react.dev/learn/you-might-not-need-an-effect) rather than in an effect
+  const [wasOpen, setWasOpen] = useState(isOpen);
+  if (wasOpen !== isOpen) {
+    setWasOpen(isOpen);
+    if (!isOpen) {
+      setQuery("");
+      setSelectedIndex(-1);
+      setProductResults([]);
+      setPortfolioResults([]);
+      setPageResults([]);
+      setIsLoading(false);
+    }
+  }
+
+  // Typing (or picking a recent search): an empty query clears the results at
+  // once, anything else shows the spinner until the debounced search answers
+  const changeQuery = (value: string) => {
+    setQuery(value);
+    setSelectedIndex(-1);
+    if (value.trim()) {
+      setIsLoading(true);
+    } else {
+      setProductResults([]);
+      setPortfolioResults([]);
+      setPageResults([]);
+      setIsLoading(false);
+    }
+  };
 
   // Global keyboard shortcut: Ctrl+K / Cmd+K
   useEffect(() => {
@@ -98,18 +128,13 @@ export default function GlobalSearch({ hasTestimonials }: { hasTestimonials: boo
     return () => window.removeEventListener("open-global-search", handleOpenSearch);
   }, []);
 
-  // Body scroll lock + focus input on open, reset on close
+  // Body scroll lock + focus input on open
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";
       setTimeout(() => inputRef.current?.focus(), 100);
     } else {
       document.body.style.overflow = "";
-      setQuery("");
-      setSelectedIndex(-1);
-      setProductResults([]);
-      setPortfolioResults([]);
-      setPageResults([]);
     }
     return () => {
       document.body.style.overflow = "";
@@ -118,16 +143,8 @@ export default function GlobalSearch({ hasTestimonials }: { hasTestimonials: boo
 
   // Debounced search
   useEffect(() => {
-    if (!query.trim()) {
-      setProductResults([]);
-      setPortfolioResults([]);
-      setPageResults([]);
-      setIsLoading(false);
-      return;
-    }
-
-    setIsLoading(true);
-    setSelectedIndex(-1);
+    // Empty query: changeQuery already cleared the results
+    if (!query.trim()) return;
 
     const timeout = setTimeout(async () => {
       const q = query.trim().toLowerCase();
@@ -263,7 +280,7 @@ export default function GlobalSearch({ hasTestimonials }: { hasTestimonials: boo
   };
 
   const handleRecentClick = (search: string) => {
-    setQuery(search);
+    changeQuery(search);
   };
 
   // Track current flat index for highlighting
@@ -295,15 +312,16 @@ export default function GlobalSearch({ hasTestimonials }: { hasTestimonials: boo
             transition={{ duration: 0.2, ease: "easeOut" }}
             className="fixed inset-x-0 top-0 z-[61] flex justify-center pt-[12vh] md:pt-[15vh] px-4"
           >
-            <div className="w-full max-w-2xl bg-white rounded-2xl shadow-2xl overflow-hidden max-h-[70vh] flex flex-col">
+            <div role="dialog" aria-modal="true" aria-label={t("search_label")} className="w-full max-w-2xl bg-white rounded-2xl shadow-2xl overflow-hidden max-h-[70vh] flex flex-col">
               {/* Search input */}
               <div className="flex items-center gap-3 px-5 py-4 border-b border-secondary-dark/30">
-                <Search className="w-5 h-5 text-primary/40 shrink-0" />
+                <Search className="w-5 h-5 text-primary/40 shrink-0" aria-hidden="true" />
                 <input
                   ref={inputRef}
                   type="text"
+                  aria-label={t("search_label")}
                   value={query}
-                  onChange={(e) => setQuery(e.target.value)}
+                  onChange={(e) => changeQuery(e.target.value)}
                   onKeyDown={handleKeyDown}
                   placeholder={t("placeholder")}
                   className="flex-1 bg-transparent outline-none text-primary text-base placeholder:text-primary/30"
@@ -493,19 +511,19 @@ export default function GlobalSearch({ hasTestimonials }: { hasTestimonials: boo
                   <kbd className="px-1 py-0.5 rounded bg-secondary border border-secondary-dark/30 font-mono">
                     ↓
                   </kbd>
-                  <span className="ms-1">navigate</span>
+                  <span className="ms-1">{t("hint_navigate")}</span>
                 </span>
                 <span className="flex items-center gap-1">
                   <kbd className="px-1.5 py-0.5 rounded bg-secondary border border-secondary-dark/30 font-mono">
                     ↵
                   </kbd>
-                  <span className="ms-1">select</span>
+                  <span className="ms-1">{t("hint_select")}</span>
                 </span>
                 <span className="flex items-center gap-1">
                   <kbd className="px-1.5 py-0.5 rounded bg-secondary border border-secondary-dark/30 font-mono">
                     esc
                   </kbd>
-                  <span className="ms-1">close</span>
+                  <span className="ms-1">{t("hint_close")}</span>
                 </span>
               </div>
             </div>

@@ -40,7 +40,8 @@ export default function StoryStrip({ months }: { months: StoryMonth[] }) {
         </div>
       </div>
 
-      <ol ref={listRef} className="mt-6 flex gap-4 overflow-x-auto snap-x snap-mandatory pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      {/* Focusable so keyboard users can scroll it with the arrow keys (the buttons are desktop-only) */}
+      <ol ref={listRef} tabIndex={0} aria-label={t("story_title")} className="mt-6 flex gap-4 overflow-x-auto rounded-3xl focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent snap-x snap-mandatory pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {months.map((m) => (
           <li key={m.id} className="snap-start shrink-0 w-[82%] sm:w-[46%] lg:w-[31%] rounded-3xl bg-white/[0.06] border border-white/10 overflow-hidden flex flex-col">
             {m.image && (

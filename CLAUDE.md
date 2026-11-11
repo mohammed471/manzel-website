@@ -12,7 +12,7 @@ Manzel (منزل) — Bilingual (Arabic RTL + English LTR) public website for a 
 
 ## Tech Stack
 
-- Next.js 16 (App Router, TypeScript)
+- Next.js 16.4 (App Router, TypeScript)
 - Tailwind CSS v4 (CSS-first config via `@theme` in globals.css)
 - next-intl (i18n — URL-prefix routing `/ar/...`, `/en/...`)
 - Framer Motion (scroll animations)
@@ -58,7 +58,7 @@ A feature is NOT complete until all 3 steps pass. Do not mark tasks as done base
 | `src/i18n/routing.ts` | Locale definitions (`['ar', 'en']`, defaultLocale: `'ar'`) |
 | `src/i18n/request.ts` | Server-side getRequestConfig, loads messages |
 | `src/i18n/navigation.ts` | Locale-aware `Link`, `redirect`, `usePathname`, `useRouter` |
-| `src/middleware.ts` | Locale detection and redirect |
+| `src/proxy.ts` | Locale detection and redirect (Next 16 "proxy", formerly middleware) — matches every page path, so `/about` redirects to `/ar/about` |
 | `src/messages/ar.json` | Arabic translations |
 | `src/messages/en.json` | English translations |
 
@@ -77,7 +77,8 @@ src/
 │   └── [locale]/
 │       ├── layout.tsx                  (locale-aware root: dir, lang, fonts, NextIntlClientProvider)
 │       ├── page.tsx                    (Home)
-│       ├── not-found.tsx, error.tsx, loading.tsx
+│       ├── not-found.tsx, error.tsx
+│       ├── [...rest]/page.tsx          (unknown paths → the translated not-found inside the layout)
 │       ├── products/page.tsx           (Products listing)
 │       ├── products/[id]/page.tsx      (Product detail)
 │       ├── portfolio/page.tsx                    (Portfolio — 5 category cards)
@@ -157,7 +158,7 @@ src/
 ├── messages/
 │   ├── ar.json             (Arabic translations)
 │   └── en.json             (English translations)
-└── middleware.ts            (next-intl locale routing)
+└── proxy.ts                 (next-intl locale routing — Next 16 name for middleware)
 ```
 
 ### Server vs Client Components
@@ -468,6 +469,14 @@ Hard-won rules from the July 2026 iPhone performance fix — do not regress thes
 - **LCP on the home page is the hero title text** (a full-viewport photo is not an LCP candidate in Chrome), so it waits for the Thmanyah Display Bold face; the six preloaded Thmanyah faces (~480 KB) share the bandwidth with it. Not preloading the four body faces cut the throttled-trace LCP 5.1 → 3.8 s but raised Lighthouse's simulated FCP — left as is pending a decision (Oct 2026).
 - **Lighthouse (mobile, Sept 2026):** perf 76–87, accessibility 95–100, best practices 96–100, SEO 100. Measure with `npx lighthouse@12 <url> --throttling-method=devtools` too — the default simulated mode over-weights JS.
 - **Static rendering:** all pages except `/products`, `/products/[id]` (live Flask data) and `/board` (rendered from its link) are SSG — keep `setRequestLocale(locale)` in new pages.
+
+## Review pass (Nov 2026, branch `claude/review-improvements`)
+
+- `next` 16.4.3 (security fixes), `next-intl` 4.14, `sharp` 0.35.5; `npm audit --omit=dev` = 0. The lock file is in sync again (`npm ci` failed before).
+- The stricter `react-hooks/set-state-in-effect` rule of eslint-config-next 16.4 is on: reset state while rendering (see `GlobalSearch`) instead of in an effect.
+- Sitemap: one `<url>` per locale with ar / en / x-default (`src/lib/sitemapEntries.ts`).
+- Layout has a "skip to content" link (`common.skip_to_content`) → `<main id="main-content">`; breadcrumbs are `<nav aria-label={common.breadcrumb}>`, the header nav `nav.main_nav`.
+- `PORTAL_DEMO_URL` is empty without `NEXT_PUBLIC_API_URL` and the open-books button hides.
 
 ## Common Pitfalls — Do NOT
 

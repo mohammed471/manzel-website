@@ -17,7 +17,8 @@
     "more": "More",
     "more_title": "All Sections",
     "close": "Close",
-    "board": "My Board"
+    "board": "My Board",
+    "main_nav": "Main navigation"
   },
   "brand": {
     "name": "MANZEL",
@@ -309,7 +310,9 @@
   "common": {
     "back_to_home": "Back to Home",
     "home": "Home",
-    "scroll_to_top": "Scroll to top"
+    "scroll_to_top": "Scroll to top",
+    "skip_to_content": "Skip to content",
+    "breadcrumb": "Breadcrumb"
   },
   "errors": {
     "page_not_found": "Page Not Found",
@@ -529,7 +532,9 @@
     "optional": "Optional",
     "phone_invalid": "Enter a valid Iraqi mobile number, e.g. 07701234567",
     "whatsapp_continue": "Continue on WhatsApp",
-    "whatsapp_followup": "Hello, I booked a consultation on the website for: {type}"
+    "whatsapp_followup": "Hello, I booked a consultation on the website for: {type}",
+    "prev_month": "Previous month",
+    "next_month": "Next month"
   },
   "faq": {
     "q1": "What services does Manzel offer?",
@@ -657,7 +662,10 @@
     "recent_searches": "Recent Searches",
     "clear_recent": "Clear",
     "close": "Close search",
-    "search_label": "Search"
+    "search_label": "Search",
+    "hint_navigate": "navigate",
+    "hint_select": "select",
+    "hint_close": "close"
   },
   "color_picker": {
     "hero_label": "Color Visualizer",

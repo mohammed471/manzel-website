@@ -31,6 +31,7 @@ export default async function OpenBooksSection({ story }: { story?: StoryMonth[]
           </span>
           <h2 className={cn("mt-4 text-3xl md:text-6xl leading-tight", dark ? "text-white" : "text-primary")}>{t("openbooks_title")}</h2>
           <p className={cn("mt-5 text-base md:text-lg leading-relaxed max-w-xl", dark ? "text-white/75" : "text-text-secondary")}>{t("openbooks_text")}</p>
+          {PORTAL_DEMO_URL && (
           <a
             href={PORTAL_DEMO_URL}
             target="_blank"
@@ -40,6 +41,7 @@ export default async function OpenBooksSection({ story }: { story?: StoryMonth[]
             {t("openbooks_button")}
             <ArrowLeft className="arrow-nudge w-4 h-4 ltr:rotate-180" />
           </a>
+          )}
         </AnimatedSection>
 
         <AnimatedSection delay={0.1}>

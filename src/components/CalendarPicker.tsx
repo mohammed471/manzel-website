@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import { toDateKey } from "@/lib/dateKey";
 
@@ -54,6 +54,7 @@ export default function CalendarPicker({
   error,
 }: CalendarPickerProps) {
   const locale = useLocale();
+  const t = useTranslations("booking");
   const isArabic = locale === "ar";
 
   const initialMonth = value
@@ -138,10 +139,11 @@ export default function CalendarPicker({
                 ? "hover:bg-surface text-text-primary"
                 : "text-gray-300 cursor-not-allowed"
             )}
-            aria-label="Previous month"
+            aria-label={t("prev_month")}
           >
             <svg
-              className="w-5 h-5"
+              className="w-5 h-5 rtl:rotate-180"
+              aria-hidden="true"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -163,10 +165,11 @@ export default function CalendarPicker({
             type="button"
             onClick={goToNextMonth}
             className="w-8 h-8 rounded-lg hover:bg-surface flex items-center justify-center transition-colors text-text-primary"
-            aria-label="Next month"
+            aria-label={t("next_month")}
           >
             <svg
-              className="w-5 h-5"
+              className="w-5 h-5 rtl:rotate-180"
+              aria-hidden="true"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"

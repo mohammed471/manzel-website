@@ -120,7 +120,7 @@ export default function MiniCalculator({ pricing, whatsapp }: { pricing: Calcula
             </span>
           </p>
           <p className="mt-4 text-sm text-text-secondary">{t("mini_note")}</p>
-          <div className="mt-8 flex flex-col sm:flex-row gap-3">
+          <div className="mt-8 flex flex-col sm:flex-row sm:flex-wrap gap-3">
             <ButtonLink href={`/calculator?${query}`} variant="accent" size="lg">
               {t("mini_details")}
               <ArrowLeft className="arrow-nudge w-4 h-4 ltr:rotate-180" />
