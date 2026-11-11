@@ -215,10 +215,10 @@ input[type="range"]::-moz-range-thumb {
     padding-bottom: calc(4rem + env(safe-area-inset-bottom));
   }
   body:has(.mobile-bottom-nav) .floating-fab {
-    bottom: calc(5rem + env(safe-area-inset-bottom));
+    bottom: calc(4.75rem + env(safe-area-inset-bottom));
   }
   body:has(.mobile-bottom-nav) .floating-fab-stack {
-    bottom: calc(9rem + env(safe-area-inset-bottom));
+    bottom: calc(8rem + env(safe-area-inset-bottom));
   }
 }
 
@@ -339,7 +339,7 @@ html:is([data-device="ios"], [data-device="android"], [data-device="mobile"]) * 
     bottom: calc(9.5rem + env(safe-area-inset-bottom));
   }
   body:has(.calc-mobile-bar) .floating-fab-stack {
-    bottom: calc(13.5rem + env(safe-area-inset-bottom));
+    bottom: calc(12.75rem + env(safe-area-inset-bottom));
   }
   body:has(.calc-mobile-bar) {
     padding-bottom: calc(9rem + env(safe-area-inset-bottom));
